@@ -1,4 +1,4 @@
-package com.csye6225.noteapp.model;
+package com.csye6225.noteapp.models;
 
 public class User {
 
