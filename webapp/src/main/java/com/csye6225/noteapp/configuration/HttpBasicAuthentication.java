@@ -1,4 +1,4 @@
-package com.csye6225.noteapp.services;
+package com.csye6225.noteapp.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,10 +15,14 @@ public class HttpBasicAuthentication extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests()
+        http.authorizeRequests()
+                .antMatchers("/user/register").permitAll()
                 .anyRequest().authenticated()
-                .and().httpBasic()
-                .authenticationEntryPoint(authEntryPoint);
+                .and()
+                .httpBasic()
+                .authenticationEntryPoint(authEntryPoint)
+                .and()
+                .csrf().disable();
     }
 
 }

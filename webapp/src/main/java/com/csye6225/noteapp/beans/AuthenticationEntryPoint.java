@@ -1,4 +1,4 @@
-package com.csye6225.noteapp.Beans;
+package com.csye6225.noteapp.beans;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
