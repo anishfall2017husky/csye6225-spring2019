@@ -1,4 +1,4 @@
-package com.csye6225.noteapp;
+package com.csye6225.noteapp.beans;
 
 import org.springframework.data.repository.CrudRepository;
 
