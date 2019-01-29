@@ -24,32 +24,28 @@ public class NoteAppRestController {
     String addNewUser(@RequestParam String emailAddress
             , @RequestParam String password) {
 
-        User n = new User(emailAddress, password);
-        userRepository.save(n);
-        return "DML Success";
-    }
 
-    @RequestMapping(value = "/user/check", method = RequestMethod.POST, produces = "application/json")
-    public @ResponseBody
-    String checkUser(@RequestParam String emailAddress) {
+        User existUser = userRepository.findByemailAddress(emailAddress);
 
-        User n2 = userRepository.findByemailAddress(emailAddress);
+        String flagExist="false";
 
-        String flag="false";
+        if(existUser!=null){
 
+            flagExist="200 : User present";
 
-        if(n2!=null){
-            flag="Sucess";
         }
         else
         {
-            flag="Failed";
+            User newUser = new User(emailAddress, password);
+
+            userRepository.save(newUser);
+
+            flagExist="201 : User created";
         };
 
-        return flag;
+        return flagExist;
+
 
     }
-
-
 
 }

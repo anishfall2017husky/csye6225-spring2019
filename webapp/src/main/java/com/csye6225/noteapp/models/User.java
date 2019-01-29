@@ -31,7 +31,6 @@ public class User {
         this.password = password;
     }
 
-
     public String getEmailAddress() {
         return emailAddress;
     }
