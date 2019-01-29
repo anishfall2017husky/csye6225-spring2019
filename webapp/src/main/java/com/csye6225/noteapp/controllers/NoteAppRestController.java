@@ -52,7 +52,6 @@ public class NoteAppRestController {
 
             flagExist = "201 : User created";
         }
-        ;
 
         return flagExist;
 
