@@ -21,8 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 public class UserController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    
+
     @Autowired
     private UserRepository userRepository;
 
@@ -31,25 +32,25 @@ public class UserController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public GenericResponse home(HttpServletRequest request, HttpServletResponse response)  {
+    public GenericResponse home(HttpServletRequest request, HttpServletResponse response) {
 
         String authorization = request.getHeader("Authorization");
 
         if (authorization != null && authorization.startsWith("Basic")) {
             response.setStatus(HttpServletResponse.SC_OK);
             return new GenericResponse(HttpStatus.OK.value(), ResponseMessage.LOGGED_IN.getMessage());
-        }else {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
-        logger.info("authorization" +  " = " + authorization);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        logger.info("authorization" + " = " + authorization);
 
         return new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
     }
 
     @RequestMapping(value = "/user/register", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public GenericResponse registerUser(@RequestBody User user , HttpServletRequest request, HttpServletResponse response) {
+    public GenericResponse registerUser(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 
         User existUser = userRepository.findByemailAddress(user.getEmailAddress());
 
@@ -59,15 +60,17 @@ public class UserController {
         }
 
         if (!this.userService.isEmailValid(user.getEmailAddress())) {
-             return new GenericResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), ResponseMessage.EMAIL_INVALID.getMessage());
+            response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY.value());
+            return new GenericResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), ResponseMessage.EMAIL_INVALID.getMessage());
         }
 
         if (!this.userService.isPasswordValid(user.getPassword())) {
+            response.setStatus(HttpStatus.UNPROCESSABLE_ENTITY.value());
             return new GenericResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), ResponseMessage.PASSWORD_INVALID.getMessage());
         }
 
         String hashedPassword = passwordEncoder.encode(user.getPassword());
-        
+
         user.setPassword(hashedPassword);
 
         logger.info("Hashed Password: " + hashedPassword);

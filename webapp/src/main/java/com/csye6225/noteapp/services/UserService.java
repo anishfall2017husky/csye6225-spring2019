@@ -1,8 +1,5 @@
 package com.csye6225.noteapp.services;
 
-import java.util.Collection;
-
-import com.csye6225.noteapp.models.User;
 import com.csye6225.noteapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
