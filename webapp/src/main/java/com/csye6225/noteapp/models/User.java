@@ -7,7 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
-@Table(name = "auth_db")
+@Table(name = "user")
 public class User {
 
     @Id
@@ -25,7 +25,6 @@ public class User {
     @NotEmpty(message = "*Please provide your password")
     private String password;
 
-    private String[] roles;
 
     public User() {
     }
@@ -51,18 +50,4 @@ public class User {
         return password;
     }
 
-
-    /**
-     * @return the roles
-     */
-    public String[] getRoles() {
-        return roles;
-    }
-
-    /**
-     * @param roles the roles to set
-     */
-    public void setRoles(String[] roles) {
-        this.roles = roles;
-    }
 }
