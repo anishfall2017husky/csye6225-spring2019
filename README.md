@@ -10,17 +10,44 @@
 | Nilank Sharma | 001279669 | sharma.nil@husky.neu.edu |
 
 ## Technology Stack
+### 1. Operating System
+* Linux based Operating System - Ubuntu
+### 2. Programming Language
+* Java 8
+### 3. Relational Database
+* MySQL
+### 4. Backend
+* Spring Boot
+* Maven
+* JUnit -> (Unit Testing)
+
 
 
 ## Build Instructions
+  
+### Start mysql server
+`systemctl start mysql`
+
+### Start the backend server
+Navigate to webapp folder  
+`cd webapp`<br><br>
+Run the following command\
+`mvn spring-boot:run`
+
 
 
 ## Deploy Instructions
 
+XXXX
 
 ## Running Tests
 
+### Unit test for backend
+Navigate to webapp folder  
+`cd webapp`<br><br>
+Run the following command\
+`mvn test`
 
 ## CI/CD
 
-
+XXXX
