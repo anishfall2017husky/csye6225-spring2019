@@ -25,6 +25,7 @@ public class User {
     @NotEmpty(message = "*Please provide your password")
     private String password;
 
+
     public User() {
     }
 
@@ -48,4 +49,5 @@ public class User {
     public String getPassword() {
         return password;
     }
+
 }

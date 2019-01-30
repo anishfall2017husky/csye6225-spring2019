@@ -1,14 +1,19 @@
 package com.csye6225.noteapp.services;
 
+import java.util.Collection;
+
+import com.csye6225.noteapp.models.User;
 import com.csye6225.noteapp.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("userService")
-public class UserService {
+public class UserService  {
 
+    
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
 
     public boolean isEmailValid(String emailAddress) {
         String emailPattern = "[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
@@ -19,4 +24,6 @@ public class UserService {
         return password.length() >= 8;
     }
 
+    
+ 
 }

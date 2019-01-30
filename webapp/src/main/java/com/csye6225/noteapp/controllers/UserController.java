@@ -12,23 +12,22 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-
 
 @RestController
 public class UserController {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private UserService userService;
-
 
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -66,6 +65,12 @@ public class UserController {
         if (!this.userService.isPasswordValid(user.getPassword())) {
             return new GenericResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), ResponseMessage.PASSWORD_INVALID.getMessage());
         }
+
+        String hashedPassword = passwordEncoder.encode(user.getPassword());
+        
+        user.setPassword(hashedPassword);
+
+        logger.info("Hashed Password: " + hashedPassword);
 
         userRepository.save(user);
 
