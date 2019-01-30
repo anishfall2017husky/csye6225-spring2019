@@ -25,6 +25,8 @@ public class User {
     @NotEmpty(message = "*Please provide your password")
     private String password;
 
+    private String[] roles;
+
     public User() {
     }
 
@@ -47,5 +49,20 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+
+    /**
+     * @return the roles
+     */
+    public String[] getRoles() {
+        return roles;
+    }
+
+    /**
+     * @param roles the roles to set
+     */
+    public void setRoles(String[] roles) {
+        this.roles = roles;
     }
 }
