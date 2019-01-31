@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 
 @RestController
 public class UserController {
@@ -38,7 +39,7 @@ public class UserController {
 
         if (authorization != null && authorization.startsWith("Basic")) {
             response.setStatus(HttpServletResponse.SC_OK);
-            return new GenericResponse(HttpStatus.OK.value(), ResponseMessage.LOGGED_IN.getMessage());
+            return new GenericResponse(HttpStatus.OK.value(), new Date().toString());
         }
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

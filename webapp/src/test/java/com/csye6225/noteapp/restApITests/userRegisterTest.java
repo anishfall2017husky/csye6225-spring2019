@@ -25,16 +25,16 @@ public class userRegisterTest {
 
         MockitoAnnotations.initMocks(this);
         User u = new User();
-        u.setEmailAddress("Unittest");
-        u.setPassword("UnitTest111");
-        Mockito.when(userRepository.findByemailAddress("Unittest")).thenReturn(u);
+        u.setEmailAddress("test@test.com");
+        u.setPassword("test12345");
+        Mockito.when(userRepository.findByemailAddress("test@test.com")).thenReturn(u);
     }
 
     @Test
     public void testUserregister() throws Exception {
 
-        User u = userRepository.findByemailAddress("Unittest");
-        assertEquals(u.getEmailAddress(), "Unittest");
+        User u = userRepository.findByemailAddress("test@test.com");
+        assertEquals(u.getEmailAddress(), "test@test.com");
 
     }
 }
