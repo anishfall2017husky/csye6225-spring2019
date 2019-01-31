@@ -19,7 +19,10 @@
 ### 4. Backend
 * Spring Boot
 * Maven
-* JUnit -> (Unit Testing)
+### 5. Testing
+* JUnit
+* Mockito
+* REST-assured
 
 
 
