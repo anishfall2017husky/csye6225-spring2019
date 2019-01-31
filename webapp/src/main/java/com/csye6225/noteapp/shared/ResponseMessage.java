@@ -1,6 +1,5 @@
 package com.csye6225.noteapp.shared;
 
-import java.util.Date;
 
 public enum ResponseMessage {
 
@@ -8,8 +7,7 @@ public enum ResponseMessage {
     USER_ALREADY_EXISTS("Email address is in use"),
     EMAIL_INVALID("Email is not valid. Please use another email address."),
     PASSWORD_INVALID("Password must be 8 or more characters"),
-    NOT_LOGGED_IN("You are not logged in."),
-    LOGGED_IN(new Date().toString());
+    NOT_LOGGED_IN("You are not logged in.");
 
     private String message;
 
