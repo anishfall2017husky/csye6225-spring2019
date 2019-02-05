@@ -53,22 +53,22 @@ public class UserController {
             User user = userRepository.findByemailAddress(values[0]);
             logger.info("user" + " = " + user);
 
-            if (user != null) {
-                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-                boolean flag = passwordEncoder.matches(values[1], user.getPassword());
-                logger.info("flag" + " = " + flag);
-                if (flag) {
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    return new GenericResponse(HttpStatus.OK.value(), new Date().toString());
-
-                } else {
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
-                }
-            } else {
+            if (user == null) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
+                return new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
             }
+
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            boolean isPassSame = passwordEncoder.matches(values[1], user.getPassword());
+            logger.info("Password query result" + " = " + isPassSame);
+
+            if (!isPassSame) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                return new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
+            }
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            return new GenericResponse(HttpStatus.OK.value(), new Date().toString());
         }
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
