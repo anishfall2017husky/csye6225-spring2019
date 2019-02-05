@@ -16,6 +16,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.Date;
 
 @RestController
@@ -38,13 +40,38 @@ public class UserController {
         String authorization = request.getHeader("Authorization");
 
         if (authorization != null && authorization.startsWith("Basic")) {
-            response.setStatus(HttpServletResponse.SC_OK);
-            return new GenericResponse(HttpStatus.OK.value(), new Date().toString());
+
+            // Authorization: Basic base64credentials
+            String base64Credentials = authorization.substring("Basic".length()).trim();
+            String credentials = new String(Base64.getDecoder().decode(base64Credentials), Charset.forName("UTF-8"));
+            logger.info("credentials" + " = " + credentials);
+
+            // credentials = username:password
+            final String[] values = credentials.split(":", 2);
+            logger.info("username/emailaddress" + " = " + values[0]);
+            logger.info("password" + " = " + values[1]);
+            User user = userRepository.findByemailAddress(values[0]);
+            logger.info("user" + " = " + user);
+
+            if (user != null) {
+                BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                boolean flag = passwordEncoder.matches(values[1], user.getPassword());
+                logger.info("flag" + " = " + flag);
+                if (flag) {
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    return new GenericResponse(HttpStatus.OK.value(), new Date().toString());
+
+                } else {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
+                }
+            } else {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
+            }
         }
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-        logger.info("authorization" + " = " + authorization);
 
         return new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
     }
