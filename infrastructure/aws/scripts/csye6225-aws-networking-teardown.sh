@@ -1,57 +1,213 @@
+
 #!/bin/bash
 
-vpcid=$(echo $VpcId)
-subnetId1=$1
-subnetId2=$2
-subnetId3=$3
-publicRouteTableId=$4
-internetGatewayId=$5
+# ************* Script to create AWS resources using awscli *********************************
+#
+#     vpc_id               --   VPC ID     
+#     subnetid1 	       --   Subnet ID-1
+#     subnetid2            --   Subnet ID-2
+#     subnetid3            --   Subnet ID-3
+#     publicRouteTableId   --   Public Route Table ID
+#     internetGatewayId    --   Internet Gateway ID
+#
+# Change Log:
+#
+# Feb 5 2019 -- Nilank Sharma  -- Initial Creation
+# Feb 6 2019 -- Srikant Swamy  -- Modified
+#
+# ********************************************************************************************
 
-#deleting all subnets
-echo "Deleting all subnets..."
+echo "Please enter SUBNET-1 ID:"
+read subnetId1
+
+echo "Please enter SUBNET-2 ID:"
+read subnetId2
+
+echo "Please enter SUBNET-3 ID:"
+read subnetId3
+
+echo "Please enter INTERNET GATEWAY ID:"
+read internetGatewayId
+
+echo "Please enter PUBLIC ROUTE TABLE ID:"
+read publicRouteTableId
+
+echo "Please enter VPC ID:"
+read vpcid
+
+#vpcid=$(echo $VpcId)
+#subnetId1=$1
+#subnetId2=$2
+#subnetId3=$3
+#publicRouteTableId=$4
+#internetGatewayId=$5
+
+echo -e "\n"
+echo " ************************************************** "
+echo " ********** Networking teardown started *********** "
+echo " ************************************************** "
+echo -e "\n"
+
+
+
+# Deleting Subnets
+
+echo " ****** Deleting Subnets ******* "
+
+echo " ****** Deleting Subnet-1 ****** "
+
+step="Deletion: Subnet 1"
+
 aws ec2 delete-subnet --subnet-id $subnetId1
+
+flag=$?
+
+if [ $flag -ne 0 ]; then
+	flag=1
+	echo -e "\n"
+	echo " **************************************************** "
+	echo "Exiting: Failed at step: $step with exit status: $flag"
+	echo " ************ Teardown Process Complete ************* "
+	echo -e "\n"
+	exit 1
+else
+	echo " ******* Deleted Subnet $subnetId1 ******* "
+fi
+
+step="Deletion: Subnet 2"
+
+echo " ****** Deleting Subnet-2 ****** "
 aws ec2 delete-subnet --subnet-id $subnetId2
+
+flag=$?
+
+if [ $flag -ne 0 ]; then
+	flag=1
+	echo -e "\n"
+	echo " **************************************************** "
+	echo "Exiting: Failed at step: $step with exit status: $flag"
+	echo " ************ Teardown Process Complete ************* "
+	echo -e "\n"
+	exit 1
+else
+	echo " ******* Deleted Subnet $subnetId2 ******* "
+fi
+
+step="Deletion: Subnet 3"
+
+echo " ****** Deleting Subnet-3 ****** "
 aws ec2 delete-subnet --subnet-id $subnetId3
-echo "Deleted all subnets"
 
-#deleting public route table
-echo "Deleting Public Route Table...."
+flag=$?
+
+if [ $flag -ne 0 ]; then
+	flag=1
+	echo -e "\n"
+	echo " **************************************************** "
+	echo "Exiting: Failed at step: $step with exit status: $flag"
+	echo " ************ Teardown Process Complete ************* "
+	echo -e "\n"
+	exit 1
+else
+	echo " ******* Deleted Subnet $subnetId3 ******* "
+fi
+
+
+echo " ****** Deleted Subnets ******** "
+
+#Deleting public route table
+
+step="Deletion: Public Route Table"
+
+echo " **** Deleting Public Route Table **** "
+
 aws ec2 delete-route-table --route-table-id $publicRouteTableId
-if [ $? -ne 0 ]; then
-	echo "Failed during deleting the public route table"
+
+flag=$?
+
+if [ $flag -ne 0 ]; then
+	flag=1
+	echo -e "\n"
+	echo " **************************************************** "
+	echo "Exiting: Failed at step: $step with exit status: $flag"
+	echo " ************ Teardown Process Complete ************* "
+	echo -e "\n"
 	exit 1
 else
-	echo "Deleted public route table"
+	echo " ******* Deleted public route table $publicRouteTableId ******* "
 fi
 
-#detach internet gateway
-echo "Detaching internet gateway....."
+# Detach Internet Gateway
+
+step="Detach: Internet Gateway"
+
+echo " ******** Detaching Internet Gateway ******** "
+
 aws ec2 detach-internet-gateway --internet-gateway-id $internetGatewayId --vpc-id $vpcid
-if [ $? -ne 0 ]; then
-	echo "Failed during detaching the internet gateway from VPC"
+
+flag=$?
+
+if [ $flag -ne 0 ]; then
+	flag=1
+	echo -e "\n"
+	echo " **************************************************** "
+	echo "Exiting: Failed at step: $step with exit status: $flag"
+	echo " ************ Teardown Process Complete ************* "
+	echo -e "\n"
 	exit 1
 else
-	echo "Detached internet gateway"
+	echo " ****** Detached internet gateway $internetGatewayId ****** "
 fi
 
-#deleting internet gateway
-echo "Deleting internet gateway......."
+# Deleting Internet gateway
+
+step="Deletion: Internet Gateway"
+
+echo " ****** Deleting Internet Gateway ****** "
+
 aws ec2 delete-internet-gateway --internet-gateway-id $internetGatewayId
-if [ $? -ne 0]; then
-	echo "Failed to delete internet gateway"
+
+flag=$?
+
+if [ $flag -ne 0]; then
+	flag=1
+	echo -e "\n"
+	echo " **************************************************** "
+	echo "Exiting: Failed at step: $step with exit status: $flag"
+	echo " ************ Teardown Process Complete ************* "
+	echo -e "\n"
 	exit 1
 else
-	echo "Deleted internet gateway"
+	echo " ****** Deleted Internet Gateway $internetGatewayId ****** "
 fi
 
-#deleteing vpc
-echo "Deleting VPC....."
+# Deleteing VPC
+
+step="Deletion: VPC"
+
+echo " ******* Deleting VPC ******** "
+
 aws ec2 delete-vpc --vpc-id $vpcid
-if [ $? -ne 0 ]; then
-	"Failed during deleteing VPC"
+
+flag=$?
+
+if [ $flag -ne 0 ]; then
+	flag=1
+	echo -e "\n"
+	echo " **************************************************** "
+	echo "Exiting: Failed at step: $step with exit status: $flag"
+	echo " ************ Teardown Process Complete ************* "
+	echo -e "\n"
 	exit 1
 else 
-	echo "Deleted VPC!"
+	echo " ***** VPC $vpcid Deleted ******* "
 fi
 
-echo "======== Networking stack cleared ========="
+echo -e "\n"
+
+echo " ************** All resources deleted ************** "
+echo " *************************************************** "
+echo " ********** Networking teardown completed ********** "
+echo " *************************************************** "
+
+
