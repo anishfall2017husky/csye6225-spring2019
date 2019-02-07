@@ -68,7 +68,6 @@ echo " *********************************************** "
 echo " ************* Script Started ****************** "
 echo " *********************************************** "
 
-
 subnet_name_1=${subnet_name}_${az_1}
 subnet_name_2=${subnet_name}_${az_2}
 subnet_name_3=${subnet_name}_${az_3}
@@ -92,8 +91,6 @@ then
 
 	echo " VPC ID '$vpc_id' CREATED in '$region_name' region."
 	
-	
-
 	aws ec2 create-tags \
 	 --resources $vpc_id \
 	 --tags "Key=Name,Value=$vpc_name" \
@@ -103,7 +100,6 @@ then
 
 fi
 	
-
 
 if [ $flag -eq 0 ] 
 then
@@ -124,11 +120,8 @@ then
 	 --region $region_name)
 
 	flag=$?
-
 	
 fi
-
-
 
 
 if [ $flag -eq 0 ] 
@@ -137,8 +130,6 @@ then
 
 	echo "  Subnet ID '$subnet_id_1' CREATED in '$az_1'" \
 	"Availability Zone."
-
-
 	
 	aws ec2 create-tags \
 	 --resources $subnet_id_1 \
@@ -147,10 +138,7 @@ then
 
 	flag=$?
 
-
 fi
-
-
 
 	
 if [ $flag -eq 0 ] 
@@ -158,9 +146,6 @@ then
 	step="Create subnet-2"
 
 	echo "  Subnet ID '$subnet_id_1' NAMED as '$subnet_name_1'."
-
-
-	
 
 	echo " ****** Creating Subnet-2 ******"
 	subnet_id_2=$(aws ec2 create-subnet \
@@ -173,10 +158,7 @@ then
 
 	flag=$?
 
-
 fi
-
-
 
 
 if [ $flag -eq 0 ] 
@@ -186,20 +168,14 @@ then
 	echo "  Subnet ID '$subnet_id_2' CREATED in '$az_2'" \
 	"Availability Zone."
 
-	
-
 	aws ec2 create-tags \
 	 --resources $subnet_id_2 \
 	 --tags "Key=Name,Value=$subnet_name_2" \
 	 --region $region_name
 
-
 	flag=$?
 
-
-
 fi
-
 
 	
 if [ $flag -eq 0 ] 
@@ -207,8 +183,6 @@ then
 	step="Create subnet-3"
 
 	echo "  Subnet ID '$subnet_id_2' NAMED as '$subnet_name_2'."
-
-	
 
 	echo " ****** Creating Subnet-3 ******"
 	subnet_id_3=$(aws ec2 create-subnet \
@@ -221,11 +195,7 @@ then
 
 	flag=$?
 
-
 fi
-
-
-
 
 
 if [ $flag -eq 0 ] 
@@ -235,7 +205,6 @@ then
 	echo "  Subnet ID '$subnet_id_3' CREATED in '$az_3'" \
 	"Availability Zone."
 
-
 	aws ec2 create-tags \
 	 --resources $subnet_id_3 \
 	 --tags "Key=Name,Value=$subnet_name_3" \
@@ -243,11 +212,7 @@ then
 
 	flag=$?
 
-
 fi
-
-
-
 
 
 if [ $flag -eq 0 ] 
@@ -256,10 +221,7 @@ then
 
 	echo "  Subnet ID '$subnet_id_3' NAMED as '$subnet_name_3'."
 
-
-	
-
-	echo " ****** Creating Subnet-1 ******"
+	echo " ****** Creating Internet Gateway ******"
 	igw_id=$(aws ec2 create-internet-gateway \
 	 --query 'InternetGateway.{InternetGatewayId:InternetGatewayId}' \
 	 --output text \
@@ -267,11 +229,7 @@ then
 
 	flag=$?
 
-
 fi
-
-
-
 
 
 if [ $flag -eq 0 ] 
@@ -280,8 +238,6 @@ then
 
 	echo "  Internet Gateway ID '$igw_id' CREATED."
 
-	
-
 	aws ec2 attach-internet-gateway \
 	 --vpc-id $vpc_id \
 	 --internet-gateway-id $igw_id \
@@ -289,9 +245,7 @@ then
 
 	 flag=$?
 
-	
 fi
-
 
 
 if [ $flag -eq 0 ] 
@@ -309,11 +263,7 @@ then
 
 	flag=$?
 
-
 fi
-
-
-
 
 
 if [ $flag -eq 0 ] 
@@ -322,8 +272,6 @@ then
 
 	echo "  IG '$igw_id' NAMED as '$internet_gateway_name'."
 
-	
-
 	echo " ******* Creating Route Table ********"
 	route_table_id=$(aws ec2 create-route-table \
 	 --vpc-id $vpc_id \
@@ -331,12 +279,8 @@ then
 	 --output text \
 	 --region $region_name)
 
-	 flag=$?
-
-	
+	 flag=$?	
 fi  
-
-
 
 
 if [ $flag -eq 0 ] 
@@ -344,8 +288,6 @@ then
 	step="Tag RT"
 
 	echo "  Route Table ID '$route_table_id' CREATED."
-
-	
 
 	echo " ****** Tagging Route Table ******"
 
@@ -356,9 +298,7 @@ then
 
 	 flag=$?
 
-
 fi  
-
 
 
 if [ $flag -eq 0 ] 
@@ -375,9 +315,7 @@ then
 
 	flag=$?
 
-
 fi
-
 
 
 if [ $flag -eq 0 ] 
@@ -397,9 +335,7 @@ then
 
 	flag=$?
 
-
 fi	
-
 
 
 if [ $flag -eq 0 ] 
@@ -409,10 +345,7 @@ then
 	echo "  Public Subnet ID '$subnet_id_2' ASSOCIATED with Route Table ID" \
 	  "'$route_table_id'."
 
-	
-
 	echo " ****** Attaching Subnet-3 to Route Table *********"
-
 	# Associate Subnet - 3 with Route Table
 	attach_route_table=$(aws ec2 associate-route-table  \
 	 --subnet-id $subnet_id_3 \
@@ -421,9 +354,7 @@ then
 
 	flag=$?
 
-
 fi	
-
 
 
 if [ $flag -eq 0 ] 
@@ -432,8 +363,6 @@ then
 
 	echo "  Public Subnet ID '$subnet_id_3' ASSOCIATED with Route Table ID" \
 	  "'$route_table_id'."
-
-	
 
 	# Open route table
 
@@ -446,10 +375,7 @@ then
 	 --region $region_name)
 
 	 flag=$?
-
-
 fi	
-
 
 
 if [ $flag -eq 0 ] 
@@ -461,16 +387,13 @@ then
 	
 	echo " ***** Finding Default Security Group ID ***** "
 	
-
 	default_sg_id=$(aws ec2 describe-security-groups \
 	--filters Name=vpc-id,Values=$vpc_id| \
 	jq -r '.SecurityGroups[] | select (.GroupName == "default") | .GroupId')
 
 	flag=$?
 
-
 fi	
-
 
 
 if [ $flag -eq 0 ] 
@@ -486,17 +409,12 @@ then
 
 	flag=$?
 
-
 fi
-
-
 
 
 if [ $flag -eq 0 ] 
 then
 	step="Add P22 rule"
-
-	
 	echo " **** Default Security Group rule removed from SG: $default_sg_id **** "
 
 	add_ssh=$(aws ec2 authorize-security-group-ingress \
@@ -510,13 +428,9 @@ then
 fi
 
 
-
-
 if [ $flag -eq 0 ] 
 then
 	step="Add P80 rule"
-
-	
 	echo " ******* Rule for Port 22 added in SG: $default_sg_id ******* "
 
 	add_tcp=$(aws ec2 authorize-security-group-ingress \
