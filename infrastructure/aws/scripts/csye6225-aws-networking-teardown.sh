@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#vpcid=$(echo $VpcId)
+vpcid=$(echo $VpcId)
 subnetId1=$1
 subnetId2=$2
 subnetId3=$3
