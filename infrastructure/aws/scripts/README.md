@@ -2,6 +2,12 @@
 
 Clone the repository on your local machine
 
+### Prerequisites
+
+Install json parser in ubuntu using following command
+
+``` sudo apt install jq ```
+
 ### Stack workflow
 #### Stack/Network creation
 
