@@ -1,10 +1,16 @@
 #!/bin/bash
 
 # ************* Script to create AWS resources using awscli *********************************
-#     vpc_name          --  Tag for VPC     
-#     subnet_name 	    --  Tag for Subnet
-#     internet_gateway  --  Tag for Internet Gateway
-#     route_table       --  Tag for Route Table
+#
+#     region_name        --   AWS Region Name     
+#     tag_name 	         --   Tag prefix for AWS resources
+#     vpc_cidr           --   CIDR block for VPC
+#     subnet_1_cidr      --   CIDR block for Subnet 1
+#     subnet_2_cidr      --   CIDR block for Subnet 2
+#     subnet_3_cidr      --   CIDR block for subnet 3
+#     port_22_cidr       --   Port 22 CIDR block for default security group
+#     port_80_cidr       --   Port 80 CIDR block for default security group
+#
 #
 # Change Log:
 #
@@ -12,14 +18,40 @@
 #
 # ********************************************************************************************
 
-region_name=$1
-tag_name=$2
-vpc_cidr=$3
-subnet_1_cidr=$4
-subnet_2_cidr=$5
-subnet_3_cidr=$6
-port22_cidr_block=$7
-port80_cidr_block=$8
+
+echo "Param-1: Please enter REGION NAME:"
+read region_name
+
+echo "Please enter TAG NAME:"
+read tag_name
+
+echo "Please enter VPC CIDR:"
+read vpc_cidr
+
+echo "Please enter SUBNET-1 CIDR:"
+read subnet_1_cidr
+
+echo "Please enter SUBNET-2 CIDR:"
+read subnet_2_cidr
+
+echo "Please enter SUBNET-3 CIDR:"
+read subnet_3_cidr
+
+echo "Please enter PORT22 CIDR:"
+read port22_cidr_block
+
+echo "Please enter PORT80 CIDR:"
+read port80_cidr_block
+
+
+#region_name=$1
+#tag_name=$2
+#vpc_cidr=$3
+#subnet_1_cidr=$4
+#subnet_2_cidr=$5
+#subnet_3_cidr=$6
+#port22_cidr_block=$7
+#port80_cidr_block=$8
 
 vpc_name="$tag_name"-vpc
 subnet_name="$tag_name"-subnet
@@ -32,12 +64,18 @@ az_3="$region_name"c
 
 step="START"
 
+echo " *********************************************** "
+echo " ************* Script Started ****************** "
+echo " *********************************************** "
+
 
 subnet_name_1=${subnet_name}_${az_1}
 subnet_name_2=${subnet_name}_${az_2}
 subnet_name_3=${subnet_name}_${az_3}
 
 step="Create vpc"
+
+echo " ****** Creating VPC ****** "
 
 vpc_id=$(aws ec2 create-vpc \
  --cidr-block $vpc_cidr \
@@ -46,8 +84,6 @@ vpc_id=$(aws ec2 create-vpc \
  --region $region_name)
 
 flag=$?
-
-
 
 
 if [ $flag -eq 0 ] 
@@ -75,7 +111,7 @@ then
 
 	echo " VPC ID '$vpc_id' NAMED as '$vpc_name'."
 
-	
+	echo " ****** Tag $vpc_name added to VPC ****** "	
 
 	echo " ****** Creating Subnet-1 ******"
 
@@ -104,7 +140,6 @@ then
 
 
 	
-
 	aws ec2 create-tags \
 	 --resources $subnet_id_1 \
 	 --tags "Key=Name,Value=$subnet_name_1" \
@@ -423,7 +458,8 @@ then
 
 	echo "  Route to '0.0.0.0/0' via Internet Gateway ID '$igw_id' ADDED to" \
 	"Route Table ID '$route_table_id'."
-
+	
+	echo " ***** Finding Default Security Group ID ***** "
 	
 
 	default_sg_id=$(aws ec2 describe-security-groups \
@@ -441,6 +477,7 @@ if [ $flag -eq 0 ]
 then
 	step="Remove default rule"
 
+	echo " ***** Default Security Group ID: $default_sg_id *****"
 
 	aws ec2 revoke-security-group-ingress \
 	 --source-group $default_sg_id \
@@ -460,6 +497,7 @@ then
 	step="Add P22 rule"
 
 	
+	echo " **** Default Security Group rule removed from SG: $default_sg_id **** "
 
 	add_ssh=$(aws ec2 authorize-security-group-ingress \
 	 --group-id "$default_sg_id" \
@@ -479,6 +517,7 @@ then
 	step="Add P80 rule"
 
 	
+	echo " ******* Rule for Port 22 added in SG: $default_sg_id ******* "
 
 	add_tcp=$(aws ec2 authorize-security-group-ingress \
 	 --group-id "$default_sg_id" \
@@ -494,16 +533,32 @@ fi
 if [ $flag -eq 0 ] 
 then
 
-	
+	echo " ****** Rule for Port 80 added in SG: $default_sg_id ***** "
+	echo " ********* All resources created ***********"
 
-	flag=$?
+	flag=0
 
-	echo "Script eneded successfully: Exit Status: $flag"
+	echo -e "\n"
+
+	echo " ***************************************************************************** "
+	echo " ******* Script eneded successfully. Exit status: $flag ********************** "
+	echo " ***************************************************************************** "
+
+	echo -e "\n"
+
 	exit 0
 
 else
-	echo "Script ended with failure at step: $step :Exit Ststus: $flag" 
+	flag=1
+
+	echo -e "\n"
+
+	echo " ******************************************************************************* "
+	echo " ******** Script ended with failure - Step: $step - Exit status: $flag ********* "
+	echo " ******************************************************************************* "
+	
+	echo -e "\n"
+	
 	exit 1
 fi
-
 
