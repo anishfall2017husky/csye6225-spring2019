@@ -1,0 +1,7 @@
+[
+    {
+       "ParameterKey": "StackName",
+       "ParameterValue": "test",
+       "UsePreviousValue": true
+     }
+]
