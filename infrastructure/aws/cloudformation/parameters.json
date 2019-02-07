@@ -1,7 +1,7 @@
 [
     {
-       "ParameterKey": "KeyName",
-       "ParameterValue": "test-csye6225-vpc",
+       "ParameterKey": "StackName",
+       "ParameterValue": "test",
        "UsePreviousValue": true
      }
 ]

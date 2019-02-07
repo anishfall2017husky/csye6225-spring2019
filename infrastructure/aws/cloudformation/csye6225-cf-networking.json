@@ -2,8 +2,8 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description":"Cloud formation template to create networking resources",
   "Parameters":{
-    "KeyName":{
-      "Description":"Key pair name",
+    "StackName":{
+      "Description":"Name of the stack",
       "Type":"String"
     }
   },
@@ -15,7 +15,14 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "nw-1-csye6225-vpc"
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-vpc",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
+            }
           }
         ]
       }
@@ -27,12 +34,19 @@
           "Ref": "myVPC"
         },
         "CidrBlock": "10.0.1.0/24",
-        "MapPublicIpOnLaunch": "true",
+        "MapPublicIpOnLaunch": true,
         "AvailabilityZone": "us-east-1a",
         "Tags": [
           {
             "Key": "Name",
-            "Value": "nw-1-public-subnet-1"
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-publicsubnet1",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
+            }
           }
         ]
       }
@@ -49,7 +63,14 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "nw-1-public-subnet-2"
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-publicsubnet2",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
+            }
           }
         ]
       }
@@ -66,7 +87,14 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "nw-1-public-subnet-3"
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-publicsubnet3",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
+            }
           }
         ]
       }
@@ -77,7 +105,14 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "nw-1-csye6225-InternetGateway"
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-ig",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
+            }
           }
         ]
       }
@@ -102,7 +137,14 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "nw-1-csye6225-public-route-table"
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-rt",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
+            }
           }
         ]
       }
