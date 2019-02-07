@@ -10,8 +10,18 @@ elif [ $# -gt 1 ]; then
   exit 2
 fi
 
+STACK_NAME=$1
 
 ##Creating Stack
-aws cloudformation create-stack --stack-name "$1" --template-body file://csye6225-cf-networking.json --parameters file://parameters.json
-aws cloudformation wait stack-create-complete --stack-name $1
-echo "stack $1 is created"
+aws cloudformation create-stack --stack-name "$STACK_NAME" --template-body file://csye6225-cf-networking.json --parameters file://parameters.json
+echo "Creation in progress.."
+
+aws cloudformation wait stack-create-complete --stack-name $STACK_NAME
+
+if [ $? -ne 0 ]; 
+then
+	echo "Stack $STACK_NAME creation failed!"
+    exit 1
+fi
+
+echo "stack $STACK_NAME is created successfully!"
