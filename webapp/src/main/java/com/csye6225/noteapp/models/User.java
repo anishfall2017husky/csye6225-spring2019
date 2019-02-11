@@ -1,11 +1,10 @@
 package com.csye6225.noteapp.models;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -22,13 +21,18 @@ public class User {
     @Column(name = "password")
     private String password;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @JsonManagedReference
+    private List<Note> notes;
+
 
     public User() {
     }
 
-    public User(String emailAddress, String password) {
+    public User(String emailAddress, String password, Note note) {
         this.emailAddress = emailAddress;
         this.password = password;
+        this.notes = notes;
     }
 
     public void setEmailAddress(String emailAddress) {
@@ -47,4 +51,19 @@ public class User {
         return password;
     }
 
+    public List<Note> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
+    }
+
+    public void add(Note note){
+        if(notes == null) {
+            notes = new ArrayList<>();
+        }
+        notes.add(note);
+        note.setUser(this);
+    }
 }
