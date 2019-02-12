@@ -1,6 +1,8 @@
 package com.csye6225.noteapp.controllers;
 
 import com.csye6225.noteapp.models.GenericResponse;
+import com.csye6225.noteapp.models.Note;
+import com.csye6225.noteapp.repository.NoteRepository;
 import com.csye6225.noteapp.repository.UserRepository;
 import com.csye6225.noteapp.models.User;
 
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -29,6 +32,9 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private NoteRepository noteRepository;
 
     @Autowired
     private UserService userService;
@@ -110,6 +116,58 @@ public class UserController {
         response.setStatus(HttpServletResponse.SC_CREATED);
 
         return new GenericResponse(HttpStatus.CREATED.value(), ResponseMessage.USER_REGISTERATION_SUCCESS.getMessage());
+    }
+
+    // Get all notes for the user
+    @RequestMapping(value="/note", method = RequestMethod.GET, produces = "application/json")
+    public List<Note> getAllNotes(HttpServletRequest request, HttpServletResponse response) {
+
+        User user = this.userService.authentication(request);
+
+        if (user != null){
+            List<Note> notes = user.getNotes();
+            return notes;
+        }
+
+
+        return null;
+
+    }
+
+    // Create a note for the user
+    @RequestMapping(value="/note", method = RequestMethod.POST, produces = "application/json")
+    public String createNote(@RequestBody Note note, HttpServletRequest request, HttpServletResponse response) {
+
+        User user = this.userService.authentication(request);
+
+
+
+        if (user != null){
+            note.setUser(user);
+            noteRepository.save(note);
+            return "201 OK";
+        }
+
+
+        return "401 Unauthorized";
+    }
+
+    // Get a note for the user
+    @RequestMapping(value="/note/{id}", method = RequestMethod.GET, produces = "application/json")
+    public GenericResponse getNote() {
+        return null;
+    }
+
+    // Update a note for the user
+    @RequestMapping(value="/note/{id}", method = RequestMethod.PUT, produces = "application/json")
+    public GenericResponse updateNote() {
+        return null;
+    }
+
+    // Delete a note for the user
+    @RequestMapping(value="/note/{id}", method = RequestMethod.DELETE, produces = "application/json")
+    public GenericResponse deleteNote() {
+        return null;
     }
 
 }
