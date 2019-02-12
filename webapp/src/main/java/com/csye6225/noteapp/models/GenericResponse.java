@@ -11,6 +11,9 @@ public class GenericResponse {
         this.message = message;
     }
 
+    public GenericResponse() {
+    }
+
     public int getCode() {
         return code;
     }

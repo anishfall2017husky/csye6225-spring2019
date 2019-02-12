@@ -1,10 +1,16 @@
 package com.csye6225.noteapp.models;
 
-
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import java.util.UUID;
 
 @Entity
 @Table(name = "note")
@@ -12,8 +18,7 @@ public class Note {
 
     @Id
     @Column(name = "note_id")
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    private int id;
+    private String id;
 
     @Column(name = "content")
     private String content;
@@ -43,11 +48,11 @@ public class Note {
         this.last_updated_on = last_updated_on;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
