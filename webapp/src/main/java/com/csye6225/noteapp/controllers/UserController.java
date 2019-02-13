@@ -198,8 +198,29 @@ public class UserController {
 
     // Update a note for the user
     @PutMapping(value="/note/{id}", produces = "application/json")
-    public GenericResponse updateNote() {
-        return null;
+    public String updateNote(@RequestBody Note note,HttpServletRequest request, @PathVariable String id, HttpServletResponse response) {
+        User user = this.userService.authentication(request);
+        if(user != null){
+            Note n = this.noteRepository.findById(id);
+            if(n != null){
+                if(user == n.getUser()){
+                    String currentDate = systemUTC().instant().toString();
+                    n.setContent(note.getContent());
+                    n.setTitle(note.getTitle());
+                    n.setCreated_on(note.getCreated_on());
+                    n.setLast_updated_on(currentDate);
+                    return "No Content";
+                }else{
+                    return "Unauthorized";
+                }
+            }else{
+                return "Note Not Found";
+            }
+        }else{
+            return "Unauthorized";
+
+        }
+        
     }
 
     // Delete a note for the user
