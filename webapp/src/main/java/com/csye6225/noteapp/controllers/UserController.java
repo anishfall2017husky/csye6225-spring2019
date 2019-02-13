@@ -160,8 +160,40 @@ public class UserController {
 
     // Get a note for the user
     @GetMapping(value="/note/{id}", produces = "application/json")
-    public GenericResponse getNote() {
+    public GenericResponse getNote(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
+
+        boolean flagIsAuth=true;
+        boolean flagIsNotePresent=true;
+        boolean flagIsEmailValid=true;
+
+        User user = this.userService.authentication(request);
+        if (user == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            flagIsAuth=false;
+            return null;
+        }
+
+        Note note = this.noteRepository.findById(id);
+        if (note == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            flagIsNotePresent=false;
+            return null;
+        }
+
+        if (!note.getUser().getEmailAddress().equals(user.getEmailAddress())) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            flagIsEmailValid=false;
+            return null;
+        }
+
+        if(flagIsAuth && flagIsNotePresent && flagIsEmailValid) {
+
+            response.setStatus(HttpServletResponse.SC_OK);
+
+        }
+
         return null;
+
     }
 
     // Update a note for the user
