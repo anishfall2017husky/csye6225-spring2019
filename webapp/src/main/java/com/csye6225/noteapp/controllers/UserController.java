@@ -191,6 +191,8 @@ public class UserController {
             return null;
         }
 
+        int result = noteRepository.deleteNoteById(id);
+        logger.info(String.valueOf(result));
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         return null;
     }
