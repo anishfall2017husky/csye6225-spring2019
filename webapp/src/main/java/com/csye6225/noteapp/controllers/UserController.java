@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -22,6 +23,9 @@ import java.nio.charset.Charset;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
+import static java.time.Clock.systemUTC;
 
 @RestController
 public class UserController {
@@ -106,67 +110,90 @@ public class UserController {
         String hashedPassword = passwordEncoder.encode(user.getPassword());
 
         user.setPassword(hashedPassword);
-
-        logger.info("Hashed Password: " + hashedPassword);
-
         userRepository.save(user);
 
-        logger.info("Create New User");
-
+        logger.info("Created New User");
         response.setStatus(HttpServletResponse.SC_CREATED);
 
         return new GenericResponse(HttpStatus.CREATED.value(), ResponseMessage.USER_REGISTERATION_SUCCESS.getMessage());
     }
 
     // Get all notes for the user
-    @RequestMapping(value="/note", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value="/note", produces = "application/json")
     public List<Note> getAllNotes(HttpServletRequest request, HttpServletResponse response) {
 
         User user = this.userService.authentication(request);
 
         if (user != null){
             List<Note> notes = user.getNotes();
+            response.setStatus(HttpStatus.OK.value());
             return notes;
         }
 
-
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         return null;
 
     }
 
     // Create a note for the user
-    @RequestMapping(value="/note", method = RequestMethod.POST, produces = "application/json")
+    @PostMapping(value="/note", produces = "application/json")
     public String createNote(@RequestBody Note note, HttpServletRequest request, HttpServletResponse response) {
 
         User user = this.userService.authentication(request);
 
-
-
-        if (user != null){
+        if (user != null) {
+            logger.info("Saving note");
             note.setUser(user);
+            String currentDate = systemUTC().instant().toString();
+            note.setCreated_on(currentDate);
+            note.setLast_updated_on(currentDate);
+            UUID uuid = UUID.randomUUID();
+            note.setId(uuid.toString());
             noteRepository.save(note);
+            logger.info("Note saved successfully!!!");
+            response.setStatus(HttpServletResponse.SC_CREATED);
             return "201 OK";
         }
-
 
         return "401 Unauthorized";
     }
 
     // Get a note for the user
-    @RequestMapping(value="/note/{id}", method = RequestMethod.GET, produces = "application/json")
+    @GetMapping(value="/note/{id}", produces = "application/json")
     public GenericResponse getNote() {
         return null;
     }
 
     // Update a note for the user
-    @RequestMapping(value="/note/{id}", method = RequestMethod.PUT, produces = "application/json")
+    @PutMapping(value="/note/{id}", produces = "application/json")
     public GenericResponse updateNote() {
         return null;
     }
 
     // Delete a note for the user
-    @RequestMapping(value="/note/{id}", method = RequestMethod.DELETE, produces = "application/json")
-    public GenericResponse deleteNote() {
+    @DeleteMapping(value="/note/{id}",produces = "*/*")
+    public ResponseEntity deleteNote(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
+
+        User user = this.userService.authentication(request);
+        if (user == null) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return null;
+        }
+
+        Note note = this.noteRepository.findById(id);
+        if (note == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return null;
+        }
+
+        if (!note.getUser().getEmailAddress().equals(user.getEmailAddress())) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return null;
+        }
+
+        int result = noteRepository.deleteNoteById(id);
+        logger.info(String.valueOf(result));
+        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         return null;
     }
 

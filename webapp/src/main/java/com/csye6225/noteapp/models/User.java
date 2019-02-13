@@ -32,7 +32,7 @@ public class User {
     public User(String emailAddress, String password, Note note) {
         this.emailAddress = emailAddress;
         this.password = password;
-        this.notes = notes;
+        this.add(note);
     }
 
     public void setEmailAddress(String emailAddress) {
