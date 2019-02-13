@@ -162,34 +162,25 @@ public class UserController {
     @GetMapping(value="/note/{id}", produces = "application/json")
     public GenericResponse getNote(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
 
-        boolean flagIsAuth=true;
-        boolean flagIsNotePresent=true;
-        boolean flagIsEmailValid=true;
 
         User user = this.userService.authentication(request);
         if (user == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            flagIsAuth=false;
-            return null;
+
+            return new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
         }
 
         Note note = this.noteRepository.findById(id);
         if (note == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            flagIsNotePresent=false;
-            return null;
+
+            return new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
         }
 
         if (!note.getUser().getEmailAddress().equals(user.getEmailAddress())) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            flagIsEmailValid=false;
-            return null;
-        }
 
-        if(flagIsAuth && flagIsNotePresent && flagIsEmailValid) {
-
-            response.setStatus(HttpServletResponse.SC_OK);
-
+            return new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
         }
 
         return null;
