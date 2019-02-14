@@ -14,7 +14,8 @@
 #
 # Change Log:
 #
-# Feb 5 2019 -- Srikant Swamy -- Initial Creation
+# Feb 05 2019 -- Srikant Swamy -- Initial Creation
+# Feb 12 2019 -- Srikant Swamy -- Changed tag name 
 #
 # ********************************************************************************************
 
@@ -43,24 +44,14 @@ read port22_cidr_block
 echo "Please enter PORT80 CIDR:"
 read port80_cidr_block
 
-
-#region_name=$1
-#tag_name=$2
-#vpc_cidr=$3
-#subnet_1_cidr=$4
-#subnet_2_cidr=$5
-#subnet_3_cidr=$6
-#port22_cidr_block=$7
-#port80_cidr_block=$8
-
-vpc_name="$tag_name"-vpc
-subnet_name="$tag_name"-subnet
-internet_gateway_name="$tag_name"-IG
-route_table_name="$tag_name"-RT
-
 az_1="$region_name"a
 az_2="$region_name"b
 az_3="$region_name"c
+
+vpc_name="$tag_name"
+subnet_name="$tag_name"
+internet_gateway_name="$tag_name"
+route_table_name="$tag_name"
 
 step="START"
 
@@ -68,9 +59,10 @@ echo " *********************************************** "
 echo " ************* Script Started ****************** "
 echo " *********************************************** "
 
-subnet_name_1=${subnet_name}_${az_1}
-subnet_name_2=${subnet_name}_${az_2}
-subnet_name_3=${subnet_name}_${az_3}
+
+subnet_name_1=${subnet_name}
+subnet_name_2=${subnet_name}
+subnet_name_3=${subnet_name}
 
 step="Create vpc"
 
