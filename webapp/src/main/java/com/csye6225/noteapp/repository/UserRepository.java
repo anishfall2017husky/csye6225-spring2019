@@ -4,6 +4,9 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.csye6225.noteapp.models.User;
 
+import javax.transaction.Transactional;
+
+@Transactional
 public interface UserRepository extends CrudRepository<User, Integer> {
 
 
