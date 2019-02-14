@@ -8,6 +8,7 @@ import com.csye6225.noteapp.models.User;
 
 import com.csye6225.noteapp.services.UserService;
 import com.csye6225.noteapp.shared.ResponseMessage;
+import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
 
 import static java.time.Clock.systemUTC;
 
@@ -126,6 +128,7 @@ public class UserController {
 
         if (user != null){
             List<Note> notes = user.getNotes();
+            logger.info("notes1 = " + notes);
             response.setStatus(HttpStatus.OK.value());
             return notes;
         }
@@ -137,53 +140,116 @@ public class UserController {
 
     // Create a note for the user
     @PostMapping(value="/note", produces = "application/json")
-    public String createNote(@RequestBody Note note, HttpServletRequest request, HttpServletResponse response) {
+    public String createNote(@RequestBody Note noteReq, HttpServletRequest request, HttpServletResponse response) {
 
-        User user = this.userService.authentication(request);
+        JsonObject j = new JsonObject();
 
-        if (user != null) {
-            logger.info("Saving note");
-            note.setUser(user);
-            String currentDate = systemUTC().instant().toString();
-            note.setCreated_on(currentDate);
-            note.setLast_updated_on(currentDate);
-            UUID uuid = UUID.randomUUID();
-            note.setId(uuid.toString());
-            noteRepository.save(note);
-            logger.info("Note saved successfully!!!");
-            response.setStatus(HttpServletResponse.SC_CREATED);
-            return "201 OK";
+        try {
+
+            User user = this.userService.authentication(request);
+
+            if (user != null){
+
+                Note note = new Note();
+
+                if(!StringUtils.isBlank(noteReq.getContent()) && !StringUtils.isBlank(noteReq.getTitle())){
+
+                    logger.info("Saving note");
+                    UUID uuid = UUID.randomUUID();
+                    note.setId(uuid.toString());
+                    note.setContent(noteReq.getContent());
+                    note.setTitle(noteReq.getTitle());
+                    String currentDate = systemUTC().instant().toString();
+                    note.setCreated_on(currentDate);
+                    note.setLast_updated_on(currentDate);
+                    note.setUser(user);
+                    noteRepository.save(note);
+                    logger.info("Note saved successfully!!!");
+                    j.addProperty("Success", "Note Created");
+                    response.setStatus(HttpServletResponse.SC_CREATED);
+
+                } else {
+
+                    j.addProperty("Error", "Content or Title is EMPTY.");
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+                }
+
+            } else {
+                j.addProperty("Error", "Invalid User Credentials.");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+
+        } catch (IllegalStateException e) {
+            j.addProperty("Exception", e.toString());
+
+        } catch (Exception e) {
+            j.addProperty("Exception", e.toString());
         }
 
-        return "401 Unauthorized";
+        return j.toString();
     }
 
     // Get a note for the user
     @GetMapping(value="/note/{id}", produces = "application/json")
-    public GenericResponse getNote(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
+    public String getNote(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
+
+        JsonObject j = new JsonObject();
+
+        try {
+
+            User user = this.userService.authentication(request);
+
+            if (user != null) {
+
+                Note note = this.noteRepository.findById(id);
+
+                if (note != null) {
+
+                    if (user == note.getUser()) {
+
+                        j.addProperty("id: ", note.getId());
+                        j.addProperty("content: ", note.getContent());
+                        j.addProperty("title: ", note.getTitle());
+                        j.addProperty("created_on: ", note.getCreated_on());
+                        j.addProperty("last_updated_on: ", note.getLast_updated_on());
+                        response.setStatus(HttpServletResponse.SC_OK);
+
+                    } else {
+
+                        j.addProperty("Error", "You are not the owner of this note.");
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+                    }
+
+                } else {
+
+                    j.addProperty("Error", "Note not found.");
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+                }
+
+            } else {
+
+                j.addProperty("Error", "Invalid User Credentials.");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+            }
 
 
-        User user = this.userService.authentication(request);
-        if (user == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        } catch (IllegalStateException e) {
 
-            return new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
+            j.addProperty("Exception", e.toString());
+
+        } catch (Exception e) {
+
+            j.addProperty("Exception", e.toString());
+
         }
 
-        Note note = this.noteRepository.findById(id);
-        if (note == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        return j.toString();
 
-            return new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
-        }
 
-        if (!note.getUser().getEmailAddress().equals(user.getEmailAddress())) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-            return new GenericResponse(HttpStatus.UNAUTHORIZED.value(), ResponseMessage.NOT_LOGGED_IN.getMessage());
-        }
-
-        return null;
 
     }
 
