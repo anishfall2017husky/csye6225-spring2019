@@ -222,7 +222,7 @@ public class UserController {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             }
         }else{
-            j.addProperty("Error", "You are not logged in!");
+            j.addProperty("Error", "Invalid User Credentials.");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             //return "Unauthorized";
 
