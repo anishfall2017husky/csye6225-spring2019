@@ -10,6 +10,7 @@ import com.csye6225.noteapp.services.UserService;
 import com.csye6225.noteapp.shared.ResponseMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.gson.JsonObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -200,6 +201,7 @@ public class UserController {
     @PutMapping(value="/note/{id}", produces = "application/json")
     public String updateNote(@RequestBody Note note,HttpServletRequest request, @PathVariable String id, HttpServletResponse response) {
         User user = this.userService.authentication(request);
+        JsonObject j = new JsonObject();
         if(user != null){
             Note n = this.noteRepository.findById(id);
             if(n != null){
@@ -209,18 +211,23 @@ public class UserController {
                     n.setTitle(note.getTitle());
                     n.setCreated_on(note.getCreated_on());
                     n.setLast_updated_on(currentDate);
-                    return "No Content";
+                    j.addProperty("Success", "Updated Successfully!");
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 }else{
-                    return "Unauthorized";
+                    j.addProperty("Error", "You are not the owner of this Note");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 }
             }else{
-                return "Note Not Found";
+                j.addProperty("Error", "Note Not Found!");
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             }
         }else{
-            return "Unauthorized";
+            j.addProperty("Error", "You are not logged in!");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            //return "Unauthorized";
 
         }
-        
+        return j.toString();
     }
 
     // Delete a note for the user
