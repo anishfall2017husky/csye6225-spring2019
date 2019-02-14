@@ -1,6 +1,6 @@
 package com.csye6225.noteapp.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.google.gson.annotations.Expose;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,23 +17,27 @@ public class Note {
 
     @Id
     @Column(name = "note_id")
+    @Expose
     private String id;
 
     @Column(name = "content")
+    @Expose
     private String content;
 
     @Column(name = "title")
+    @Expose
     private String title;
 
     @Column(name = "created_on")
+    @Expose
     private String created_on;
 
     @Column(name = "last_updated_on")
+    @Expose
     private String last_updated_on;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
     @JoinColumn(name="user_id")
-    @JsonBackReference
     private User user;
 
     public Note () {

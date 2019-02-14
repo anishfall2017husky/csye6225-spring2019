@@ -8,15 +8,15 @@ import com.csye6225.noteapp.models.User;
 
 import com.csye6225.noteapp.services.UserService;
 import com.csye6225.noteapp.shared.ResponseMessage;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -27,7 +27,6 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import org.apache.commons.lang3.StringUtils;
 
 import static java.time.Clock.systemUTC;
 
@@ -127,19 +126,30 @@ public class UserController {
 
     // Get all notes for the user
     @GetMapping(value = "/note", produces = "application/json")
-    public List<Note> getAllNotes(HttpServletRequest request, HttpServletResponse response) {
+    public String getAllNotes(HttpServletRequest request, HttpServletResponse response) {
+
+        JsonObject j = new JsonObject();
+
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
         User user = this.userService.authentication(request);
 
         if (user != null) {
+
             List<Note> notes = user.getNotes();
-            logger.info("notes1 = " + notes);
+            logger.info("notes = " + notes);
+
+            String notesListToJson = gson.toJson(notes);
+            logger.info("notesToJson = " + notesListToJson);
             response.setStatus(HttpStatus.OK.value());
-            return notes;
+            return notesListToJson;
+
         }
 
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        return null;
+        j.addProperty("Error", "Invalid User Credentials.");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        return j.toString();
 
     }
 
@@ -175,7 +185,7 @@ public class UserController {
 
                 } else {
 
-                    j.addProperty("Error", "Content or Title is EMPTY.");
+                    j.addProperty("Error", "Content/Title cannot be empty or null.");
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
                 }
@@ -298,31 +308,36 @@ public class UserController {
     }
 
     // Delete a note for the user
-    @DeleteMapping(value = "/note/{id}", produces = "*/*")
-    public ResponseEntity deleteNote(@PathVariable String id, HttpServletRequest request,
+    @DeleteMapping(value = "/note/{id}", produces = "application/json")
+    public String deleteNote(@PathVariable String id, HttpServletRequest request,
             HttpServletResponse response) {
+
+        JsonObject j = new JsonObject();
 
         User user = this.userService.authentication(request);
         if (user == null) {
+            j.addProperty("Error", "Invalid User Credentials.");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return null;
+            return j.toString();
         }
 
         Note note = this.noteRepository.findById(id);
         if (note == null) {
+            j.addProperty("Error", "Note Not Found!");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return null;
+            return j.toString();
         }
 
         if (!note.getUser().getEmailAddress().equals(user.getEmailAddress())) {
+            j.addProperty("Error", "You are not the owner of this Note");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return null;
+            return j.toString();
         }
 
         int result = noteRepository.deleteNoteById(id);
         logger.info(String.valueOf(result));
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        return null;
+        return j.toString();
     }
 
 }

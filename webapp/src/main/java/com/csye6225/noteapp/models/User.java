@@ -1,7 +1,5 @@
 package com.csye6225.noteapp.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +20,6 @@ public class User {
     private String password;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    @JsonManagedReference
     private List<Note> notes;
 
 
