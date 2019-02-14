@@ -282,8 +282,8 @@ public class UserController {
                         String currentDate = systemUTC().instant().toString();
                         n.setContent(note.getContent());
                         n.setTitle(note.getTitle());
-                        n.setCreated_on(note.getCreated_on());
                         n.setLast_updated_on(currentDate);
+                        this.noteRepository.save(n);
                         j.addProperty("Success", "Updated Successfully!");
                         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                     } else {
