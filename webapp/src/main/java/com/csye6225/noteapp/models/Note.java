@@ -2,14 +2,8 @@ package com.csye6225.noteapp.models;
 
 import com.google.gson.annotations.Expose;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "note")
@@ -39,6 +33,9 @@ public class Note {
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
     @JoinColumn(name="user_id")
     private User user;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "note", cascade = CascadeType.ALL)
+    private List<Attachment> attachments;
 
     public Note () {
 
@@ -97,5 +94,13 @@ public class Note {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
     }
 }
