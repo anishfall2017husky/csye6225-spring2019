@@ -1,7 +1,9 @@
 package com.csye6225.noteapp.controllers;
 
+import com.csye6225.noteapp.models.Attachment;
 import com.csye6225.noteapp.models.GenericResponse;
 import com.csye6225.noteapp.models.Note;
+import com.csye6225.noteapp.repository.AttachmentRepository;
 import com.csye6225.noteapp.repository.NoteRepository;
 import com.csye6225.noteapp.repository.UserRepository;
 import com.csye6225.noteapp.models.User;
@@ -10,6 +12,7 @@ import com.csye6225.noteapp.services.UserService;
 import com.csye6225.noteapp.shared.ResponseMessage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.nio.charset.Charset;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static java.time.Clock.systemUTC;
 
@@ -42,6 +44,9 @@ public class UserController {
 
     @Autowired
     private NoteRepository noteRepository;
+
+    @Autowired
+    private AttachmentRepository attachmentRepository;
 
     @Autowired
     private UserService userService;
@@ -130,19 +135,44 @@ public class UserController {
 
         JsonObject j = new JsonObject();
 
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+        JsonArray array = new JsonArray();
 
         User user = this.userService.authentication(request);
 
         if (user != null) {
 
             List<Note> notes = user.getNotes();
-            logger.info("notes = " + notes);
 
-            String notesListToJson = gson.toJson(notes);
-            logger.info("notesToJson = " + notesListToJson);
+            for(Note n : notes) {
+                JsonObject obj = new JsonObject();
+                obj.addProperty("id",n.getId());
+                obj.addProperty("content",n.getContent());
+                obj.addProperty("title",n.getTitle());
+                obj.addProperty("created_on",n.getCreated_on());
+                obj.addProperty("last_updated_on",n.getLast_updated_on());
+
+                List<Attachment> attachments = n.getAttachments();
+
+
+                JsonArray filesArray = new JsonArray();
+
+                for (Attachment a  : attachments) {
+                    JsonObject fileObj = new JsonObject();
+                    fileObj.addProperty("id",a.getId());
+                    fileObj.addProperty("url",a.getUrl());
+                    filesArray.add(fileObj);
+                }
+
+                obj.add("attachments",filesArray);
+
+                array.add(obj);
+
+            }
+
+            logger.info(array.toString());
+
             response.setStatus(HttpStatus.OK.value());
-            return notesListToJson;
+            return array.toString();
 
         }
 
@@ -228,6 +258,21 @@ public class UserController {
                         j.addProperty("title: ", note.getTitle());
                         j.addProperty("created_on: ", note.getCreated_on());
                         j.addProperty("last_updated_on: ", note.getLast_updated_on());
+
+                        List<Attachment> attachments = note.getAttachments();
+
+
+                        JsonArray filesArray = new JsonArray();
+
+                        for (Attachment a  : attachments) {
+                            JsonObject fileObj = new JsonObject();
+                            fileObj.addProperty("id",a.getId());
+                            fileObj.addProperty("url",a.getUrl());
+                            filesArray.add(fileObj);
+                        }
+
+                        j.add("attachments",filesArray);
+
                         response.setStatus(HttpServletResponse.SC_OK);
 
                     } else {
@@ -338,6 +383,164 @@ public class UserController {
         logger.info(String.valueOf(result));
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         return j.toString();
+    }
+
+    // Get list of files attached to the note
+    @GetMapping(value = "/note/{idNotes}/attachments" , produces = "application/json")
+    public String getFiles(@PathVariable("idNotes") String id, HttpServletRequest request, HttpServletResponse response) {
+
+        JsonObject j = new JsonObject();
+
+        User user = this.userService.authentication(request);
+
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+
+        if (user != null) {
+            Note note = this.noteRepository.findById(id);
+            List<Attachment> attachments = note.getAttachments();
+            String attachmentsListToJson = gson.toJson(attachments);
+            logger.info("attachmentsListToJson = " + attachmentsListToJson);
+            response.setStatus(HttpStatus.OK.value());
+            return attachmentsListToJson;
+        }
+
+        j.addProperty("Error", "Invalid User Credentials.");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        return j.toString();
+
+
+    }
+
+
+    // Attach a file to the note
+    @PostMapping(value = "/note/{idNotes}/attachments" , produces = "application/json")
+    public String attachFile(@PathVariable("idNotes") String id, @RequestParam(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
+
+        JsonObject j = new JsonObject();
+
+        try {
+
+            User user = this.userService.authentication(request);
+
+            if ( file != null) {
+
+
+                if ( user != null) {
+
+                    Note note = this.noteRepository.findById(id);
+
+                    if (note != null) {
+
+                        if (user == note.getUser()) {
+
+                            Attachment attachment = new Attachment();
+                            UUID uuid = UUID.randomUUID();
+                            attachment.setId(uuid.toString());
+                            String fileName = file.getOriginalFilename();
+                            logger.info("filename = " + fileName);
+                            File localFile = new File("/home/anishsurti/Desktop/Files",fileName);
+                            logger.info("localFile = " + localFile);
+                            file.transferTo(localFile);
+                            attachment.setUrl(localFile.getPath());
+                            attachment.setNote(note);
+                            attachmentRepository.save(attachment);
+                            j.addProperty("Success", "File attached");
+                            response.setStatus(HttpServletResponse.SC_CREATED);
+
+                        } else {
+
+                            j.addProperty("Error", "Invalid User Credentials.");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+                        }
+
+                    } else {
+
+                        j.addProperty("Error", "Note not found");
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+                    }
+
+                } else {
+                    j.addProperty("Error", "Invalid User Credentials.");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                }
+
+            } else {
+                j.addProperty("Error", "Please select a file");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+
+        } catch (IllegalStateException e) {
+            j.addProperty("message", e.toString());
+
+        } catch (Exception e) {
+            j.addProperty("message", e.toString());
+        }
+        return j.toString();
+
+    }
+
+    // Update file attached to the note
+
+    // Delete file attached to the transaction
+    @DeleteMapping(value = "/note/{idNotes}/attachments/{idAttachments}", produces = "application/json")
+    public String deleteFile(@PathVariable("idNotes") String idNote, @PathVariable("idAttachments") String idAttachment, HttpServletRequest request, HttpServletResponse response){
+
+        JsonObject j  = new JsonObject();
+
+        try {
+
+            User user = this.userService.authentication(request);
+
+            if (user != null) {
+
+                Attachment attachment = this.attachmentRepository.findById(idAttachment);
+
+                if (attachment != null) {
+
+                    Note note = this.noteRepository.findById(idNote);
+
+                    if ((note != null) && (note == attachment.getNote())) {
+
+                        if (user == attachment.getNote().getUser()){
+
+                            File filePath = new File(attachment.getUrl());
+                            filePath.delete();
+                            this.attachmentRepository.deleteAttachmentById(idAttachment);
+                            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+
+                        } else {
+
+                            j.addProperty("Error", "Invalid User Credentials.");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+                        }
+
+                    } else {
+                        j.addProperty("Error", "Note not found or attachment doesn't belong to the note");
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    }
+
+                } else {
+                    j.addProperty("Error", "Attachment not found");
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                }
+
+            } else {
+                j.addProperty("Error", "Invalid User Credentials.");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+
+        } catch (IllegalStateException e) {
+            j.addProperty("message", e.toString());
+
+        } catch (Exception e) {
+            j.addProperty("message", e.toString());
+        }
+        return j.toString();
+
     }
 
 }
