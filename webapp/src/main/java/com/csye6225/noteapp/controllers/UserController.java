@@ -320,7 +320,7 @@ public class UserController {
                             String fileName = file.getOriginalFilename();
                             logger.info("filename = " + fileName);
                             String filePath = fileHandler.uploadFile(file, user.getEmailAddress());
-                            logger.info("localFile = " + filePath);
+                            logger.info("File = " + filePath);
                             attachment.setUrl(filePath);
                             attachment.setNote(note);
                             attachmentRepository.save(attachment);
