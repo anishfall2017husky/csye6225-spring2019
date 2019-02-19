@@ -1,0 +1,119 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description":"Cloud formation template to create application stack",
+  "Parameters":{
+    "NetworkStackNameParameter":{
+      "Description":"Name of the Network Stack",
+      "Type":"String"
+    }
+  },
+  "Resources": {
+    "webappSecurityGroup": {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "rule to allow TCP traffic on port 22, 80 and 443 from anywhere in the world",
+        "SecurityGroupIngress" : [ {
+            "IpProtocol" : "tcp",
+            "FromPort" : 22,
+            "ToPort" : 22,
+            "CidrIp" : "0.0.0.0/0"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : 80,
+            "ToPort" : 80,
+            "CidrIp" : "0.0.0.0/0"
+          },
+          {
+            "IpProtocol" : "tcp",
+            "FromPort" : 443,
+            "ToPort" : 443,
+            "CidrIp" : "0.0.0.0/0"
+          }
+        ],
+        "Tags" :  [ {
+          "Key" : "webAppSGName",
+          "Value" : "csye6225-spring19-webAppSGName"
+          }
+        ],
+        "VpcId" :  {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VpcID"}}
+      }
+    },
+    "dbSecurityGroup": {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "rule to allow TCP traffic on port 3306 for MySQL only from the webapp security group",
+        "SecurityGroupIngress" : [ {
+            "IpProtocol" : "tcp",
+            "FromPort" : 3306,
+            "ToPort" : 3306,
+            "SourceSecurityGroupId" : { "Ref" : "webappSecurityGroup" },
+          }
+        ],
+        "Tags" :  [ {
+          "Key" : "dbSGName",
+          "Value" : "csye6225-spring19-dbSGName"
+          }
+        ],
+        "VpcId" :  {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VpcID"}}
+      }
+    },
+    "EC2Instance": {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "ImageId" : "ami-069e7cdfe77c3f5b8",
+        "InstanceType" : "t2.micro",
+        "KeyName" : "ec2",
+        "BlockDeviceMappings" : [
+          {
+             "DeviceName" : "/dev/sda1",
+             "Ebs" : {
+               "DeleteOnTermination" : true,
+               "VolumeSize" : "20",
+               "VolumeType" : "gp2"
+             }
+          }
+        ],
+        "SecurityGroupIds": [
+          { "Ref" : "webappSecurityGroup" }
+        ],
+        "SubnetId": {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetID"}},
+        "Tags": [
+          {
+            "Key": "ec2Name",
+            "Value": "csye6225-spring19-ec2"
+          }
+        ]
+      }
+    },
+    "DynamoDBTable": {
+        "Type" : "AWS::DynamoDB::Table",
+        "Properties" : {
+        "AttributeDefinitions" : [
+          {
+          "AttributeName" : "id",
+          "AttributeType" : "S"
+          }
+        ],
+        "KeySchema" : [
+          {
+            "AttributeName" : "id",
+            "KeyType" : "HASH"
+          }
+        ],
+        "TableName" : "csye6225",
+        "ProvisionedThroughput" : {
+            "ReadCapacityUnits" : 5,
+            "WriteCapacityUnits" : 5
+          },
+        "Tags" : [
+          {
+            "Key": "dynamoDBName",
+            "Value": "csye6225-spring19-dynamoDB"
+          }
+        ]
+      }
+    },
+    
+  }
+}
