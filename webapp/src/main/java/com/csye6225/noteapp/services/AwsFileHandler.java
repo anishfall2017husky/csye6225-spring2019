@@ -27,7 +27,10 @@ public class AwsFileHandler implements FileHandler {
     @Value("${amazonProperties.endpointUrl}")
     private String endpointUrl;
 
-    @Value("${amazonProperties.bucketName}")
+//    @Value("${amazonProperties.bucketName}")
+//    private String bucketName;
+
+    @Value("${spring.bucket.name}")
     private String bucketName;
 
     @PostConstruct
