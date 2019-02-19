@@ -195,5 +195,21 @@
         }
       }
     }
+  },
+  "Outputs" : {
+    "StackVPC" : {
+      "Description" : "The ID of the VPC",
+      "Value" : { "Ref" : "myVPC" },
+      "Export" : {
+        "Name" : {"Fn::Sub": "${AWS::StackName}-VpcID" }
+      }
+    },
+    "Subnet" : {
+      "Description" : "The ID of the Subnet",
+      "Value" : { "Ref" : "publicsubnet1" },
+      "Export" : {
+        "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetID" }
+      }
+    }
   }
 }
