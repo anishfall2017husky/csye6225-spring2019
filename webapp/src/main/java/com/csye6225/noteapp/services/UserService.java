@@ -1,7 +1,11 @@
 package com.csye6225.noteapp.services;
 
+import com.csye6225.noteapp.models.Attachment;
+import com.csye6225.noteapp.models.Note;
 import com.csye6225.noteapp.models.User;
 import com.csye6225.noteapp.repository.UserRepository;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.Charset;
 import java.util.Base64;
+import java.util.List;
 
 @Service("userService")
 public class UserService  {
@@ -57,6 +62,23 @@ public class UserService  {
         }
         return null;
 
+    }
+
+
+    public void getJsonArray(Note n, JsonObject obj) {
+        List<Attachment> attachments = n.getAttachments();
+
+
+        JsonArray filesArray = new JsonArray();
+
+        for (Attachment a  : attachments) {
+            JsonObject fileObj = new JsonObject();
+            fileObj.addProperty("id",a.getId());
+            fileObj.addProperty("url",a.getUrl());
+            filesArray.add(fileObj);
+        }
+
+        obj.add("attachments",filesArray);
     }
 
     
