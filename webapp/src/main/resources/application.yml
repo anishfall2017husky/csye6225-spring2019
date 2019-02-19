@@ -1,0 +1,3 @@
+amazonProperties:
+  endpointUrl: http://s3.amazonaws.com
+  bucketName: ankita.me.csye6225.com
