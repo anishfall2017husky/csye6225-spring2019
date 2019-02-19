@@ -291,7 +291,12 @@ public class UserController {
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         if (user != null) {
             Note note = this.noteRepository.findById(id);
-            List<Attachment> attachments = note.getAttachments();
+            List<Attachment> attachments = new ArrayList<>();
+            try {
+                attachments = note.getAttachments();
+            } catch (NullPointerException e) {
+                logger.info("No attachments: " + e.getMessage());
+            }
             String attachmentsListToJson = gson.toJson(attachments);
             logger.info("attachmentsListToJson = " + attachmentsListToJson);
             response.setStatus(HttpStatus.OK.value());
@@ -353,7 +358,7 @@ public class UserController {
     // Update file attached to the note
 
     // Delete file attached to the transaction
-    @DeleteMapping(value = "/note/{idNotes}/attachments/{idAttachments}", produces = "application/json")
+    @DeleteMapping(value = "/note/{idNotes}/attachments/{idAttachments}", produces = "*/*")
     public String deleteFile(@PathVariable("idNotes") String idNote, @PathVariable("idAttachments") String idAttachment, HttpServletRequest request, HttpServletResponse response) {
         JsonObject j = new JsonObject();
         try {
@@ -364,10 +369,14 @@ public class UserController {
                     Note note = this.noteRepository.findById(idNote);
                     if ((note != null) && (note == attachment.getNote())) {
                         if (user == attachment.getNote().getUser()) {
-                            File filePath = new File(attachment.getUrl());
-                            filePath.delete();
-                            this.attachmentRepository.deleteAttachmentById(idAttachment);
-                            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                            String deleteResult = this.fileHandler.deleteFile(attachment.getUrl(), user.getEmailAddress());
+//                            if (deleteResult != null) {
+                                this.attachmentRepository.deleteAttachmentById(idAttachment);
+                                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+//                            } else {
+//                                j.addProperty("Error", "File does not exist!!");
+//                                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+//                            }
                         } else {
                             j.addProperty("Error", "Invalid User Credentials.");
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

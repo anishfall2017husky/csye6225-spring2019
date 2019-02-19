@@ -3,7 +3,7 @@ package com.csye6225.noteapp.services;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 @Service
 @Profile("dev")
@@ -38,7 +39,7 @@ public class AwsFileHandler implements FileHandler {
 
     @Override
     public String uploadFile(MultipartFile multipartFile, String emailAddress) throws Exception {
-        String fileName = multipartFile.getOriginalFilename().replace(" ", "_");
+        String fileName = (new Date().toString() + "-" + multipartFile.getOriginalFilename()).replace(" ", "_");
         String name = this.dir + emailAddress + "/" + fileName;
 
         InputStream inputStream = null;
@@ -54,9 +55,10 @@ public class AwsFileHandler implements FileHandler {
     }
 
     @Override
-    public String deleteFile(String fileLocation) throws Exception {
+    public String deleteFile(String fileLocation, String emailAddress) throws Exception {
         String fileName = fileLocation.substring(fileLocation.lastIndexOf("/") + 1);
-        s3client.deleteObject(new DeleteObjectRequest(bucketName + "/", fileName));
+        fileName = dir + emailAddress + "/" + fileName;
+        s3client.deleteObjects(new DeleteObjectsRequest(bucketName).withKeys(fileName));
         return "Successfully deleted";
     }
 }

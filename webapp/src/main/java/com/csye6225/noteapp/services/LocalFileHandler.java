@@ -4,9 +4,11 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 
 @Service
 @Profile("default")
@@ -21,13 +23,19 @@ public class LocalFileHandler implements FileHandler {
         if (!Files.exists(path)) {
             Files.createDirectory(path);
         }
-        path = Paths.get(tmpFolder, emailAddress, multipartFile.getOriginalFilename().replace(" ", "_"));
+        StringBuilder fileName = new StringBuilder(new Date().toString());
+        fileName.append("-" + multipartFile.getOriginalFilename());
+        path = Paths.get(tmpFolder, emailAddress, fileName.toString().replace(" ", "_"));
         Files.write(path.toAbsolutePath(), bytes);
         return path.toString();
     }
 
     @Override
-    public String deleteFile(String fileLocation) throws Exception {
+    public String deleteFile(String fileLocation, String emailAddress) throws Exception {
+        File file = new File(fileLocation);
+        if (file.delete()) {
+            return "Successfully deleted";
+        }
         return null;
     }
 }

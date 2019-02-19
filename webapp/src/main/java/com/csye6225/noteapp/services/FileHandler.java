@@ -6,6 +6,6 @@ public interface FileHandler {
 
     public String uploadFile(MultipartFile multipartFile, String emailAddress) throws Exception;
 
-    public String deleteFile(String fileLocation) throws Exception;
+    public String deleteFile(String fileLocation, String emailAddress) throws Exception;
 
 }
