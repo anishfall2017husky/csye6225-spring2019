@@ -356,8 +356,10 @@ public class UserController {
     }
 
     // Update file attached to the note
-    @RequestMapping(value="/note/{idNotes}/attachments/{idAttachments}", produces="application/json",method={RequestMethod.PUT} )
-    public String updateFile(@RequestParam(value = "file") MultipartFile file,@PathVariable("idNotes") String idNote, @PathVariable("idAttachments") String idAttachment, HttpServletRequest request, HttpServletResponse response){
+    @PutMapping(value="/note/{idNotes}/attachments/{idAttachments}", produces="application/json")
+    public String updateFile(@RequestParam(value = "file") MultipartFile file,@PathVariable("idNotes") String idNote,
+                             @PathVariable("idAttachments") String idAttachment, HttpServletRequest request,
+                             HttpServletResponse response){
         JsonObject j  = new JsonObject();
         try{
             User user = this.userService.authentication(request);
@@ -371,7 +373,8 @@ public class UserController {
                                 String fileName = file.getOriginalFilename();
                                 logger.info("filename = " + fileName);
                                 String filePath = fileHandler.uploadFile(file, user.getEmailAddress());
-                                logger.info("localFile = " + filePath);
+                                String deleteResult = this.fileHandler.deleteFile(attachment.getUrl(), user.getEmailAddress());
+                                logger.info("File = " + filePath);
                                 attachment.setUrl(filePath);
                                 attachment.setNote(note);
                                 this. attachmentRepository.save(attachment);
