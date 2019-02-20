@@ -204,12 +204,20 @@
         "Name" : {"Fn::Sub": "${AWS::StackName}-VpcID" }
       }
     },
-    "Subnet" : {
-      "Description" : "The ID of the Subnet",
+    "SubnetEC2" : {
+      "Description" : "The ID of the SubnetEC2",
       "Value" : { "Ref" : "publicsubnet1" },
       "Export" : {
-        "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetID" }
+        "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetEC2" }
+      }
+    },
+    "SubnetDB" : {
+      "Description" : "The ID of the SubnetDB",
+      "Value" : { "Ref" : "publicsubnet2" },
+      "Export" : {
+        "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetDB" }
       }
     }
+
   }
 }
