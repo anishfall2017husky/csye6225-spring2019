@@ -356,6 +356,53 @@ public class UserController {
     }
 
     // Update file attached to the note
+    @RequestMapping(value="/note/{idNotes}/attachments/{idAttachments}", produces="application/json",method={RequestMethod.PUT} )
+    public String updateFile(@RequestParam(value = "file") MultipartFile file,@PathVariable("idNotes") String idNote, @PathVariable("idAttachments") String idAttachment, HttpServletRequest request, HttpServletResponse response){
+        JsonObject j  = new JsonObject();
+        try{
+            User user = this.userService.authentication(request);
+            if(user != null){
+                Attachment attachment = this.attachmentRepository.findById(idAttachment);
+                if(attachment!=null){
+                    Note note = this.noteRepository.findById(idNote);
+                    if((note!=null) && (note==attachment.getNote())){
+                        if(file!=null) {
+                            if(user == attachment.getNote().getUser()){
+                                String fileName = file.getOriginalFilename();
+                                logger.info("filename = " + fileName);
+                                String filePath = fileHandler.uploadFile(file, user.getEmailAddress());
+                                logger.info("localFile = " + filePath);
+                                attachment.setUrl(filePath);
+                                attachment.setNote(note);
+                                this. attachmentRepository.save(attachment);
+                                j.addProperty("Success", "Updated Successfully!");
+                                response.setStatus(HttpServletResponse.SC_NO_CONTENT); 
+                            }else{
+                                j.addProperty("Error", "You are not the owner of the attachment.");
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            }
+                        }else{
+                            j.addProperty("Error", "Sorry, attachment cannot be null/empty.");
+                            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        }
+                    }else{
+                        j.addProperty("Error", "Note not found");
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    }
+                }else{
+                    j.addProperty("Error", "Attachment not found.");
+                    response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                }
+            }else{
+                j.addProperty("Error", "Invalid User Credentials.");
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+
+        }catch(Exception e){
+            j.addProperty("message", e.toString());
+        }
+        return j.toString();
+    }
 
     // Delete file attached to the transaction
     @DeleteMapping(value = "/note/{idNotes}/attachments/{idAttachments}", produces = "*/*")
