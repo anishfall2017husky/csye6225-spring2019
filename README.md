@@ -37,7 +37,7 @@ Navigate to webapp folder
 Run the following command\
 
 ### For Default profile
-`./mvnw spring-boot:run -Dspring-boot.run.profiles=default -Dspring-boot.run.arguments=--spring.bucket.name=*bucket-name*
+`./mvnw spring-boot:run -Dspring-boot.run.profiles=default -Dspring-boot.run.arguments=--spring.bucket.name=*bucket-name*`
 
 ### For Dev profile
 `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.arguments=--spring.bucket.name=*bucket-name*,--spring.datasource.url=jdbc:mysql://*endpoint-url*/csye6225`
