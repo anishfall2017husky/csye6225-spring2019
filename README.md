@@ -35,9 +35,12 @@
 Navigate to webapp folder  
 `cd webapp`<br><br>
 Run the following command\
-`mvn spring-boot:run`
 
+### For Default profile
+`./mvnw spring-boot:run -Dspring-boot.run.profiles=default -Dspring-boot.run.arguments=--spring.bucket.name=*bucket-name*
 
+### For Dev profile
+`./mvnw spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.arguments=--spring.bucket.name=*bucket-name*,--spring.datasource.url=jdbc:mysql://*endpoint-url*/csye6225`
 
 ## Deploy Instructions
 
