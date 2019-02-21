@@ -12,6 +12,8 @@
       "Type": "AWS::EC2::VPC",
       "Properties": {
         "CidrBlock": "10.0.0.0/16",
+        "EnableDnsSupport": true,
+        "EnableDnsHostnames" : true,
         "Tags": [
           {
             "Key": "Name",
@@ -195,5 +197,29 @@
         }
       }
     }
+  },
+  "Outputs" : {
+    "StackVPC" : {
+      "Description" : "The ID of the VPC",
+      "Value" : { "Ref" : "myVPC" },
+      "Export" : {
+        "Name" : {"Fn::Sub": "${AWS::StackName}-VpcID" }
+      }
+    },
+    "SubnetEC2" : {
+      "Description" : "The ID of the SubnetEC2",
+      "Value" : { "Ref" : "publicsubnet1" },
+      "Export" : {
+        "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetEC2" }
+      }
+    },
+    "SubnetDB" : {
+      "Description" : "The ID of the SubnetDB",
+      "Value" : { "Ref" : "publicsubnet2" },
+      "Export" : {
+        "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetDB" }
+      }
+    }
+
   }
 }
