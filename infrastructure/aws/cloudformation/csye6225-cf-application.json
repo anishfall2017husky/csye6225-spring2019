@@ -6,20 +6,22 @@
         "Description":"Name of the Network Stack",
         "Type":"String"
       },
-  
-  "DBName":{
+      "MyIp":{
+        "Description":"My Ip",
+        "Type":"String"
+      },
+      "DBName":{
            "Default": "csye6225",
            "Description": "MySQL RDS DB Name",
            "Type": "String"
        },
-  
-  "DBAllocatedStorage" :{
+
+       "DBAllocatedStorage" :{
            "Default": "5",
            "Description" : "The size of DB in GB",
            "Type": "Number"
        },
-  
-  "DBClass" : {
+       "DBClass" : {
            "Default" : "db.t2.medium",
            "Description" : "Database instance class",
            "Type" : "String"
@@ -36,12 +38,7 @@
            "Type": "String",
            "AllowedPattern" : "[a-zA-Z0-9]*"
        }
-  
-  
     },
-  
-  
-  
     "Resources": {
       "webappSecurityGroup": {
         "Type" : "AWS::EC2::SecurityGroup",
@@ -67,14 +64,14 @@
             }
           ],
           "Tags" :  [ {
-            "Key" : "webAppSGName",
+            "Key" : "Name",
             "Value" : "csye6225-spring19-webAppSGName"
             }
           ],
           "VpcId" :  {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VpcID"}}
         }
       },
-      
+
       "dbSecurityGroup": {
         "Type" : "AWS::EC2::SecurityGroup",
         "Properties" : {
@@ -84,10 +81,16 @@
               "FromPort" : 3306,
               "ToPort" : 3306,
               "SourceSecurityGroupId" : { "Ref" : "webappSecurityGroup" }
+            },
+            {
+              "IpProtocol" : "tcp",
+              "FromPort" : 3306,
+              "ToPort" : 3306,
+              "CidrIp" : {"Ref":"MyIp"}
             }
           ],
           "Tags" :  [ {
-            "Key" : "dbSGName",
+            "Key" : "Name",
             "Value" : "csye6225-spring19-dbSGName"
             }
           ],
@@ -97,9 +100,9 @@
       "EC2Instance": {
         "Type" : "AWS::EC2::Instance",
         "Properties" : {
-          "ImageId" : "ami-054cbbe219b56c738",
+          "ImageId" : "ami-069e7cdfe77c3f5b8",
           "InstanceType" : "t2.micro",
-          "KeyName" : "csye6225_ec2",
+          "KeyName" : "ec2",
           "BlockDeviceMappings" : [
             {
                "DeviceName" : "/dev/sda1",
@@ -116,7 +119,7 @@
           "SubnetId": {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetEC2"}},
           "Tags": [
             {
-              "Key": "ec2Name",
+              "Key": "Name",
               "Value": "csye6225-spring19-ec2"
             }
           ]
@@ -144,13 +147,13 @@
             },
           "Tags" : [
             {
-              "Key": "dynamoDBName",
+              "Key": "Name",
               "Value": "csye6225-spring19-dynamoDB"
             }
           ]
         }
       },
-      
+
   "DBSubnetGroup" : {
        "Type" : "AWS::RDS::DBSubnetGroup",
        "Properties" : {
@@ -160,23 +163,7 @@
                       {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetDB"}}  ]
       }
   },
-  
-  "DBSecurityGroup": {
-     "Type": "AWS::RDS::DBSecurityGroup",
-     "Properties": {
-        "EC2VpcId" : {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VpcID"}},
-        "GroupDescription" : "DB Security Group for RDS Instance",
-        "DBSecurityGroupIngress": [
-           {"EC2SecurityGroupId": {
-                "Fn::GetAtt": [
-                  "webappSecurityGroup",
-                  "GroupId" ] }
-           }
-      ]     
-     }
-   
-   },
-  
+
   "RDSInstance": {
       "Type" : "AWS::RDS::DBInstance",
       "Properties" :
@@ -189,12 +176,12 @@
           "MasterUsername" : { "Ref" : "DBUsername"},
           "MasterUserPassword" : { "Ref" : "DBPassword"},
           "DBSubnetGroupName" : {"Ref" : "DBSubnetGroup"},
-          "DBSecurityGroups" : [ { "Ref" : "DBSecurityGroup"}],
+          "VPCSecurityGroups" : [ {"Ref" : "dbSecurityGroup" } ],
           "DBInstanceIdentifier" : "csye6225-spring2019",
           "MultiAZ" : false,
-          "PubliclyAccessible" : false
+          "PubliclyAccessible" : true
   }
     }
-  
+
   }
   }
