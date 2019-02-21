@@ -10,6 +10,23 @@
         "Description":"My Ip",
         "Type":"String"
       },
+
+       "AMIid":{
+        "Description":"AMI ID",
+        "Type":"String"
+      },
+
+
+       "StackName":{
+        "Description":"Application Stack Name",
+        "Type":"String"
+      },
+
+      "KeyName":{
+        "Description":"EC2 Key Name",
+        "Type":"String"
+      },
+
       "DBName":{
            "Default": "csye6225",
            "Description": "MySQL RDS DB Name",
@@ -61,13 +78,27 @@
               "FromPort" : 443,
               "ToPort" : 443,
               "CidrIp" : "0.0.0.0/0"
+            },
+            {
+              "IpProtocol" : "tcp",
+              "FromPort" : 8080,
+              "ToPort" : 8080,
+              "CidrIp" : "0.0.0.0/0"
             }
           ],
-          "Tags" :  [ {
+            "Tags" :  [ {
             "Key" : "Name",
-            "Value" : "csye6225-spring19-webAppSGName"
+            "Value" : {
+              "Fn::Sub": [
+                "${StackName}-csye6225-sgwebapp",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
             }
-          ],
+            }
+          ]
+         ,
           "VpcId" :  {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VpcID"}}
         }
       },
@@ -89,20 +120,30 @@
               "CidrIp" : {"Ref":"MyIp"}
             }
           ],
+
           "Tags" :  [ {
             "Key" : "Name",
-            "Value" : "csye6225-spring19-dbSGName"
+            "Value" : {
+              "Fn::Sub": [
+                "${StackName}-csye6225-rdssg",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
             }
-          ],
+            }
+          ]
+
+          ,
           "VpcId" :  {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VpcID"}}
         }
       },
       "EC2Instance": {
         "Type" : "AWS::EC2::Instance",
         "Properties" : {
-          "ImageId" : "ami-069e7cdfe77c3f5b8",
+          "ImageId" : {"Ref" : "AMIid" },
           "InstanceType" : "t2.micro",
-          "KeyName" : "ec2",
+          "KeyName" : {"Ref" : "KeyName" },
           "BlockDeviceMappings" : [
             {
                "DeviceName" : "/dev/sda1",
@@ -117,12 +158,20 @@
             { "Ref" : "webappSecurityGroup" }
           ],
           "SubnetId": {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetEC2"}},
-          "Tags": [
-            {
-              "Key": "Name",
-              "Value": "csye6225-spring19-ec2"
+          "Tags" :  [ {
+            "Key" : "Name",
+            "Value" : {
+              "Fn::Sub": [
+                "${StackName}-csye6225-ec2",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
+            }
             }
           ]
+
+
         }
       },
       "DynamoDBTable": {
@@ -145,12 +194,21 @@
               "ReadCapacityUnits" : 5,
               "WriteCapacityUnits" : 5
             },
-          "Tags" : [
-            {
-              "Key": "Name",
-              "Value": "csye6225-spring19-dynamoDB"
+          "Tags" :  [ {
+            "Key" : "Name",
+            "Value" : {
+              "Fn::Sub": [
+                "${StackName}-csye6225-dynamodb",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
+            }
             }
           ]
+
+
+
         }
       },
 
@@ -160,7 +218,23 @@
        "DBSubnetGroupDescription" : "Subnets available for the RDS DB Instance",
        "SubnetIds" : [
                       {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetEC2"}},
-                      {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetDB"}}  ]
+                      {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetDB"}}  ],
+
+        "Tags": [
+            {
+              "Key": "Name",
+              "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-dbsubnetgrp",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
+            }
+            }
+          ]
+
+
       }
   },
 
@@ -179,7 +253,23 @@
           "VPCSecurityGroups" : [ {"Ref" : "dbSecurityGroup" } ],
           "DBInstanceIdentifier" : "csye6225-spring2019",
           "MultiAZ" : false,
-          "PubliclyAccessible" : true
+          "PubliclyAccessible" : true,
+
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-rds",
+                {
+                  "StackName": { "Ref": "StackName" }
+                }
+              ]
+            }
+            }
+          ]
+
+
   }
     }
 
