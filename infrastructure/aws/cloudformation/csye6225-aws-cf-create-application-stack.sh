@@ -15,7 +15,7 @@ step="Fetch: AMI ID"
 
 tag_name="csye6225"
 
-ami_id=$(aws ec2 describe-images --filters Name=tag:Name,Values=$tag_name --query 'Images[0].ImageId' --output text)
+ami_id=$(aws ec2 describe-images --filters Name=tag:Name,Values=$tag_name --query "reverse(sort_by(Images, &CreationDate))[0].ImageId" --output text)
 
 flag=$?
 
