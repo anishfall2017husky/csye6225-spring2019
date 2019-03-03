@@ -1,7 +1,7 @@
 [
     {
-       "ParameterKey": "StackName",
-       "ParameterValue": "test",
-       "UsePreviousValue": true
+       "VPCStackName": "testvpc",
+       "NetworkStackName": "testapp",
+       "EC2_Key": "ec2"
      }
 ]

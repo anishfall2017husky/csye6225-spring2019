@@ -1,19 +1,15 @@
 #!/bin/bash
 
-echo "Please enter stack name: "
-read stack_name
+stack_name=$(jq -r '.[0].VPCStackName' parameters.json)
+nw_stack_name=$(jq -r '.[0].NetworkStackName' parameters.json)
+key_name=$(jq -r '.[0].EC2_Key' parameters.json)
 
-echo "Please enter network stack name: "
-read nw_stack_name
 
-echo "Please enter ec2 key name: "
-read key_name
+echo "VPC Stack name: ${stack_name}"
+echo "Network stack name: ${nw_stack_name}"
+echo "Ec2 key name: ${key_name}"
 
-myip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
-finalMyIp=$myip/32
-echo $myip
-echo $finalMyIp
-
+read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
 step="Fetch: AMI ID"
 
