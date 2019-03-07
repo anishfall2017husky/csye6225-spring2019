@@ -2,6 +2,7 @@
     {
        "VPCStackName": "testvpc",
        "NetworkStackName": "testapp",
-       "EC2_Key": "ec2"
+       "EC2_Key": "ec2",
+       "circleci_pstack": "circlecipacker"
      }
 ]
