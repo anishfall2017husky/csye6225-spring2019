@@ -45,9 +45,14 @@ jobs:
             mkdir ~/artifacts
             cd ~/artifacts
             cp ~/project/webapp/target/*.war ~/artifacts
+            zip ~/artifacts.zip ~/artifacts
             ls -al; pwd
-      - store_artifacts:
-          path: ~/artifacts
+      - run:
+          name: Deploy to S3
+          command: |
+            export $bucket_name=$(aws s3api list-buckets \
+            --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
+            aws s3 cp ~/artifacts.zip s3://$bucket_name
 workflows:
   version: 2.1
   test-and-build:
