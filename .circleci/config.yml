@@ -5,8 +5,11 @@ executors:
       - image: circleci/openjdk:8u181-jdk-stretch
     working_directory: ~/project/webapp
 jobs:
-  configure-aws:
+  build-app:
     executor: my-executor
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
     parameters:
       profile-name:
         description: Profile name
@@ -25,7 +28,9 @@ jobs:
         type: env_var_name
         default: AWS_REGION
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
+      # Configure aws cli
       - run:
           name: Install packages
           command: sudo apt-get update && sudo apt-get install wget zip unzip -y
@@ -53,14 +58,6 @@ jobs:
           command: |
             aws configure set region $<< parameters.aws-region >> \
             --profile << parameters.profile-name >>
-  build-app:
-    executor: my-executor
-    environment:
-      # Customize the JVM maximum heap limit
-      MAVEN_OPTS: -Xmx3200m
-    steps:
-      - checkout:
-          path: ~/project
       # Download and cache dependencies
       - restore_cache:
           keys: 
@@ -95,15 +92,7 @@ workflows:
   version: 2
   configure-and-build:
     jobs:
-      - configure-aws:
-          filters:
-            # TODO: change branch 
-            branches:
-              only:
-                - assignment5
       - build-app:
-          requires:
-            - configure-aws
           filters:
             # TODO: change branch 
             branches:
