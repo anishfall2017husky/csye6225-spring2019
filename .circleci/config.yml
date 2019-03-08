@@ -1,0 +1,60 @@
+version: 2.1
+executors:
+  my-executor:
+    docker:
+      - image: circleci/openjdk:8u181-jdk-stretch
+    working_directory: ~/project/webapp
+jobs:
+  build-app:
+    executor: my-executor
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
+    steps:
+      - checkout:
+          path: ~/project
+      # - run:
+      #     name: Install packages
+      #     command: sudo apt-get update && sudo apt-get install wget zip unzip -y
+      # - run:
+      #     name: Install awscli
+      #     command: |
+      #       sudo apt install apt-utils -y
+      #       sudo apt-get install python3 -y
+      #       sudo apt install python3-pip -y
+      #       sudo pip3 install awscli
+      # Download and cache dependencies
+      - restore_cache:
+          keys: 
+            - m2-{{ checksum "pom.xml" }}
+            # fallback to using the latest cache if no exact match is found
+            - m2-
+      - run:
+          name: Download maven dependency
+          command: mvn dependency:go-offline dependency:resolve-plugins
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: m2-{{ checksum "pom.xml" }}
+      - run:
+          name: zip up artifacts if tests are successful
+          command: |
+            mvn integration-test
+            [[ $? -eq 0 ]] || exit 1
+            rm -rf ~/artifacts
+            mkdir ~/artifacts
+            cd ~/artifacts
+            cp ~/project/webapp/target/*.war ~/artifacts
+            ls -al; pwd
+      - store_artifacts:
+          path: ~/artifacts
+workflows:
+  version: 2.1
+  test-and-build:
+    jobs:
+      - build-app:
+          filters:
+            # TODO: change branch 
+            branches:
+              only:
+                - assignment5
