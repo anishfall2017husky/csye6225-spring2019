@@ -13,16 +13,16 @@ jobs:
     steps:
       - checkout:
           path: ~/project
-      # - run:
-      #     name: Install packages
-      #     command: sudo apt-get update && sudo apt-get install wget zip unzip -y
-      # - run:
-      #     name: Install awscli
-      #     command: |
-      #       sudo apt install apt-utils -y
-      #       sudo apt-get install python3 -y
-      #       sudo apt install python3-pip -y
-      #       sudo pip3 install awscli
+      - run:
+          name: Install packages
+          command: sudo apt-get update && sudo apt-get install wget zip unzip -y
+      - run:
+          name: Install awscli
+          command: |
+            sudo apt install apt-utils -y
+            sudo apt-get install python3 -y
+            sudo apt install python3-pip -y
+            sudo pip3 install awscli
       # Download and cache dependencies
       - restore_cache:
           keys: 
