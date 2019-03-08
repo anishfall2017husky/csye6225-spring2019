@@ -179,7 +179,10 @@
               }
             ]
           }
-        }]
+        },
+        {
+  "Key": "code-deploy",
+  "Value": "code-deploy-ec2"} ]
       }
     },
 
@@ -475,29 +478,64 @@
       }
     },
 
-    "CodeDeployServiceRolePolicy": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [{
-            "Effect": "Allow",
-            "Principal": {
-              "Service": [
-                "ec2.amazonaws.com"
-              ]
+    "CodeDeployServiceRole": {
+         "Type": "AWS::IAM::Role",
+         "Properties": {
+            "AssumeRolePolicyDocument": {
+               "Statement": [{
+                  "Effect": "Allow",
+                  "Principal": {
+                     "Service": ["codedeploy.amazonaws.com"]
+                  },
+                  "Action": ["sts:AssumeRole"]
+               }]
             },
-            "Action": [
-              "sts:AssumeRole"
-            ]
-          }]
-        },
-        "Path": "/",
-        "RoleName": "CodeDeployServiceRole",
-        "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
-        ]
-      }
-    }
+          "ManagedPolicyArns": ["arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"],
+          "Path": "/"
+         }
+      },
+
+
+"CodeDeployApplication": {
+  "Type": "AWS::CodeDeploy::Application",
+  "Properties": {
+    "ApplicationName": "csye6225-webapp",
+    "ComputePlatform": "Server"
+  }
+},
+
+
+
+"DeploymentGroup" : {
+  "Type" : "AWS::CodeDeploy::DeploymentGroup",
+  "Properties" : {
+    "ApplicationName" : {"Ref" : "CodeDeployApplication"},
+    "DeploymentGroupName": "csye6225-webapp-deployment",
+    "DeploymentStyle": {"DeploymentType": "IN_PLACE",
+              "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL"},
+
+    "AutoRollbackConfiguration": {
+          "Enabled": "true",
+          "Events": [ "DEPLOYMENT_FAILURE" ] },
+
+          "Ec2TagFilters" : [{
+      "Key" : "code-deploy",
+      "Value" :"code-deploy-ec2",
+      "Type" : "KEY_AND_VALUE"
+    }],
+  
+    
+    "ServiceRoleArn" : { 
+      "Fn::GetAtt" : [ 
+        "CodeDeployServiceRole", 
+        "Arn" 
+      ] 
+    } 
+  }
+}
+
+
+
+
   }
 }
