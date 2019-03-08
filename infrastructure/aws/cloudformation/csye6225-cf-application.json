@@ -141,53 +141,6 @@
       }
     },
 
-    "EC2Instance": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "ImageId": {
-          "Ref": "AMIid"
-        },
-        "InstanceType": "t2.micro",
-        "KeyName": {
-          "Ref": "KeyName"
-        },
-        "BlockDeviceMappings": [{
-          "DeviceName": "/dev/sda1",
-          "Ebs": {
-            "DeleteOnTermination": true,
-            "VolumeSize": "20",
-            "VolumeType": "gp2"
-          }
-        }],
-        "SecurityGroupIds": [{
-          "Ref": "webappSecurityGroup"
-        }],
-        "SubnetId": {
-          "Fn::ImportValue": {
-            "Fn::Sub": "${NetworkStackNameParameter}-SubnetEC2"
-          }
-        },
-        "Tags": [{
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-ec2",
-                {
-                  "StackName": {
-                    "Ref": "StackName"
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "Key": "code-deploy",
-            "Value": "code-deploy-ec2"
-          }
-        ]
-      }
-    },
-
     "DynamoDBTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
@@ -518,21 +471,82 @@
         },
         "AutoRollbackConfiguration": {
           "Enabled": "true",
-          "Events": ["DEPLOYMENT_FAILURE"]
+          "Events": [ "DEPLOYMENT_FAILURE" ] },
+
+          "Ec2TagFilters" : [{
+      "Key" : "code-deploy",
+      "Value" :"code-deploy-ec2",
+      "Type" : "KEY_AND_VALUE"
+    }],
+
+    "ServiceRoleArn" : { 
+      "Fn::GetAtt" : [ 
+        "CodeDeployServiceRole", 
+        "Arn" 
+      ] 
+    } 
+  }
+},
+
+"EC2InstanceProfile": {
+         "Type": "AWS::IAM::InstanceProfile",
+         "Properties": {
+            "Path": "/",
+            "Roles": [{ "Ref": "CodeDeployEC2ServiceRolePolicy" }]
+         }
+      },
+
+
+ "EC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Ref": "AMIid"
         },
-        "Ec2TagFilters": [{
-          "Key": "code-deploy",
-          "Value": "code-deploy-ec2",
-          "Type": "KEY_AND_VALUE"
+        "InstanceType": "t2.micro",
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "BlockDeviceMappings": [{
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "DeleteOnTermination": true,
+            "VolumeSize": "20",
+            "VolumeType": "gp2"
+          }
         }],
-        "ServiceRoleArn": {
-          "Fn::GetAtt": [
-            "CodeDeployServiceRole",
-            "Arn"
-          ]
-        }
+        "SecurityGroupIds": [{
+          "Ref": "webappSecurityGroup"
+        }],
+        "SubnetId": {
+          "Fn::ImportValue": {
+            "Fn::Sub": "${NetworkStackNameParameter}-SubnetEC2"
+          }
+        },
+        "Tags": [{
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-ec2",
+                {
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Key": "code-deploy",
+            "Value": "code-deploy-ec2"
+          }
+        ],
+        "IamInstanceProfile":{"Ref": "EC2InstanceProfile"}
+
       }
     }
+
+
 
   }
 }

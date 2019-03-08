@@ -53,7 +53,6 @@ echo "Executing Create Stack....."
 aws cloudformation create-stack --stack-name ${stack_name} \
 --template-body file://csye6225-cf-application.json \
 --parameters ParameterKey=NetworkStackNameParameter,ParameterValue=${nw_stack_name} \
-ParameterKey=MyIp,ParameterValue=$finalMyIp \
 ParameterKey=AMIid,ParameterValue=${ami_id} \
 ParameterKey=StackName,ParameterValue=${stack_name} \
 ParameterKey=KeyName,ParameterValue=${key_name} \

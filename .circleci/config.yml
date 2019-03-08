@@ -107,6 +107,7 @@ jobs:
               --application-name csye6225-webapp \
               --s3-location $<< parameters.bucket-name >>/csye6225-webapp-${CIRCLE_BUILD_NUM}.zip \
               --ignore-hidden-files
+
 workflows:
   version: 2
   configure-and-build:
