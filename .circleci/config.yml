@@ -62,6 +62,17 @@ jobs:
           command: |
             aws configure set region $<< parameters.aws-region >> \
             --profile << parameters.profile-name >>
+      # Install aws code deploy
+      - run:
+          name: Install aws code deploy
+          command: |
+            # Ruby dep
+            sudo apt-get install ruby-full
+            cd
+            wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
+            chmod +x ./install
+            sudo ./install auto
+            sudo service codedeploy-agent start
       # Download and cache dependencies
       - restore_cache:
           keys: 
@@ -81,15 +92,21 @@ jobs:
             mvn integration-test
             [[ $? -eq 0 ]] || exit 1
             rm -rf ~/artifacts
-            mkdir ~/artifacts
+            mkdir -p ~/artifacts/scripts
             cd ~/artifacts
             cp ~/project/webapp/target/*.war ~/artifacts
-            zip -r ~/artifacts.zip ~/artifacts
+            cp ~/project/appspec.yml ~/artifacts
+            cp ~/project/infrastructure/aws/codedeploy/*.sh ~/artifacts/scripts
             ls -al; pwd
       - run:
           name: Deploy to S3
           command: |
-            aws s3 cp ~/artifacts.zip $<< parameters.bucket-name >>
+            cd ~/artifacts
+            ls -al
+            aws deploy push \
+              --application-name csye6225-webapp \
+              --s3-location $<< parameters.bucket-name >>/csye6225-webapp-${CIRCLE_BUILD_NUM} \
+              --ignore-hidden-files
 workflows:
   version: 2
   configure-and-build:
