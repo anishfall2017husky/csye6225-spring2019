@@ -471,33 +471,36 @@
         },
         "AutoRollbackConfiguration": {
           "Enabled": "true",
-          "Events": [ "DEPLOYMENT_FAILURE" ] },
+          "Events": ["DEPLOYMENT_FAILURE"]
+        },
 
-          "Ec2TagFilters" : [{
-      "Key" : "code-deploy",
-      "Value" :"code-deploy-ec2",
-      "Type" : "KEY_AND_VALUE"
-    }],
+        "Ec2TagFilters": [{
+          "Key": "code-deploy",
+          "Value": "code-deploy-ec2",
+          "Type": "KEY_AND_VALUE"
+        }],
 
-    "ServiceRoleArn" : { 
-      "Fn::GetAtt" : [ 
-        "CodeDeployServiceRole", 
-        "Arn" 
-      ] 
-    } 
-  }
-},
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "CodeDeployServiceRole",
+            "Arn"
+          ]
+        }
+      }
+    },
 
-"EC2InstanceProfile": {
-         "Type": "AWS::IAM::InstanceProfile",
-         "Properties": {
-            "Path": "/",
-            "Roles": [{ "Ref": "CodeDeployEC2ServiceRolePolicy" }]
-         }
-      },
+    "EC2InstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [{
+          "Ref": "CodeDeployEC2ServiceRolePolicy"
+        }]
+      }
+    },
 
 
- "EC2Instance": {
+    "EC2Instance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "ImageId": {
@@ -541,9 +544,12 @@
             "Value": "code-deploy-ec2"
           }
         ],
-        "IamInstanceProfile":{"Ref": "EC2InstanceProfile"}
+        "IamInstanceProfile": {
+          "Ref": "EC2InstanceProfile"
+        }
 
-      }
+      },
+      "DependsOn": "EC2InstanceProfile" 
     }
 
 
