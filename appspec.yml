@@ -1,7 +1,7 @@
 version: 0.0
 os: linux
 files:
-  - source: ./build/libs/ROOT.war
+  - source: ./noteapp-0.0.1-SNAPSHOT.war
     destination: /opt/tomcat/webapps
 hooks:
   BeforeInstall:
