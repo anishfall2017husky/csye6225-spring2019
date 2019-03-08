@@ -141,57 +141,6 @@
       }
     },
 
-<<<<<<< HEAD
-   
-=======
-    "EC2Instance": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "ImageId": {
-          "Ref": "AMIid"
-        },
-        "InstanceType": "t2.micro",
-        "KeyName": {
-          "Ref": "KeyName"
-        },
-        "BlockDeviceMappings": [{
-          "DeviceName": "/dev/sda1",
-          "Ebs": {
-            "DeleteOnTermination": true,
-            "VolumeSize": "20",
-            "VolumeType": "gp2"
-          }
-        }],
-        "SecurityGroupIds": [{
-          "Ref": "webappSecurityGroup"
-        }],
-        "SubnetId": {
-          "Fn::ImportValue": {
-            "Fn::Sub": "${NetworkStackNameParameter}-SubnetEC2"
-          }
-        },
-        "Tags": [{
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-ec2",
-                {
-                  "StackName": {
-                    "Ref": "StackName"
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "Key": "code-deploy",
-            "Value": "code-deploy-ec2"
-          }
-        ]
-      }
-    },
->>>>>>> 50add9abfc9cb44d6adc3e9bc1105f9416478c12
-
     "DynamoDBTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
@@ -522,7 +471,6 @@
         },
         "AutoRollbackConfiguration": {
           "Enabled": "true",
-<<<<<<< HEAD
           "Events": [ "DEPLOYMENT_FAILURE" ] },
 
           "Ec2TagFilters" : [{
@@ -599,23 +547,6 @@
     }
 
 
-=======
-          "Events": ["DEPLOYMENT_FAILURE"]
-        },
-        "Ec2TagFilters": [{
-          "Key": "code-deploy",
-          "Value": "code-deploy-ec2",
-          "Type": "KEY_AND_VALUE"
-        }],
-        "ServiceRoleArn": {
-          "Fn::GetAtt": [
-            "CodeDeployServiceRole",
-            "Arn"
-          ]
-        }
-      }
-    }
->>>>>>> 50add9abfc9cb44d6adc3e9bc1105f9416478c12
 
   }
 }
