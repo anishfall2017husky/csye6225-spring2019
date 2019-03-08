@@ -66,6 +66,14 @@ jobs:
       - run:
           name: Install aws code deploy
           command: |
+            # Ruby dep
+            sudo mkdir -p /etc/apt/sources.list.d
+            sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C3173AA6
+            cat <<EOF | sudo tee /etc/apt/sources.list.d/brightbox-ubuntu-ruby-ng-wily.list
+            deb http://ppa.launchpad.net/brightbox/ruby-ng/ubuntu wily main
+            EOF
+            sudo apt-get update
+            sudo apt-get install ruby2.0
             cd
             wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
             chmod +x ./install
@@ -93,6 +101,7 @@ jobs:
             mkdir ~/artifacts
             cd ~/artifacts
             cp ~/project/webapp/target/*.war ~/artifacts
+            cp ~/project/infrastructure/aws/codedeploy/*.sh ~/artifacts
             zip -r ~/csye6225-webapp.zip ~/artifacts
             ls -al; pwd
       - run:
