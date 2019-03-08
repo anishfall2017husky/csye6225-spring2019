@@ -44,6 +44,18 @@
       "Description": "The database admin account password",
       "Type": "String",
       "AllowedPattern": "[a-zA-Z0-9]*"
+    },
+    "AwsAccountID": {
+      "Description": "Account ID",
+      "Type": "String"
+    },
+    "ApplicationName": {
+      "Description": "Name of the webapp to be deployed",
+      "Type": "String"
+    },
+    "AwsRegion": {
+      "Description": "Aws Region",
+      "Type": "String"
     }
   },
 
@@ -52,8 +64,7 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "rule to allow TCP traffic on port 22, 80 and 443 from anywhere in the world",
-        "SecurityGroupIngress": [
-          {
+        "SecurityGroupIngress": [{
             "IpProtocol": "tcp",
             "FromPort": 22,
             "ToPort": 22,
@@ -72,21 +83,23 @@
             "CidrIp": "0.0.0.0/0"
           }
         ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-sgwebapp",
-                {
-                  "StackName": { "Ref": "StackName" }
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Sub": [
+              "${StackName}-csye6225-sgwebapp",
+              {
+                "StackName": {
+                  "Ref": "StackName"
                 }
-              ]
-            }
+              }
+            ]
           }
-        ],
+        }],
         "VpcId": {
-          "Fn::ImportValue": { "Fn::Sub": "${NetworkStackNameParameter}-VpcID" }
+          "Fn::ImportValue": {
+            "Fn::Sub": "${NetworkStackNameParameter}-VpcID"
+          }
         }
       }
     },
@@ -95,102 +108,106 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "rule to allow TCP traffic on port 3306 for MySQL only from the webapp security group",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 3306,
-            "ToPort": 3306,
-            "SourceSecurityGroupId": { "Ref": "webappSecurityGroup" }
+        "SecurityGroupIngress": [{
+          "IpProtocol": "tcp",
+          "FromPort": 3306,
+          "ToPort": 3306,
+          "SourceSecurityGroupId": {
+            "Ref": "webappSecurityGroup"
           }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-rdssg",
-                {
-                  "StackName": { "Ref": "StackName" }
+        }],
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Sub": [
+              "${StackName}-csye6225-rdssg",
+              {
+                "StackName": {
+                  "Ref": "StackName"
                 }
-              ]
-            }
+              }
+            ]
           }
-        ],
+        }],
         "VpcId": {
-          "Fn::ImportValue": { "Fn::Sub": "${NetworkStackNameParameter}-VpcID" }
+          "Fn::ImportValue": {
+            "Fn::Sub": "${NetworkStackNameParameter}-VpcID"
+          }
         }
       }
     },
+
     "EC2Instance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "ImageId": { "Ref": "AMIid" },
+        "ImageId": {
+          "Ref": "AMIid"
+        },
         "InstanceType": "t2.micro",
-        "KeyName": { "Ref": "KeyName" },
-        "BlockDeviceMappings": [
-          {
-            "DeviceName": "/dev/sda1",
-            "Ebs": {
-              "DeleteOnTermination": true,
-              "VolumeSize": "20",
-              "VolumeType": "gp2"
-            }
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "BlockDeviceMappings": [{
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "DeleteOnTermination": true,
+            "VolumeSize": "20",
+            "VolumeType": "gp2"
           }
-        ],
-        "SecurityGroupIds": [{ "Ref": "webappSecurityGroup" }],
+        }],
+        "SecurityGroupIds": [{
+          "Ref": "webappSecurityGroup"
+        }],
         "SubnetId": {
           "Fn::ImportValue": {
             "Fn::Sub": "${NetworkStackNameParameter}-SubnetEC2"
           }
         },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-ec2",
-                {
-                  "StackName": { "Ref": "StackName" }
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Sub": [
+              "${StackName}-csye6225-ec2",
+              {
+                "StackName": {
+                  "Ref": "StackName"
                 }
-              ]
-            }
+              }
+            ]
           }
-        ]
+        }]
       }
     },
+
     "DynamoDBTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "id",
-            "AttributeType": "S"
-          }
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "id",
-            "KeyType": "HASH"
-          }
-        ],
+        "AttributeDefinitions": [{
+          "AttributeName": "id",
+          "AttributeType": "S"
+        }],
+        "KeySchema": [{
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }],
         "TableName": "csye6225",
         "ProvisionedThroughput": {
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
         },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-dynamodb",
-                {
-                  "StackName": { "Ref": "StackName" }
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Sub": [
+              "${StackName}-csye6225-dynamodb",
+              {
+                "StackName": {
+                  "Ref": "StackName"
                 }
-              ]
-            }
+              }
+            ]
           }
-        ]
+        }]
       }
     },
 
@@ -198,8 +215,7 @@
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
         "DBSubnetGroupDescription": "Subnets available for the RDS DB Instance",
-        "SubnetIds": [
-          {
+        "SubnetIds": [{
             "Fn::ImportValue": {
               "Fn::Sub": "${NetworkStackNameParameter}-SubnetEC2"
             }
@@ -210,49 +226,249 @@
             }
           }
         ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-dbsubnetgrp",
-                {
-                  "StackName": { "Ref": "StackName" }
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Sub": [
+              "${StackName}-csye6225-dbsubnetgrp",
+              {
+                "StackName": {
+                  "Ref": "StackName"
                 }
-              ]
-            }
+              }
+            ]
           }
-        ]
+        }]
       }
     },
 
     "RDSInstance": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
-        "DBName": { "Ref": "DBName" },
-        "AllocatedStorage": { "Ref": "DBAllocatedStorage" },
-        "DBInstanceClass": { "Ref": "DBClass" },
+        "DBName": {
+          "Ref": "DBName"
+        },
+        "AllocatedStorage": {
+          "Ref": "DBAllocatedStorage"
+        },
+        "DBInstanceClass": {
+          "Ref": "DBClass"
+        },
         "Engine": "MySQL",
         "EngineVersion": "5.6.35",
-        "MasterUsername": { "Ref": "DBUsername" },
-        "MasterUserPassword": { "Ref": "DBPassword" },
-        "DBSubnetGroupName": { "Ref": "DBSubnetGroup" },
-        "VPCSecurityGroups": [{ "Ref": "dbSecurityGroup" }],
+        "MasterUsername": {
+          "Ref": "DBUsername"
+        },
+        "MasterUserPassword": {
+          "Ref": "DBPassword"
+        },
+        "DBSubnetGroupName": {
+          "Ref": "DBSubnetGroup"
+        },
+        "VPCSecurityGroups": [{
+          "Ref": "dbSecurityGroup"
+        }],
         "DBInstanceIdentifier": "csye6225-spring2019",
         "MultiAZ": false,
         "PubliclyAccessible": true,
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-rds",
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Sub": [
+              "${StackName}-csye6225-rds",
+              {
+                "StackName": {
+                  "Ref": "StackName"
+                }
+              }
+            ]
+          }
+        }]
+      }
+    },
+
+    "CodeDeployEC2S3UserPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "This policy allows EC2 instances to get data from S3 buckets",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+              "s3:Get*",
+              "s3:List*"
+            ],
+            "Resource": [
+              "*"
+            ]
+          }]
+        },
+        "ManagedPolicyName": "CodeDeploy-EC2-S3"
+      }
+    },
+
+    "CircleCIUploadToS3UserPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "CircleCI-Upload-To-S3",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+              "s3:PutObject"
+            ],
+            "Resource": [
+              "*"
+            ]
+          }]
+        },
+        "Users": [
+          "circleci"
+        ]
+      }
+    },
+
+    "CodeDeployEC2ServiceRolePolicy": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [
+                "ec2.amazonaws.com"
+              ]
+            },
+            "Action": [
+              "sts:AssumeRole"
+            ]
+          }]
+        },
+        "Path": "/",
+        "RoleName": "CodeDeployEC2ServiceRole",
+        "ManagedPolicyArns": [{
+          "Ref": "CodeDeployEC2S3UserPolicy"
+        }]
+      }
+    },
+
+    "CircleCICodeDeployUserPolciy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "CircleCI-Code-Deploy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+              "Effect": "Allow",
+              "Action": [
+                "codedeploy:RegisterApplicationRevision",
+                "codedeploy:GetApplicationRevision"
+              ],
+              "Resource": [{
+                "Fn::Sub": [
+                  "arn:aws:codedeploy:${AWS_REGION}:${AWS_ACCOUNT_ID}:application:${CODE_DEPLOY_APPLICATION_NAME}",
+                  {
+                    "AWS_REGION": {
+                      "Ref": "AwsRegion"
+                    },
+                    "AWS_ACCOUNT_ID": {
+                      "Ref": "AwsAccountID"
+                    },
+                    "CODE_DEPLOY_APPLICATION_NAME": {
+                      "Ref": "ApplicationName"
+                    }
+                  }
+                ]
+              }]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "codedeploy:CreateDeployment",
+                "codedeploy:GetDeployment"
+              ],
+              "Resource": [
+                "*"
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "codedeploy:GetDeploymentConfig"
+              ],
+              "Resource": [{
+                  "Fn::Sub": [
+                    "arn:aws:codedeploy:${AWS_REGION}:${AWS_ACCOUNT_ID}:deploymentconfig:CodeDeployDefault.OneAtATime",
+                    {
+                      "AWS_REGION": {
+                        "Ref": "AwsRegion"
+                      },
+                      "AWS_ACCOUNT_ID": {
+                        "Ref": "AwsAccountID"
+                      }
+                    }
+                  ]
+                },
                 {
-                  "StackName": { "Ref": "StackName" }
+                  "Fn::Sub": [
+                    "arn:aws:codedeploy:${AWS_REGION}:${AWS_ACCOUNT_ID}:deploymentconfig:CodeDeployDefault.HalfAtATime",
+                    {
+                      "AWS_REGION": {
+                        "Ref": "AwsRegion"
+                      },
+                      "AWS_ACCOUNT_ID": {
+                        "Ref": "AwsAccountID"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:aws:codedeploy:${AWS_REGION}:${AWS_ACCOUNT_ID}:deploymentconfig:CodeDeployDefault.AllAtOnce",
+                    {
+                      "AWS_REGION": {
+                        "Ref": "AwsRegion"
+                      },
+                      "AWS_ACCOUNT_ID": {
+                        "Ref": "AwsAccountID"
+                      }
+                    }
+                  ]
                 }
               ]
             }
-          }
+          ]
+        },
+        "Users": [
+          "circleci"
+        ]
+      }
+    },
+
+    "CodeDeployServiceRolePolicy": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [
+                "ec2.amazonaws.com"
+              ]
+            },
+            "Action": [
+              "sts:AssumeRole"
+            ]
+          }]
+        },
+        "Path": "/",
+        "RoleName": "CodeDeployServiceRole",
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
         ]
       }
     }
