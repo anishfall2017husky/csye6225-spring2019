@@ -532,7 +532,15 @@
       ] 
     } 
   }
-}
+},
+
+"EC2InstanceProfile": {
+         "Type": "AWS::IAM::InstanceProfile",
+         "Properties": {
+            "Path": "/",
+            "Roles": [{ "Ref": "CodeDeployEC2ServiceRolePolicy" }]
+         }
+      }
 
 
 
