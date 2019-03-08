@@ -4,10 +4,19 @@ stack_name=$(jq -r '.[0].VPCStackName' parameters.json)
 nw_stack_name=$(jq -r '.[0].NetworkStackName' parameters.json)
 key_name=$(jq -r '.[0].EC2_Key' parameters.json)
 
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
+APPLICATION_NAME=$(jq -r '.[0].webapp_name' parameters.json)
+AWS_REGION=$(jq -r '.[0].aws_region' parameters.json)
+DOMAIN_NAME=$(aws route53 list-hosted-zones --query 'HostedZones[0].Name' --output text)
+DOMAIN_NAME=${DOMAIN_NAME%?}
+BUCKET_NAME=code-deploy.${DOMAIN_NAME}
 
 echo "VPC Stack name: ${stack_name}"
 echo "Network stack name: ${nw_stack_name}"
 echo "Ec2 key name: ${key_name}"
+echo "Aws region: ${AWS_REGION}"
+echo "Webapp Name: ${APPLICATION_NAME}"
+echo "Bucket Name: ${BUCKET_NAME}"
 
 read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
@@ -41,9 +50,6 @@ then
 	exit 1
 fi
 
-
-
-
 echo "Executing Create Stack....."
 
 aws cloudformation create-stack --stack-name ${stack_name} \
@@ -52,7 +58,12 @@ aws cloudformation create-stack --stack-name ${stack_name} \
 ParameterKey=MyIp,ParameterValue=$finalMyIp \
 ParameterKey=AMIid,ParameterValue=${ami_id} \
 ParameterKey=StackName,ParameterValue=${stack_name} \
-ParameterKey=KeyName,ParameterValue=${key_name}
+ParameterKey=KeyName,ParameterValue=${key_name} \
+ParameterKey=AwsAccountID,ParameterValue=${AWS_ACCOUNT_ID} \
+ParameterKey=ApplicationName,ParameterValue=${APPLICATION_NAME} \
+ParameterKey=AwsRegion,ParameterValue=${AWS_REGION} \
+ParameterKey=S3BucketName,ParameterValue=${BUCKET_NAME} \
+--capabilities CAPABILITY_NAMED_IAM
 
 if [ $? -eq 0 ]; then
 	echo "Waiting to creating stack completely...!"

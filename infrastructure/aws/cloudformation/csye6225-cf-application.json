@@ -56,6 +56,10 @@
     "AwsRegion": {
       "Description": "Aws Region",
       "Type": "String"
+    },
+    "S3BucketName": {
+      "Description": "S3 bucket name",
+      "Type": "String"
     }
   },
 
@@ -299,9 +303,16 @@
               "s3:Get*",
               "s3:List*"
             ],
-            "Resource": [
-              "*"
-            ]
+            "Resource": [{
+              "Fn::Sub": [
+                "arn:aws:s3:::${BUCKET_NAME}",
+                {
+                  "BUCKET_NAME": {
+                    "Ref": "S3BucketName"
+                  }
+                }
+              ]
+            }]
           }]
         },
         "ManagedPolicyName": "CodeDeploy-EC2-S3"
@@ -319,9 +330,16 @@
             "Action": [
               "s3:PutObject"
             ],
-            "Resource": [
-              "*"
-            ]
+            "Resource": [{
+              "Fn::Sub": [
+                "arn:aws:s3:::${BUCKET_NAME}",
+                {
+                  "BUCKET_NAME": {
+                    "Ref": "S3BucketName"
+                  }
+                }
+              ]
+            }]
           }]
         },
         "Users": [
