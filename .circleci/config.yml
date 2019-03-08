@@ -27,6 +27,10 @@ jobs:
         description: AWS region
         type: env_var_name
         default: AWS_REGION
+      bucket-name:
+        description: Artifact holder Bucket Name
+        type: env_var_name
+        default: AWS_CODE_DEPLOY_BUCKET
     steps:
       - checkout:
           path: ~/project
@@ -85,9 +89,7 @@ jobs:
       - run:
           name: Deploy to S3
           command: |
-            export bucket_name=$(aws s3api list-buckets \
-            --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
-            aws s3 cp ~/artifacts.zip s3://$bucket_name
+            aws s3 cp ~/artifacts.zip $<< parameters.bucket-name >>
 workflows:
   version: 2
   configure-and-build:
