@@ -7,9 +7,7 @@ key_name=$(jq -r '.[0].EC2_Key' parameters.json)
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
 APPLICATION_NAME=$(jq -r '.[0].webapp_name' parameters.json)
 AWS_REGION=$(jq -r '.[0].aws_region' parameters.json)
-DOMAIN_NAME=$(aws route53 list-hosted-zones --query 'HostedZones[0].Name' --output text)
-DOMAIN_NAME=${DOMAIN_NAME%?}
-BUCKET_NAME=code-deploy.${DOMAIN_NAME}
+BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
 
 echo "VPC Stack name: ${stack_name}"
 echo "Network stack name: ${nw_stack_name}"
