@@ -7,7 +7,7 @@ APPLICATION_NAME=$(jq -r '.[0].webapp_name' parameters.json)
 AWS_REGION=$(jq -r '.[0].aws_region' parameters.json)
 CD_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
 
-echo "Aws region: ${AWS_REGION}"
+echo "AWS region: ${AWS_REGION}"
 echo "Webapp Name: ${APPLICATION_NAME}"
 echo "Code deploy Bucket Name: ${CD_BUCKET_NAME}"
 echo "Circleci stack: ${CICD_STACK_NAME}"

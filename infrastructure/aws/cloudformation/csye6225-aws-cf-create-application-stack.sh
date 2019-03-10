@@ -1,6 +1,6 @@
 #!/bin/bash
 
-stack_name=$(jq -r '.[0].VPCStackName' parameters.json)
+stack_name=$(jq -r '.[0].StackName' parameters.json)
 nw_stack_name=$(jq -r '.[0].NetworkStackName' parameters.json)
 key_name=$(jq -r '.[0].EC2_Key' parameters.json)
 
@@ -10,10 +10,10 @@ AWS_REGION=$(jq -r '.[0].aws_region' parameters.json)
 CD_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
 ATTACHMENTS_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/csye6225.com$/{print}')
 
-echo "VPC Stack name: ${stack_name}"
-echo "Network stack name: ${nw_stack_name}"
-echo "Ec2 key name: ${key_name}"
-echo "Aws region: ${AWS_REGION}"
+echo "Stack name: ${stack_name}"
+echo "VPN stack name: ${nw_stack_name}"
+echo "EC2 key name: ${key_name}"
+echo "AWS region: ${AWS_REGION}"
 echo "Webapp Name: ${APPLICATION_NAME}"
 echo "Code deploy Bucket Name: ${CD_BUCKET_NAME}"
 echo "Attachments Bucket Name: ${ATTACHMENTS_BUCKET_NAME}"
