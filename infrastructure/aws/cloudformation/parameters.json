@@ -3,7 +3,7 @@
        "VPCStackName": "testvpc",
        "NetworkStackName": "testapp",
        "EC2_Key": "ec2",
-       "circleci_pstack": "circlecipacker",
+       "cicd_stack": "circlecipolicies",
        "webapp_name": "csye6225-webapp",
        "aws_region": "us-east-1"
      }
