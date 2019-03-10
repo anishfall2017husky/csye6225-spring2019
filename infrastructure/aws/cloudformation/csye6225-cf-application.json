@@ -57,8 +57,12 @@
       "Description": "Aws Region",
       "Type": "String"
     },
-    "S3BucketName": {
-      "Description": "S3 bucket name",
+    "AttachmentsBucketName": {
+      "Description": "Attachments bucket name",
+      "Type": "String"
+    },
+    "CDBucketName": {
+      "Description": "Code deploy bucket name",
       "Type": "String"
     }
   },
@@ -266,7 +270,7 @@
                 "arn:aws:s3:::${BUCKET_NAME}",
                 {
                   "BUCKET_NAME": {
-                    "Ref": "S3BucketName"
+                    "Ref": "CDBucketName"
                   }
                 }
               ]
@@ -293,7 +297,7 @@
                 "arn:aws:s3:::${BUCKET_NAME}",
                 {
                   "BUCKET_NAME": {
-                    "Ref": "S3BucketName"
+                    "Ref": "CDBucketName"
                   }
                 }
               ]
@@ -302,7 +306,7 @@
                 "arn:aws:s3:::${BUCKET_NAME}/*",
                 {
                   "BUCKET_NAME": {
-                    "Ref": "S3BucketName"
+                    "Ref": "CDBucketName"
                   }
                 }
               ]
@@ -499,7 +503,6 @@
       }
     },
 
-
     "EC2Instance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
@@ -546,13 +549,60 @@
         ],
         "IamInstanceProfile": {
           "Ref": "EC2InstanceProfile"
+        },
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "\n", [
+                "cd",
+                "sudo bash",
+                "sudo systemctl stop tomcat.service",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "echo 'JAVA_OPTS= -Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom -Dspring.datasource.username=csye6225master -Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev -Dspring.datasource.url=jdbc:mysql://",
+                      {
+                        "Fn::GetAtt": [
+                          "RDSInstance",
+                          "Endpoint.Address"
+                        ]
+                      },
+                      ":3306/csye6225 -Dspring.bucket.name=",
+                      {
+                        "Ref": "AttachmentsBucketName"
+                      },
+                      "\"' >> tomcat.service"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "echo 'Environment=\"JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom -Dspring.datasource.username=csye6225master -Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev -Dspring.datasource.url=jdbc:mysql://",
+                      {
+                        "Fn::GetAtt": [
+                          "RDSInstance",
+                          "Endpoint.Address"
+                        ]
+                      },
+                      ":3306/csye6225 -Dspring.bucket.name=",
+                      {
+                        "Ref": "AttachmentsBucketName"
+                      },
+                      "\"' >> tomcat.service"
+                    ]
+                  ]
+                },
+                "sudo systemctl start tomcat.service"
+              ]
+            ]
+          }
         }
-
       },
-      "DependsOn": "EC2InstanceProfile" 
+      "DependsOn": ["EC2InstanceProfile" , "RDSInstance"]
     }
-
-
 
   }
 }

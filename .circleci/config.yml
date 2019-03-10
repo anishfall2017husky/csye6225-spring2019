@@ -105,9 +105,13 @@ jobs:
             ls -al
             aws deploy push \
               --application-name csye6225-webapp \
-              --s3-location $<< parameters.bucket-name >>/csye6225-webapp-${CIRCLE_BUILD_NUM}.zip \
+              --s3-location s3://$<< parameters.bucket-name >>/csye6225-webapp-${CIRCLE_BUILD_NUM}.zip \
               --ignore-hidden-files
-
+            aws deploy create-deployment \
+              --application-name csye6225-webapp \
+              --deployment-config-name CodeDeployDefault.OneAtATime \
+              --deployment-group-name csye6225-webapp-deployment \
+              --s3-location bucket=$<< parameters.bucket-name >>,bundleType=zip,key=csye6225-webapp-${CIRCLE_BUILD_NUM}.zip
 workflows:
   version: 2
   configure-and-build:
