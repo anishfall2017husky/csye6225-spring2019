@@ -1,6 +1,6 @@
 #!/bin/bash
 
-circleci_pstack=$(jq -r '.[0].circleci_pstack' parameters.json)
+circleci_pstack=$(jq -r '.[0].cicd_stack' parameters.json)
 
 echo "Circleci packer roles stack: ${circleci_pstack}"
 
