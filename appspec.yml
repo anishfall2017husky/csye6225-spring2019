@@ -6,7 +6,7 @@ files:
     destination: /home/centos
   - source: ./restartTomcat.sh
     destination: /home/centos
-  - source: ./build/libs/ROOT.war
+  - source: ./noteapp-0.0.1-SNAPSHOT.war
     destination: /opt/tomcat/webapps
 
 hooks:
