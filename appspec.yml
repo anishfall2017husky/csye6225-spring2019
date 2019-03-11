@@ -1,0 +1,16 @@
+version: 0.0
+os: linux
+
+files:
+  - source: ./appspec.yml
+    destination: /home/centos
+  - source: ./restartTomcat.sh
+    destination: /home/centos
+  - source: ./build/libs/ROOT.war
+    destination: /opt/tomcat/webapps
+
+hooks:
+  AfterInstall:
+   - location: ./restartTomcat.sh
+     timeout: 180
+     runas: centos

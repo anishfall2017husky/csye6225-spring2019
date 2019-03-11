@@ -6,6 +6,10 @@
         "Description":"Name of the Network Stack",
         "Type":"String"
       },
+      "IAMPolicyStackNameParameter":{
+        "Description":"Name of the IAM Policy Stack",
+        "Type":"String"
+      },
       "MyIp":{
         "Description":"My Ip",
         "Type":"String"
@@ -15,7 +19,11 @@
         "Description":"AMI ID",
         "Type":"String"
       },
-
+      "CodeDeployAppName":{
+        "Default": "csye6225-webapp",
+        "Description":"Code Deploy Application Name",
+        "Type":"String"
+      },
 
        "StackName":{
         "Description":"Application Stack Name",
@@ -57,6 +65,7 @@
        }
     },
     "Resources": {
+
       "webappSecurityGroup": {
         "Type" : "AWS::EC2::SecurityGroup",
         "Properties" : {
@@ -138,9 +147,11 @@
           "VpcId" :  {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VpcID"}}
         }
       },
+
       "EC2Instance": {
         "Type" : "AWS::EC2::Instance",
         "Properties" : {
+          "IamInstanceProfile" : {"Ref":"ec2InstanceProfile"},
           "ImageId" : {"Ref" : "AMIid" },
           "InstanceType" : "t2.micro",
           "KeyName" : {"Ref" : "KeyName" },
@@ -158,6 +169,34 @@
             { "Ref" : "webappSecurityGroup" }
           ],
           "SubnetId": {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetEC2"}},
+          "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "\n",
+                            [
+                                "#!/bin/bash -xe ",
+                                "sudo touch /home/centos/setenv.sh",
+                                "cd /home/centos",
+                                {
+                                    "Fn::Join": [
+                                        "", [
+                                            "echo 'JAVA_OPTS= -Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom -Dspring.datasource.username=csye6225master -Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev -Dspring.datasource.url=jdbc:mysql://",
+                                            {
+                                                "Fn::GetAtt": [
+                                                    "RDSInstance",
+                                                    "Endpoint.Address"
+                                                ]
+                                            },
+                                            ":3306/csye6225 -Dspring.bucket.name=csye6225-spring2019-surtia.me.csye6225.com",
+                                            "\"' >> tomcat.service"
+                                        ]
+                                    ]
+                                },
+                                "sudo mv /home/centos/setenv.sh /opt/tomcat/bin"
+                            ]
+                        ]
+                    }
+                },
           "Tags" :  [ {
             "Key" : "Name",
             "Value" : {
@@ -264,14 +303,112 @@
                 {
                   "StackName": { "Ref": "StackName" }
                 }
-              ]
-            }
+                ]
+              }
             }
           ]
+        }
+    },
 
+    "codeDeployEC2ServiceRole" : {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+               "Statement": [ {
+                  "Effect": "Allow",
+                  "Principal": {
+                     "Service": [ "ec2.amazonaws.com" ]
+                  },
+                  "Action": [ "sts:AssumeRole" ]
+               } ]
+         },
+        "RoleName": "CodeDeployEC2ServiceRole"
+      }
+    },
 
-  }
+    "CodeDeployEC2S3Policy" : {
+      "Type" : "AWS::IAM::Policy",
+      "Properties" : {
+        "PolicyDocument" : {
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Action": [
+                      "s3:Get*",
+                      "s3:List*"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": "*"
+              }
+          ]
+        },
+        "PolicyName" : "CodeDeploy-EC2-S3",
+        "Roles": [ { "Ref": "codeDeployEC2ServiceRole" } ]
+      }
+    },
+
+    "ec2InstanceProfile":{
+       "Type": "AWS::IAM::InstanceProfile",
+       "Properties": {
+          "Roles": [ { "Ref": "codeDeployEC2ServiceRole" } ],
+          "InstanceProfileName": "EC2InstanceProfile"
+       }
+    },
+
+    "CodeDeployServiceRole" : {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version" : "2012-10-17",
+               "Statement": [ {
+                  "Effect": "Allow",
+                  "Principal": {
+                     "Service": [ "codedeploy.amazonaws.com" ]
+                  },
+                  "Action": [ "sts:AssumeRole" ]
+               } ]
+         },
+         "ManagedPolicyArns": [ "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole" ],
+        "RoleName": "CodeDeployServiceRole"
+      }
+    },
+
+    "codeDeployApplication":{
+      "Type" : "AWS::CodeDeploy::Application",
+      "Properties" : {
+        "ApplicationName" : {"Ref":"CodeDeployAppName"},
+        "ComputePlatform" : "Server"
+      }
+    },
+
+    "codeDeploymentGroup":{
+      "Type" : "AWS::CodeDeploy::DeploymentGroup",
+      "Properties" : {
+        "ApplicationName" : {"Ref":"codeDeployApplication"},
+        "AutoRollbackConfiguration" : {
+            "Events" : [ "DEPLOYMENT_FAILURE" ]
+          },
+        "DeploymentGroupName" : "csye6225-webapp-deployment",
+        "DeploymentConfigName" : "CodeDeployDefault.AllAtOnce",
+        "DeploymentStyle" : {
+          "DeploymentOption" : "WITHOUT_TRAFFIC_CONTROL",
+          "DeploymentType" : "IN_PLACE"
+        },
+        "Ec2TagFilters":[
+          {
+            "Type" : "VALUE_ONLY",
+            "Value" : "EC2-csye6225-ec2"
+          }
+          ],
+        "ServiceRoleArn" : {
+        "Fn::GetAtt": [
+            "CodeDeployServiceRole",
+            "Arn"
+          ]
+        }
+      }
     }
 
-  }
+    }
   }

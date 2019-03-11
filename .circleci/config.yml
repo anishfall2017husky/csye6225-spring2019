@@ -1,0 +1,73 @@
+version: 2.1
+executors:
+  my-executor:
+    docker:
+      - image: circleci/openjdk:8u181-jdk-stretch
+    working_directory: ~/project/webapp
+jobs:
+  build-app:
+    executor: my-executor
+    environment:
+      # Customize the JVM maximum heap limit
+      MAVEN_OPTS: -Xmx3200m
+    steps:
+      - checkout:
+          path: ~/project
+      # Configure aws cli
+      - run:
+          name: Install packages
+          command: sudo apt-get update && sudo apt-get install wget zip unzip -y
+      - run:
+          name: Install awscli
+          command: |
+            sudo apt install apt-utils -y
+            sudo apt-get install python3 -y
+            sudo apt install python3-pip -y
+            sudo pip3 install awscli
+      # Install aws code deploy
+      - run:
+          name: Install aws code deploy
+          command: |
+            # Ruby dep
+            sudo apt-get install ruby-full
+            cd
+            wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
+            chmod +x ./install
+            sudo ./install auto
+            sudo service codedeploy-agent start
+      - run:
+          name: zip up artifacts if tests are successful
+          command: |
+            mvn integration-test
+            [[ $? -eq 0 ]] || exit 1
+            rm -rf ~/artifacts
+            mkdir -p ~/artifacts/scripts
+            cd ~/artifacts
+            cp ~/project/webapp/target/*.war ~/artifacts
+            cp ~/project/appspec.yml ~/artifacts
+            cp ~/project/infrastructure/aws/codedeploy/*.sh ~/artifacts/scripts
+            ls -al; pwd
+      - run:
+          name: Deploy to S3
+          command: |
+            cd ~/artifacts
+            ls -al
+            aws deploy push \
+              --application-name csye6225-webapp \
+              --s3-location s3://code-deploy.csye6225-spring2019-surtia.me/csye6225-webapp-${CIRCLE_BUILD_NUM}.zip \
+              --ignore-hidden-files
+            aws deploy create-deployment \
+              --application-name csye6225-webapp \
+              --deployment-config-name CodeDeployDefault.OneAtATime \
+              --deployment-group-name csye6225-webapp-deployment \
+              --s3-location bucket=$<< parameters.bucket-name >>,bundleType=zip,key=csye6225-webapp-${CIRCLE_BUILD_NUM}.zip
+workflows:
+  version: 2
+  configure-and-build:
+    jobs:
+      - build-app:
+          filters:
+            # TODO: change branch
+            branches:
+              only:
+                - assignment5
