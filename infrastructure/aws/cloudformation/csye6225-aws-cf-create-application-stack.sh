@@ -12,12 +12,6 @@ read policies_stack_name
 echo "Please enter ec2 key name: "
 read key_name
 
-myip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
-finalMyIp=$myip/32
-echo $myip
-echo $finalMyIp
-
-
 step="Fetch: AMI ID"
 
 tag_name="csye6225"
@@ -50,7 +44,7 @@ fi
 
 echo "Executing Create Stack....."
 
-aws cloudformation create-stack --stack-name ${stack_name} --template-body file://csye6225-cf-application.json --parameters ParameterKey=NetworkStackNameParameter,ParameterValue=${nw_stack_name} ParameterKey=MyIp,ParameterValue=$finalMyIp \
+aws cloudformation create-stack --stack-name ${stack_name} --template-body file://csye6225-cf-application.json --parameters ParameterKey=NetworkStackNameParameter,ParameterValue=${nw_stack_name} \
 ParameterKey=AMIid,ParameterValue=${ami_id} ParameterKey=StackName,ParameterValue=${stack_name} ParameterKey=IAMPolicyStackNameParameter,ParameterValue=${policies_stack_name} \
 ParameterKey=KeyName,ParameterValue=${key_name} \
 --capabilities=CAPABILITY_NAMED_IAM

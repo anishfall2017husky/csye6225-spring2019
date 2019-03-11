@@ -1,16 +1,18 @@
 version: 0.0
 os: linux
-
 files:
-  - source: ./appspec.yml
-    destination: /home/centos
-  - source: ./restartTomcat.sh
-    destination: /home/centos
   - source: ./noteapp-0.0.1-SNAPSHOT.war
     destination: /opt/tomcat/webapps
-
 hooks:
+  BeforeInstall:
+    - location: scripts/applicationStop.sh
+      timeout: 900
+      runas: centos
   AfterInstall:
-   - location: ./restartTomcat.sh
-     timeout: 180
-     runas: centos
+    - location: scripts/afterInstall.sh
+      timeout: 900
+      runas: centos
+  ApplicationStart:
+    - location: scripts/applicationStart.sh
+      timeout: 900
+      runas: centos
