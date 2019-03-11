@@ -423,14 +423,19 @@
           "Fn::Base64": {
             "Fn::Join": [
               "\n", [
-                "cd",
                 "sudo bash",
                 "sudo systemctl stop tomcat.service",
+                "cd /usr/lib/systemd/system",
                 {
                   "Fn::Join": [
                     "",
                     [
-                      "echo 'JAVA_OPTS= -Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom -Dspring.datasource.username=csye6225master -Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev -Dspring.datasource.url=jdbc:mysql://",
+                      "sudo sed -i 's|Environment=\"JAVA_OPTS=-Djava.awt.headless=true ",
+                      "-Djava.security.egd=file:/dev/./urandom\"|",
+                      "Environment=\"JAVA_OPTS=-Djava.awt.headless=true ",
+                      "-Djava.security.egd=file:/dev/./urandom -Dspring.datasource.username=csye6225master ", 
+                      "-Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev ",
+                      "-Dspring.datasource.url=jdbc:mysql://",
                       {
                         "Fn::GetAtt": [
                           "RDSInstance",
@@ -441,26 +446,7 @@
                       {
                         "Ref": "AttachmentsBucketName"
                       },
-                      "\"' >> tomcat.service"
-                    ]
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "echo 'Environment=\"JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom -Dspring.datasource.username=csye6225master -Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev -Dspring.datasource.url=jdbc:mysql://",
-                      {
-                        "Fn::GetAtt": [
-                          "RDSInstance",
-                          "Endpoint.Address"
-                        ]
-                      },
-                      ":3306/csye6225 -Dspring.bucket.name=",
-                      {
-                        "Ref": "AttachmentsBucketName"
-                      },
-                      "\"' >> tomcat.service"
+                      "\"|g' /usr/lib/systemd/system/tomcat.service"
                     ]
                   ]
                 },

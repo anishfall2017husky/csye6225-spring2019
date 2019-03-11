@@ -15,9 +15,9 @@ Parameters:
     Type: String
 Resources:
   CircleCIPackerUserPolicy:
-    Type: AWS::IAM::Policy
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: circleci-ec2-ami
+      ManagedPolicyName: circleci-ec2-ami
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -63,9 +63,8 @@ Resources:
         - 
           circleci
   CircleCIUploadToS3UserPolicy:
-    Type: AWS::IAM::Policy
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: CircleCI-Upload-To-S3
       PolicyDocument:
         Version: 2012-10-17
         Statement:
@@ -77,10 +76,11 @@ Resources:
               - !Sub arn:aws:s3:::${CDBucketName}/*
       Users:
         - circleci
+      ManagedPolicyName: CircleCI-Upload-To-S3  
   CircleCICodeDeployUserPolciy:
-    Type: AWS::IAM::Policy
+    Type: AWS::IAM::ManagedPolicy
     Properties:
-      PolicyName: CircleCI-Code-Deploy
+      ManagedPolicyName: CircleCI-Code-Deploy
       PolicyDocument:
         Version: 2012-10-17
         Statement:
