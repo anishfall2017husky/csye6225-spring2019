@@ -92,11 +92,11 @@ jobs:
             mvn integration-test
             [[ $? -eq 0 ]] || exit 1
             rm -rf ~/artifacts
-            mkdir -p ~/artifacts/scripts
+            mkdir -p ~/artifacts
             cd ~/artifacts
             cp ~/project/webapp/target/*.war ~/artifacts
             cp ~/project/appspec.yml ~/artifacts
-            cp ~/project/*.sh ~/artifacts/scripts
+            cp ~/project/*.sh ~/artifacts
             ls -al; pwd
       - run:
           name: Deploy to S3
