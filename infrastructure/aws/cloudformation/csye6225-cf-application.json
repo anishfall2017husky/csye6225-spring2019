@@ -348,80 +348,197 @@
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
-          "Statement": [{
-            "Effect": "Allow",
-            "Principal": {
-              "Service": [
-                "ec2.amazonaws.com"
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
               ]
-            },
-            "Action": [
-              "sts:AssumeRole"
-            ]
-          }]
+            }
+          ]
         },
         "Path": "/",
         "RoleName": "CodeDeployEC2ServiceRole",
-        "ManagedPolicyArns": [{
-          "Ref": "CodeDeployEC2S3UserPolicy"
-        }]
+        "ManagedPolicyArns": [
+          {
+            "Ref": "CodeDeployEC2S3UserPolicy"
+          }
+        ]
       }
-},
-"CodeDeployServiceRole": {
-  "Type": "AWS::IAM::Role",
-  "Properties": {
-    "AssumeRolePolicyDocument": {
-      "Statement": [{
-        "Effect": "Allow",
-        "Principal": {
-          "Service": ["codedeploy.amazonaws.com"]
+    },
+    "CodeDeployServiceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "codedeploy.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
         },
-        "Action": ["sts:AssumeRole"]
-      }]
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+        ],
+        "Path": "/"
+      }
     },
-    "ManagedPolicyArns": ["arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"],
-    "Path": "/"
-  }
-},
-
-"CodeDeployApplication": {
-  "Type": "AWS::CodeDeploy::Application",
-  "Properties": {
-    "ApplicationName": "csye6225-webapp",
-    "ComputePlatform": "Server"
-  }
-},
-
-"DeploymentGroup": {
-  "Type": "AWS::CodeDeploy::DeploymentGroup",
-  "Properties": {
-    "ApplicationName": {
-      "Ref": "CodeDeployApplication"
+    "CodeDeployApplication": {
+      "Type": "AWS::CodeDeploy::Application",
+      "Properties": {
+        "ApplicationName": "csye6225-webapp",
+        "ComputePlatform": "Server"
+      }
     },
-    "DeploymentGroupName": "csye6225-webapp-deployment",
-    "DeploymentStyle": {
-      "DeploymentType": "IN_PLACE",
-      "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL"
+    "DeploymentGroup": {
+      "Type": "AWS::CodeDeploy::DeploymentGroup",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "CodeDeployApplication"
+        },
+        "DeploymentGroupName": "csye6225-webapp-deployment",
+        "DeploymentStyle": {
+          "DeploymentType": "IN_PLACE",
+          "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL"
+        },
+        "AutoRollbackConfiguration": {
+          "Enabled": "true",
+          "Events": [
+            "DEPLOYMENT_FAILURE"
+          ]
+        },
+        "Ec2TagFilters": [
+          {
+            "Key": "code-deploy",
+            "Value": "code-deploy-ec2",
+            "Type": "KEY_AND_VALUE"
+          }
+        ],
+        "ServiceRoleArn": {
+          "Fn::GetAtt": [
+            "CodeDeployServiceRole",
+            "Arn"
+          ]
+        }
+      }
     },
-    "AutoRollbackConfiguration": {
-      "Enabled": "true",
-      "Events": ["DEPLOYMENT_FAILURE"]
+    "EC2InstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "CodeDeployEC2ServiceRolePolicy"
+          }
+        ]
+      }
     },
-
-    "Ec2TagFilters": [{
-      "Key": "code-deploy",
-      "Value": "code-deploy-ec2",
-      "Type": "KEY_AND_VALUE"
-    }],
-
-    "ServiceRoleArn": {
-      "Fn::GetAtt": [
-        "CodeDeployServiceRole",
-        "Arn"
+    "EC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Ref": "AMIid"
+        },
+        "InstanceType": "t2.micro",
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "DeleteOnTermination": true,
+              "VolumeSize": "20",
+              "VolumeType": "gp2"
+            }
+          }
+        ],
+        "SecurityGroupIds": [
+          {
+            "Ref": "webappSecurityGroup"
+          }
+        ],
+        "SubnetId": {
+          "Fn::ImportValue": {
+            "Fn::Sub": "${NetworkStackNameParameter}-SubnetEC2"
+          }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-ec2",
+                {
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Key": "code-deploy",
+            "Value": "code-deploy-ec2"
+          }
+        ],
+        "IamInstanceProfile": {
+          "Ref": "EC2InstanceProfile"
+        },
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "\n",
+              [
+                "sudo bash",
+                "sudo systemctl stop tomcat.service",
+                "cd /usr/lib/systemd/system",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "sudo sed -i 's|Environment=\"JAVA_OPTS=-Djava.awt.headless=true ",
+                      "-Djava.security.egd=file:/dev/./urandom\"|",
+                      "Environment=\"JAVA_OPTS=-Djava.awt.headless=true ",
+                      "-Djava.security.egd=file:/dev/./urandom -Dspring.datasource.username=csye6225master ",
+                      "-Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev ",
+                      "-Dspring.datasource.url=jdbc:mysql://",
+                      {
+                        "Fn::GetAtt": [
+                          "RDSInstance",
+                          "Endpoint.Address"
+                        ]
+                      },
+                      ":3306/csye6225 -Dspring.bucket.name=",
+                      {
+                        "Ref": "AttachmentsBucketName"
+                      },
+                      "\"|g' /usr/lib/systemd/system/tomcat.service"
+                    ]
+                  ]
+                },
+                "sudo systemctl start tomcat.service"
+              ]
+            ]
+          }
+        }
+      },
+      "DependsOn": [
+        "EC2InstanceProfile",
+        "RDSInstance"
       ]
     }
-  }
-},
-
   }
 }
