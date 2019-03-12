@@ -2,7 +2,7 @@
     {
        "StackName": "testapp",
        "NetworkStackName": "testvpc",
-       "EC2_Key": "ec2",
+       "EC2_Key": "csye6225_ec2",
        "cicd_stack": "circlecipolicies",
        "webapp_name": "csye6225-webapp",
        "aws_region": "us-east-1"
