@@ -1,7 +1,7 @@
 [
     {
-       "StackName": "testapp",
-       "NetworkStackName": "testvpc",
+       "StackName": "app",
+       "NetworkStackName": "nw",
        "EC2_Key": "ec2",
        "cicd_stack": "circlecipolicies",
        "webapp_name": "csye6225-webapp",
