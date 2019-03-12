@@ -1,8 +1,10 @@
 version: 0.0
 os: linux
+
 files:
-  - source: ./noteapp-0.0.1-SNAPSHOT.war
+  - source: ./ROOT.war
     destination: /opt/tomcat/webapps
+
 hooks:
   BeforeInstall:
     - location: scripts/applicationStop.sh
