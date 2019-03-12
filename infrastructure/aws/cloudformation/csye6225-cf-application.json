@@ -366,6 +366,62 @@
           "Ref": "CodeDeployEC2S3UserPolicy"
         }]
       }
-}
+},
+"CodeDeployServiceRole": {
+  "Type": "AWS::IAM::Role",
+  "Properties": {
+    "AssumeRolePolicyDocument": {
+      "Statement": [{
+        "Effect": "Allow",
+        "Principal": {
+          "Service": ["codedeploy.amazonaws.com"]
+        },
+        "Action": ["sts:AssumeRole"]
+      }]
+    },
+    "ManagedPolicyArns": ["arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"],
+    "Path": "/"
+  }
+},
+
+"CodeDeployApplication": {
+  "Type": "AWS::CodeDeploy::Application",
+  "Properties": {
+    "ApplicationName": "csye6225-webapp",
+    "ComputePlatform": "Server"
+  }
+},
+
+"DeploymentGroup": {
+  "Type": "AWS::CodeDeploy::DeploymentGroup",
+  "Properties": {
+    "ApplicationName": {
+      "Ref": "CodeDeployApplication"
+    },
+    "DeploymentGroupName": "csye6225-webapp-deployment",
+    "DeploymentStyle": {
+      "DeploymentType": "IN_PLACE",
+      "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL"
+    },
+    "AutoRollbackConfiguration": {
+      "Enabled": "true",
+      "Events": ["DEPLOYMENT_FAILURE"]
+    },
+
+    "Ec2TagFilters": [{
+      "Key": "code-deploy",
+      "Value": "code-deploy-ec2",
+      "Type": "KEY_AND_VALUE"
+    }],
+
+    "ServiceRoleArn": {
+      "Fn::GetAtt": [
+        "CodeDeployServiceRole",
+        "Arn"
+      ]
+    }
+  }
+},
+
   }
 }
