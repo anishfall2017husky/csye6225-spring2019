@@ -1,36 +1,12 @@
-version: 2.1
-executors:
-  my-executor:
+version: 2 
+jobs:
+  build-app:
     docker:
       - image: circleci/openjdk:8u181-jdk-stretch
     working_directory: ~/project/webapp
-jobs:
-  build-app:
-    executor: my-executor
     environment:
       # Customize the JVM maximum heap limit
       MAVEN_OPTS: -Xmx3200m
-    parameters:
-      profile-name:
-        description: Profile name
-        type: string
-        default: "default"
-      aws-access-key-id:
-        description: AWS access key id for IAM role
-        type: env_var_name
-        default: AWS_ACCESS_KEY
-      aws-secret-access-key:
-        description: AWS secret key for IAM role
-        type: env_var_name
-        default: AWS_SECRET_KEY
-      aws-region:
-        description: AWS region
-        type: env_var_name
-        default: AWS_REGION
-      bucket-name:
-        description: Artifact holder Bucket Name
-        type: env_var_name
-        default: AWS_CODE_DEPLOY_BUCKET
     steps:
       - checkout:
           path: ~/project
@@ -49,19 +25,19 @@ jobs:
           name: Configure AWS Access Key ID
           command: |
             aws configure set aws_access_key_id \
-            $<< parameters.aws-access-key-id >> \
-            --profile << parameters.profile-name >>
+            ${AWS_ACCESS_KEY} \
+            --profile default
       - run:
           name: Configure AWS Secret Access Key
           command: |
             aws configure set aws_secret_access_key \
-            $<< parameters.aws-secret-access-key >> \
-            --profile << parameters.profile-name >>
+            ${AWS_SECRET_KEY} \
+            --profile default
       - run:
           name: Configure AWS region
           command: |
-            aws configure set region $<< parameters.aws-region >> \
-            --profile << parameters.profile-name >>
+            aws configure set region ${AWS_REGION} \
+            --profile default
       # Install aws code deploy
       - run:
           name: Install aws code deploy
@@ -106,13 +82,13 @@ jobs:
             ls -al
             aws deploy push \
               --application-name csye6225-webapp \
-              --s3-location s3://$<< parameters.bucket-name >>/csye6225-webapp-${CIRCLE_BUILD_NUM}.zip \
+              --s3-location s3://${AWS_CODE_DEPLOY_BUCKET}/csye6225-webapp-${CIRCLE_BUILD_NUM}.zip \
               --ignore-hidden-files
             aws deploy create-deployment \
               --application-name csye6225-webapp \
               --deployment-config-name CodeDeployDefault.OneAtATime \
               --deployment-group-name csye6225-webapp-deployment \
-              --s3-location bucket=$<< parameters.bucket-name >>,bundleType=zip,key=csye6225-webapp-${CIRCLE_BUILD_NUM}.zip
+              --s3-location bucket=${AWS_CODE_DEPLOY_BUCKET},bundleType=zip,key=csye6225-webapp-${CIRCLE_BUILD_NUM}.zip
 workflows:
   version: 2
   configure-and-build:
