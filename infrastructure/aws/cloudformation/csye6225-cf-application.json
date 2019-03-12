@@ -1,277 +1,371 @@
 {
-    "AWSTemplateFormatVersion": "2010-09-09",
-    "Description":"Cloud formation template to create application stack",
-    "Parameters":{
-      "NetworkStackNameParameter":{
-        "Description":"Name of the Network Stack",
-        "Type":"String"
-      },
-      "MyIp":{
-        "Description":"My Ip",
-        "Type":"String"
-      },
-
-       "AMIid":{
-        "Description":"AMI ID",
-        "Type":"String"
-      },
-
-
-       "StackName":{
-        "Description":"Application Stack Name",
-        "Type":"String"
-      },
-
-      "KeyName":{
-        "Description":"EC2 Key Name",
-        "Type":"String"
-      },
-
-      "DBName":{
-           "Default": "csye6225",
-           "Description": "MySQL RDS DB Name",
-           "Type": "String"
-       },
-
-       "DBAllocatedStorage" :{
-           "Default": "5",
-           "Description" : "The size of DB in GB",
-           "Type": "Number"
-       },
-       "DBClass" : {
-           "Default" : "db.t2.medium",
-           "Description" : "Database instance class",
-           "Type" : "String"
-       },
-       "DBUsername" : {
-           "Default" : "csye6225master",
-           "Description" : "The database admin account username",
-           "Type": "String",
-           "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*"
-       },
-       "DBPassword" : {
-           "Default": "csye6225password",
-           "Description" : "The database admin account password",
-           "Type": "String",
-           "AllowedPattern" : "[a-zA-Z0-9]*"
-       }
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Cloud formation template to create application stack",
+  "Parameters": {
+    "NetworkStackNameParameter": {
+      "Description": "Name of the Network Stack",
+      "Type": "String"
     },
-    "Resources": {
-      "webappSecurityGroup": {
-        "Type" : "AWS::EC2::SecurityGroup",
-        "Properties" : {
-          "GroupDescription" : "rule to allow TCP traffic on port 22, 80 and 443 from anywhere in the world",
-          "SecurityGroupIngress" : [ {
-              "IpProtocol" : "tcp",
-              "FromPort" : 22,
-              "ToPort" : 22,
-              "CidrIp" : "0.0.0.0/0"
-            },
-            {
-              "IpProtocol" : "tcp",
-              "FromPort" : 80,
-              "ToPort" : 80,
-              "CidrIp" : "0.0.0.0/0"
-            },
-            {
-              "IpProtocol" : "tcp",
-              "FromPort" : 443,
-              "ToPort" : 443,
-              "CidrIp" : "0.0.0.0/0"
-            },
-            {
-              "IpProtocol" : "tcp",
-              "FromPort" : 8080,
-              "ToPort" : 8080,
-              "CidrIp" : "0.0.0.0/0"
-            }
-          ],
-            "Tags" :  [ {
-            "Key" : "Name",
-            "Value" : {
+    "MyIp": {
+      "Description": "My Ip",
+      "Type": "String"
+    },
+    "AMIid": {
+      "Description": "AMI ID",
+      "Type": "String"
+    },
+    "StackName": {
+      "Description": "Application Stack Name",
+      "Type": "String"
+    },
+    "KeyName": {
+      "Description": "EC2 Key Name",
+      "Type": "String"
+    },
+    "DBName": {
+      "Default": "csye6225",
+      "Description": "MySQL RDS DB Name",
+      "Type": "String"
+    },
+    "DBAllocatedStorage": {
+      "Default": "5",
+      "Description": "The size of DB in GB",
+      "Type": "Number"
+    },
+    "DBClass": {
+      "Default": "db.t2.medium",
+      "Description": "Database instance class",
+      "Type": "String"
+    },
+    "DBUsername": {
+      "Default": "csye6225master",
+      "Description": "The database admin account username",
+      "Type": "String",
+      "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*"
+    },
+    "DBPassword": {
+      "Default": "csye6225password",
+      "Description": "The database admin account password",
+      "Type": "String",
+      "AllowedPattern": "[a-zA-Z0-9]*"
+    }
+  },
+  "Resources": {
+    "webappSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "rule to allow TCP traffic on port 22, 80 and 443 from anywhere in the world",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 80,
+            "ToPort": 80,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 8080,
+            "ToPort": 8080,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
               "Fn::Sub": [
                 "${StackName}-csye6225-sgwebapp",
                 {
-                  "StackName": { "Ref": "StackName" }
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
                 }
               ]
             }
-            }
-          ]
-         ,
-          "VpcId" :  {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VpcID"}}
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": {
+            "Fn::Sub": "${NetworkStackNameParameter}-VpcID"
+          }
         }
-      },
-
-      "dbSecurityGroup": {
-        "Type" : "AWS::EC2::SecurityGroup",
-        "Properties" : {
-          "GroupDescription" : "rule to allow TCP traffic on port 3306 for MySQL only from the webapp security group",
-          "SecurityGroupIngress" : [ {
-              "IpProtocol" : "tcp",
-              "FromPort" : 3306,
-              "ToPort" : 3306,
-              "SourceSecurityGroupId" : { "Ref" : "webappSecurityGroup" }
-            },
-            {
-              "IpProtocol" : "tcp",
-              "FromPort" : 3306,
-              "ToPort" : 3306,
-              "CidrIp" : {"Ref":"MyIp"}
+      }
+    },
+    "dbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "rule to allow TCP traffic on port 3306 for MySQL only from the webapp security group",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3306,
+            "ToPort": 3306,
+            "SourceSecurityGroupId": {
+              "Ref": "webappSecurityGroup"
             }
-          ],
-
-          "Tags" :  [ {
-            "Key" : "Name",
-            "Value" : {
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3306,
+            "ToPort": 3306,
+            "CidrIp": {
+              "Ref": "MyIp"
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
               "Fn::Sub": [
                 "${StackName}-csye6225-rdssg",
                 {
-                  "StackName": { "Ref": "StackName" }
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
                 }
               ]
             }
-            }
-          ]
-
-          ,
-          "VpcId" :  {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-VpcID"}}
+          }
+        ],
+        "VpcId": {
+          "Fn::ImportValue": {
+            "Fn::Sub": "${NetworkStackNameParameter}-VpcID"
+          }
         }
-      },
-      "EC2Instance": {
-        "Type" : "AWS::EC2::Instance",
-        "Properties" : {
-          "ImageId" : {"Ref" : "AMIid" },
-          "InstanceType" : "t2.micro",
-          "KeyName" : {"Ref" : "KeyName" },
-          "BlockDeviceMappings" : [
-            {
-               "DeviceName" : "/dev/sda1",
-               "Ebs" : {
-                 "DeleteOnTermination" : true,
-                 "VolumeSize" : "20",
-                 "VolumeType" : "gp2"
-               }
+      }
+    },
+    "EC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Ref": "AMIid"
+        },
+        "InstanceType": "t2.micro",
+        "KeyName": {
+          "Ref": "KeyName"
+        },
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "DeleteOnTermination": true,
+              "VolumeSize": "20",
+              "VolumeType": "gp2"
             }
-          ],
-          "SecurityGroupIds": [
-            { "Ref" : "webappSecurityGroup" }
-          ],
-          "SubnetId": {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetEC2"}},
-          "Tags" :  [ {
-            "Key" : "Name",
-            "Value" : {
+          }
+        ],
+        "SecurityGroupIds": [
+          {
+            "Ref": "webappSecurityGroup"
+          }
+        ],
+        "SubnetId": {
+          "Fn::ImportValue": {
+            "Fn::Sub": "${NetworkStackNameParameter}-SubnetEC2"
+          }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
               "Fn::Sub": [
                 "${StackName}-csye6225-ec2",
                 {
-                  "StackName": { "Ref": "StackName" }
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
                 }
               ]
             }
-            }
-          ]
-
-
-        }
-      },
-      "DynamoDBTable": {
-          "Type" : "AWS::DynamoDB::Table",
-          "Properties" : {
-          "AttributeDefinitions" : [
-            {
-            "AttributeName" : "id",
-            "AttributeType" : "S"
-            }
-          ],
-          "KeySchema" : [
-            {
-              "AttributeName" : "id",
-              "KeyType" : "HASH"
-            }
-          ],
-          "TableName" : "csye6225",
-          "ProvisionedThroughput" : {
-              "ReadCapacityUnits" : 5,
-              "WriteCapacityUnits" : 5
-            },
-          "Tags" :  [ {
-            "Key" : "Name",
-            "Value" : {
+          }
+        ]
+      }
+    },
+    "DynamoDBTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
+        "TableName": "csye6225",
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
               "Fn::Sub": [
                 "${StackName}-csye6225-dynamodb",
                 {
-                  "StackName": { "Ref": "StackName" }
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
                 }
               ]
             }
+          }
+        ]
+      }
+    },
+    "DBSubnetGroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "Properties": {
+        "DBSubnetGroupDescription": "Subnets available for the RDS DB Instance",
+        "SubnetIds": [
+          {
+            "Fn::ImportValue": {
+              "Fn::Sub": "${NetworkStackNameParameter}-SubnetEC2"
             }
-          ]
-
-
-
-        }
-      },
-
-  "DBSubnetGroup" : {
-       "Type" : "AWS::RDS::DBSubnetGroup",
-       "Properties" : {
-       "DBSubnetGroupDescription" : "Subnets available for the RDS DB Instance",
-       "SubnetIds" : [
-                      {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetEC2"}},
-                      {"Fn::ImportValue" : {"Fn::Sub" : "${NetworkStackNameParameter}-SubnetDB"}}  ],
-
+          },
+          {
+            "Fn::ImportValue": {
+              "Fn::Sub": "${NetworkStackNameParameter}-SubnetDB"
+            }
+          }
+        ],
         "Tags": [
-            {
-              "Key": "Name",
-              "Value": {
+          {
+            "Key": "Name",
+            "Value": {
               "Fn::Sub": [
                 "${StackName}-csye6225-dbsubnetgrp",
                 {
-                  "StackName": { "Ref": "StackName" }
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
                 }
               ]
             }
-            }
-          ]
-
-
+          }
+        ]
       }
-  },
-
-  "RDSInstance": {
-      "Type" : "AWS::RDS::DBInstance",
-      "Properties" :
-      {
-          "DBName" : { "Ref" : "DBName"},
-          "AllocatedStorage" : { "Ref" : "DBAllocatedStorage"},
-          "DBInstanceClass" : { "Ref" : "DBClass"},
-          "Engine" : "MySQL",
-          "EngineVersion" : "5.6.35",
-          "MasterUsername" : { "Ref" : "DBUsername"},
-          "MasterUserPassword" : { "Ref" : "DBPassword"},
-          "DBSubnetGroupName" : {"Ref" : "DBSubnetGroup"},
-          "VPCSecurityGroups" : [ {"Ref" : "dbSecurityGroup" } ],
-          "DBInstanceIdentifier" : "csye6225-spring2019",
-          "MultiAZ" : false,
-          "PubliclyAccessible" : true,
-
-          "Tags": [
-            {
-              "Key": "Name",
-              "Value": {
+    },
+    "RDSInstance": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "DBName": {
+          "Ref": "DBName"
+        },
+        "AllocatedStorage": {
+          "Ref": "DBAllocatedStorage"
+        },
+        "DBInstanceClass": {
+          "Ref": "DBClass"
+        },
+        "Engine": "MySQL",
+        "EngineVersion": "5.6.35",
+        "MasterUsername": {
+          "Ref": "DBUsername"
+        },
+        "MasterUserPassword": {
+          "Ref": "DBPassword"
+        },
+        "DBSubnetGroupName": {
+          "Ref": "DBSubnetGroup"
+        },
+        "VPCSecurityGroups": [
+          {
+            "Ref": "dbSecurityGroup"
+          }
+        ],
+        "DBInstanceIdentifier": "csye6225-spring2019",
+        "MultiAZ": false,
+        "PubliclyAccessible": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
               "Fn::Sub": [
                 "${StackName}-csye6225-rds",
                 {
-                  "StackName": { "Ref": "StackName" }
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
                 }
               ]
             }
+          }
+        ]
+      }
+    },
+    "CodeDeployEC2S3UserPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "Description": "This policy allows EC2 instances to get data from S3 buckets",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:Get*",
+                "s3:List*"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:aws:s3:::${BUCKET_NAME}",
+                    {
+                      "BUCKET_NAME": {
+                        "Ref": "CDBucketName"
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
-
-
+        },
+        "ManagedPolicyName": "CodeDeploy-EC2-S3"
+      }
+    },
+    "CodeDeployEC2ServiceRolePolicy": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [
+                "ec2.amazonaws.com"
+              ]
+            },
+            "Action": [
+              "sts:AssumeRole"
+            ]
+          }]
+        },
+        "Path": "/",
+        "RoleName": "CodeDeployEC2ServiceRole",
+        "ManagedPolicyArns": [{
+          "Ref": "CodeDeployEC2S3UserPolicy"
+        }]
+      }
+}
   }
-    }
-
-  }
-  }
+}
