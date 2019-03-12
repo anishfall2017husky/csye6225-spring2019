@@ -266,15 +266,26 @@
               "s3:List*"
             ],
             "Resource": [{
-              "Fn::Sub": [
-                "arn:aws:s3:::${BUCKET_NAME}",
-                {
-                  "BUCKET_NAME": {
-                    "Ref": "CDBucketName"
+                "Fn::Sub": [
+                  "arn:aws:s3:::${BUCKET_NAME}",
+                  {
+                    "BUCKET_NAME": {
+                      "Ref": "CDBucketName"
+                    }
                   }
-                }
-              ]
-            }]
+                ]
+              },
+              {
+                "Fn::Sub": [
+                  "arn:aws:s3:::${BUCKET_NAME}/*",
+                  {
+                    "BUCKET_NAME": {
+                      "Ref": "CDBucketName"
+                    }
+                  }
+                ]
+              }
+            ]
           }]
         },
         "ManagedPolicyName": "CodeDeploy-EC2-S3"
@@ -423,6 +434,7 @@
           "Fn::Base64": {
             "Fn::Join": [
               "\n", [
+                "#!/bin/bash -xe",
                 "sudo bash",
                 "sudo systemctl stop tomcat.service",
                 "cd /usr/lib/systemd/system",
@@ -433,7 +445,7 @@
                       "sudo sed -i 's|Environment=\"JAVA_OPTS=-Djava.awt.headless=true ",
                       "-Djava.security.egd=file:/dev/./urandom\"|",
                       "Environment=\"JAVA_OPTS=-Djava.awt.headless=true ",
-                      "-Djava.security.egd=file:/dev/./urandom -Dspring.datasource.username=csye6225master ", 
+                      "-Djava.security.egd=file:/dev/./urandom -Dspring.datasource.username=csye6225master ",
                       "-Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev ",
                       "-Dspring.datasource.url=jdbc:mysql://",
                       {
@@ -450,13 +462,14 @@
                     ]
                   ]
                 },
-                "sudo systemctl start tomcat.service"
+                "sudo systemctl daemon-reload",
+                "sudo systemctl restart tomcat.service"
               ]
             ]
           }
         }
       },
-      "DependsOn": ["EC2InstanceProfile" , "RDSInstance"]
+      "DependsOn": ["EC2InstanceProfile", "RDSInstance"]
     }
 
   }

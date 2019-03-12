@@ -96,6 +96,7 @@ jobs:
             cd ~/artifacts
             cp ~/project/webapp/target/*.war ~/artifacts
             cp ~/project/appspec.yml ~/artifacts
+            mv ~/artifacts/noteapp-0.0.1-SNAPSHOT.war ~/artifacts/ROOT.war
             cp ~/project/infrastructure/aws/codedeploy/*.sh ~/artifacts/scripts
             ls -al; pwd
       - run:
