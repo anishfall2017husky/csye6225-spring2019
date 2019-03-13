@@ -59,10 +59,10 @@ Resources:
               - ec2:TerminateInstances
             Resource: 
               - "*"
-    Users:
-      - 
-        circleci
-CircleCIUploadToS3UserPolicy:
+      Users:
+        - 
+          circleci
+  CircleCIUploadToS3UserPolicy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       PolicyDocument:
@@ -77,7 +77,7 @@ CircleCIUploadToS3UserPolicy:
       Users:
         - circleci
       ManagedPolicyName: CircleCI-Upload-To-S3  
-CircleCICodeDeployUserPolciy:
+  CircleCICodeDeployUserPolciy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
       ManagedPolicyName: CircleCI-Code-Deploy
@@ -104,4 +104,4 @@ CircleCICodeDeployUserPolciy:
               - !Sub arn:aws:codedeploy:${AwsRegion}:${AwsAccountID}:deploymentconfig:CodeDeployDefault.HalfAtATime
               - !Sub arn:aws:codedeploy:${AwsRegion}:${AwsAccountID}:deploymentconfig:CodeDeployDefault.AllAtOnce
       Users:
-        - circleci
+      - circleci

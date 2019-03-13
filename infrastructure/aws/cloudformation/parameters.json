@@ -1,14 +1,14 @@
 [
-  {
-    "StackName": "testapp",
-    "NetworkStackName": "testvpc",
-    "EC2_Key": "ec2",
-    "cicd_stack": "circlecipolicies",
-    "webapp_name": "csye6225-webapp",
-    "aws_region": "us-east-1"
-  },
-  {
-    "CircleCIUserName": "abhinnankit",
-    "Branch": "assignment5"
-  }
+    {
+       "StackName": "testapp",
+       "NetworkStackName": "testvpc",
+       "EC2_Key": "ec2",
+       "cicd_stack": "circlecipolicies",
+       "webapp_name": "csye6225-webapp",
+       "aws_region": "us-east-1"
+     },
+     {
+       "CircleCIUserName": "abhinnankit",
+       "Branch": "assignment5"
+     }
 ]
