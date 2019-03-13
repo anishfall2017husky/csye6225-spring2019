@@ -263,7 +263,9 @@
             "Effect": "Allow",
             "Action": [
               "s3:Get*",
-              "s3:List*"
+              "s3:List*",
+              "s3:PutObject",
+              "s3:DeleteObject"
             ],
             "Resource": [{
                 "Fn::Sub": [
