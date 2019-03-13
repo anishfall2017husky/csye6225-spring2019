@@ -284,6 +284,26 @@
                     }
                   }
                 ]
+              },
+              {
+                "Fn::Sub": [
+                  "arn:aws:s3:::${BUCKET_NAME}/*",
+                  {
+                    "BUCKET_NAME": {
+                      "Ref": "AttachmentsBucketName"
+                    }
+                  }
+                ]
+              },
+              {
+                "Fn::Sub": [
+                  "arn:aws:s3:::${BUCKET_NAME}/*",
+                  {
+                    "BUCKET_NAME": {
+                      "Ref": "AttachmentsBucketName"
+                    }
+                  }
+                ]
               }
             ]
           }]

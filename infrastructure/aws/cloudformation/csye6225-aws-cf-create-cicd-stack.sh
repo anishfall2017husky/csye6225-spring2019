@@ -6,10 +6,12 @@ AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
 APPLICATION_NAME=$(jq -r '.[0].webapp_name' parameters.json)
 AWS_REGION=$(jq -r '.[0].aws_region' parameters.json)
 CD_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
+ATTACHMENTS_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/csye6225.com$/{print}')
 
 echo "AWS region: ${AWS_REGION}"
 echo "Webapp Name: ${APPLICATION_NAME}"
 echo "Code deploy Bucket Name: ${CD_BUCKET_NAME}"
+echo "Attachments Bucket Name: ${ATTACHMENTS_BUCKET_NAME}"
 echo "Circleci stack: ${CICD_STACK_NAME}"
 
 read -p "Continue?(Y/n): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
@@ -22,6 +24,7 @@ aws cloudformation create-stack --stack-name ${CICD_STACK_NAME} \
 ParameterKey=ApplicationName,ParameterValue=${APPLICATION_NAME} \
 ParameterKey=AwsRegion,ParameterValue=${AWS_REGION} \
 ParameterKey=CDBucketName,ParameterValue=${CD_BUCKET_NAME} \
+ParameterKey=AttachmentsBucketName,ParameterValue=${ATTACHMENTS_BUCKET_NAME} \
 --capabilities CAPABILITY_NAMED_IAM
 
 if [ $? -eq 0 ]; then

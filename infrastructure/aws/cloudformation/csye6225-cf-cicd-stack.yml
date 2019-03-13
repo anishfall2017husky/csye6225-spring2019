@@ -13,6 +13,9 @@ Parameters:
   CDBucketName:
     Description: CD bucket name
     Type: String
+  AttachmentsBucketName:
+    Description: Attachments bucket name
+    Type: String
 Resources:
   CircleCIPackerUserPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -74,6 +77,8 @@ Resources:
             Resource:
               - !Sub arn:aws:s3:::${CDBucketName}
               - !Sub arn:aws:s3:::${CDBucketName}/*
+              - !Sub arn:aws:s3:::${AttachmentsBucketName}
+              - !Sub arn:aws:s3:::${AttachmentsBucketName}/*
       Users:
         - circleci
       ManagedPolicyName: CircleCI-Upload-To-S3
