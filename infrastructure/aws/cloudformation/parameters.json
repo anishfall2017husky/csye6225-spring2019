@@ -1,7 +1,14 @@
 [
     {
-       "ParameterKey": "StackName",
-       "ParameterValue": "test",
-       "UsePreviousValue": true
+       "StackName": "EC2",
+       "NetworkStackName": "VPC",
+       "EC2_Key": "ec2",
+       "cicd_stack": "CICD",
+       "webapp_name": "csye6225-webapp",
+       "aws_region": "us-east-1"
+     },
+     {
+       "CircleCIUserName": "anishfall2017husky",
+       "Branch": "assignment5"
      }
 ]
