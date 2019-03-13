@@ -6,9 +6,5 @@
        "cicd_stack": "circlecipolicies",
        "webapp_name": "csye6225-webapp",
        "aws_region": "us-east-1"
-     },
-     {
-       "CircleCIUserName": "abhinnankit",
-       "Branch": "assignment5"
      }
 ]

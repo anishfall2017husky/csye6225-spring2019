@@ -76,12 +76,11 @@ aws cloudformation wait stack-create-complete --stack-name ${stack_name}
 
 if [ $? -eq 0 ]; then
 	echo "Stack successfully created...!"
-	USER_NAME=$(jq -r '.[1].CircleCIUserName' parameters.json)
-	BRANCH=$(jq -r '.[1].Branch' parameters.json)
-	read -p "Enter circleci token (Leave blank to not deploy app): " CIRCLECI_USER_TOKEN
-	if [ -z $CIRCLECI_USER_TOKEN ] 
+	USER_NAME=${circleci_username}
+	BRANCH=${branch_name}
+	if [ -z ${circleci_user_token}] 
 	then
-		curl -u ${CIRCLECI_USER_TOKEN}: \
+		curl -u ${circleci_user_token}: \
     	 -d build_parameters[CIRCLE_JOB]=build-app \
 		 https://circleci.com/api/v1.1/project/github/${USER_NAME}/csye6225-spring2019/tree/${BRANCH}
 	else 
