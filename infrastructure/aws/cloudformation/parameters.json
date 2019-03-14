@@ -6,8 +6,5 @@
        "cicd_stack": "CICD",
        "webapp_name": "csye6225-webapp",
        "aws_region": "us-east-1"
-     },
-     {
-       "Branch": "assignment5"
      }
 ]
