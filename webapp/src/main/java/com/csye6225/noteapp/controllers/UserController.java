@@ -277,6 +277,15 @@ public class UserController {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return j.toString();
         }
+        List<Attachment> attachments = note.getAttachments();
+        for (Attachment attachment: attachments) {
+            try {
+                this.fileHandler.deleteFile(attachment.getUrl(), user.getEmailAddress());
+            }
+            catch (Exception e) {
+                j.addProperty("message", e.toString());
+            }
+        }
         int result = noteRepository.deleteNoteById(id);
         logger.info(String.valueOf(result));
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
