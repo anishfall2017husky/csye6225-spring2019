@@ -34,7 +34,7 @@
 ### Start the backend server
 Navigate to webapp folder  
 `cd webapp`<br><br>
-Run the following command\
+Run the following command
 
 ### For Default profile
 `./mvnw spring-boot:run -Dspring-boot.run.profiles=default -Dspring-boot.run.arguments=--spring.bucket.name=*bucket-name*`
@@ -44,7 +44,16 @@ Run the following command\
 
 ## Deploy Instructions
 
-XXXX
+### Technology
+* AWS CodeDeploy
+
+### Usage
+* Need to create an aws codedeploy application
+* Run the following command in order
+
+`aws deploy push --application-name <code_deploy_app_name> --s3-location s3://<bucket_name>/csye6225-webapp-<build_num>.zip --ignore-hidden-files`
+
+`aws deploy create-deployment --application-name <code_deploy_app_name> --deployment-config-name CodeDeployDefault.OneAtATime  --deployment-group-name <deployment_group_name> --s3-location s3://<bucket_name>/csye6225-webapp-<build_num>.zip`
 
 ## Running Tests
 
@@ -56,4 +65,17 @@ Run the following command\
 
 ## CI/CD
 
-XXXX
+### Technology
+* CircleCI
+
+### Requirements
+Environment varibales
+* AWS_REGION
+* AWS_SECRET_KEY
+* AWS_ACCESS_KEY
+* AWS_CODE_DEPLOY_BUCKET
+
+### Usage
+* A git commit will automatically execute CircleCI JOB
+* A job can also be initiated using the following command
+`curl -u 'put_circleci_user_token' -d build_parameters[CIRCLE_JOB]=build-app https://circleci.com/api/v1.1/project/github/<username>/csye6225-spring2019/tree/<branch>`

@@ -11,14 +11,14 @@ public class timestampTest {
 
 
 
-    @Test
-    public void
-    timeTestAPI() {
-        given().auth().preemptive().basic("username", "password").when().
-            get("/").
-        then().
-            statusCode(200).
-            body("message",equalTo(new Date().toString()));
+    // @Test
+    // public void
+    // timeTestAPI() {
+    //     given().auth().preemptive().basic("username", "password").when().
+    //         get("/").
+    //     then().
+    //         statusCode(200).
+    //         body("message",equalTo(new Date().toString()));
 
-    }
+    // }
 }

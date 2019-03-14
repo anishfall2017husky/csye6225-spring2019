@@ -5,12 +5,17 @@ Clone the repository on your local machine
 ### Stack workflow
 #### Stack creation
 
-1. To create networking stack:
+1. First create networking stack:
     - Run the following script in terminal
 	```
 	./csye6225-aws-cf-create-stack.sh <STACK_NAME>
 	```
-2. To create application stack:
+2. Then create policies stack:
+    - Run the following script in terminal
+	```
+	./csye6225-aws-cf-create-cicd-stack.sh
+	```	
+3. Then create application stack:
     - Run the following script in terminal
 	```
 	./csye6225-aws-cf-create-application-stack.sh
@@ -28,4 +33,9 @@ Clone the repository on your local machine
     - Run the following script in terminal
 	```
 	./csye6225-aws-cf-terminate-application-stack.sh
+	```	
+3. To delete policies stack:
+    - Run the following script in terminal
+	```
+	./csye6225-aws-cf-terminate-cicd-stack.sh
 	```	
