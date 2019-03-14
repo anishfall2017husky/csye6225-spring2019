@@ -213,20 +213,6 @@
         "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetEC2" }
       }
     },
-    "SubnetEC2a" : {
-      "Description" : "The ID of the SubnetEC2",
-      "Value" : { "Ref" : "publicsubnet2" },
-      "Export" : {
-        "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetEC2a" }
-      }
-    },
-    "SubnetEC2b" : {
-      "Description" : "The ID of the SubnetEC2",
-      "Value" : { "Ref" : "publicsubnet3" },
-      "Export" : {
-        "Name" : {"Fn::Sub": "${AWS::StackName}-SubnetEC2b" }
-      }
-    },
     "SubnetDB" : {
       "Description" : "The ID of the SubnetDB",
       "Value" : { "Ref" : "publicsubnet2" },
