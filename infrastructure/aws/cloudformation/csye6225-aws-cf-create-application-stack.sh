@@ -40,7 +40,7 @@ fi
 
 if [ $flag -ne 0 ]
 then
-	
+
 	echo -e "\n"
 	echo " **************************************************** "
 	echo " **** Exiting: Failed at - $step with exit status: $flag **** "
@@ -76,16 +76,6 @@ aws cloudformation wait stack-create-complete --stack-name ${stack_name}
 
 if [ $? -eq 0 ]; then
 	echo "Stack successfully created...!"
-	USER_NAME=${circleci_username}
-	BRANCH=${branch_name}
-	if [ -z ${circleci_user_token}] 
-	then
-		curl -u ${circleci_user_token}: \
-    	 -d build_parameters[CIRCLE_JOB]=build-app \
-		 https://circleci.com/api/v1.1/project/github/${USER_NAME}/csye6225-spring2019/tree/${BRANCH}
-	else 
-		echo "App not deployed on EC2!"
-	fi
 else
 	echo "Error in creating Stack...Exiting..."
 	exit 1

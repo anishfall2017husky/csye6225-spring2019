@@ -12,7 +12,7 @@ hooks:
       runas: centos
   AfterInstall:
     - location: scripts/afterInstall.sh
-      timeout: 900  
+      timeout: 900
       runas: centos
   ApplicationStart:
     - location: scripts/applicationStart.sh

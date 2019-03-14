@@ -262,7 +262,9 @@
             "Effect": "Allow",
             "Action": [
               "s3:Get*",
-              "s3:List*"
+              "s3:List*",
+              "s3:PutObject",
+              "s3:DeleteObject"
             ],
             "Resource": [{
                 "Fn::Sub": [
@@ -280,6 +282,26 @@
                   {
                     "BUCKET_NAME": {
                       "Ref": "CDBucketName"
+                    }
+                  }
+                ]
+              },
+              {
+                "Fn::Sub": [
+                  "arn:aws:s3:::${BUCKET_NAME}/*",
+                  {
+                    "BUCKET_NAME": {
+                      "Ref": "AttachmentsBucketName"
+                    }
+                  }
+                ]
+              },
+              {
+                "Fn::Sub": [
+                  "arn:aws:s3:::${BUCKET_NAME}/*",
+                  {
+                    "BUCKET_NAME": {
+                      "Ref": "AttachmentsBucketName"
                     }
                   }
                 ]

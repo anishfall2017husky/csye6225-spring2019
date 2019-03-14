@@ -21,7 +21,7 @@ Resources:
       PolicyDocument:
         Version: 2012-10-17
         Statement:
-          - 
+          -
             Effect: Allow
             Action:
               - ec2:AttachVolume
@@ -57,10 +57,10 @@ Resources:
               - ec2:RunInstances
               - ec2:StopInstances
               - ec2:TerminateInstances
-            Resource: 
+            Resource:
               - "*"
       Users:
-        - 
+        -
           circleci
   CircleCIUploadToS3UserPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -76,7 +76,7 @@ Resources:
               - !Sub arn:aws:s3:::${CDBucketName}/*
       Users:
         - circleci
-      ManagedPolicyName: CircleCI-Upload-To-S3  
+      ManagedPolicyName: CircleCI-Upload-To-S3
   CircleCICodeDeployUserPolciy:
     Type: AWS::IAM::ManagedPolicy
     Properties:
