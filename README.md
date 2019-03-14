@@ -68,8 +68,8 @@ Run the following command\
 ### Technology
 * CircleCI
 
-### Decription
-Need 4 environment varibales
+### Requirements
+Environment varibales
 * AWS_REGION
 * AWS_SECRET_KEY
 * AWS_ACCESS_KEY
