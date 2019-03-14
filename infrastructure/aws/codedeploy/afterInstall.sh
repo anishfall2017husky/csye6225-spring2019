@@ -1,11 +1,10 @@
 #!/bin/bash
 
-sudo systemctl daemon-reload
 sudo systemctl stop tomcat.service
 
 sudo rm -rf /opt/tomcat/webapps/docs  /opt/tomcat/webapps/examples /opt/tomcat/webapps/host-manager  /opt/tomcat/webapps/manager /opt/tomcat/webapps/ROOT
 
-sudo mv /opt/tomcat/webapps/noteapp-0.0.1-SNAPSHOT /opt/tomcat/webapps/ROOT.war
+sudo mv /opt/tomcat/webapps/*.war /opt/tomcat/webapps/ROOT.war
 
 sudo chown tomcat:tomcat /opt/tomcat/webapps/ROOT.war
 
