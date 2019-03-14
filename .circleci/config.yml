@@ -99,3 +99,4 @@ workflows:
             branches:
               only:
                 - assignment5
+                - master
