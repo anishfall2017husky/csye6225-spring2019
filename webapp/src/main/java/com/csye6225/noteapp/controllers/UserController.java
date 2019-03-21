@@ -116,7 +116,7 @@ public class UserController {
     }
 
     // Get all notes for the user
-    @GetMapping(value = "/note", produces = "application/json")
+    @GetMapping(value = "/notenilank", produces = "application/json")
     public String getAllNotes(HttpServletRequest request, HttpServletResponse response) {
         JsonObject j = new JsonObject();
         JsonArray array = new JsonArray();
@@ -143,7 +143,7 @@ public class UserController {
     }
 
     // Create a note for the user
-    @PostMapping(value = "/note", produces = "application/json")
+    @PostMapping(value = "/notenilank", produces = "application/json")
     public String createNote(@RequestBody Note noteReq, HttpServletRequest request, HttpServletResponse response) {
         JsonObject j = new JsonObject();
         try {
@@ -181,7 +181,7 @@ public class UserController {
     }
 
     // Get a note for the user
-    @GetMapping(value = "/note/{id}", produces = "application/json")
+    @GetMapping(value = "/notenilank/{id}", produces = "application/json")
     public String getNote(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
         JsonObject j = new JsonObject();
         try {
@@ -218,7 +218,7 @@ public class UserController {
     }
 
     // Update a note for the user
-    @PutMapping(value = "/note/{id}", produces = "application/json")
+    @PutMapping(value = "/notenilank/{id}", produces = "application/json")
     public String updateNote(@RequestBody Note note, HttpServletRequest request, @PathVariable String id,
                              HttpServletResponse response) {
         User user = this.userService.authentication(request);
@@ -256,7 +256,7 @@ public class UserController {
     }
 
     // Delete a note for the user
-    @DeleteMapping(value = "/note/{id}", produces = "application/json")
+    @DeleteMapping(value = "/notenilank/{id}", produces = "application/json")
     public String deleteNote(@PathVariable String id, HttpServletRequest request,
                              HttpServletResponse response) {
         JsonObject j = new JsonObject();
@@ -293,7 +293,7 @@ public class UserController {
     }
 
     // Get list of files attached to the note
-    @GetMapping(value = "/note/{idNotes}/attachments", produces = "application/json")
+    @GetMapping(value = "/notenilank/{idNotes}/attachments", produces = "application/json")
     public String getFiles(@PathVariable("idNotes") String id, HttpServletRequest request, HttpServletResponse response) {
         JsonObject j = new JsonObject();
         User user = this.userService.authentication(request);
@@ -318,7 +318,7 @@ public class UserController {
 
 
     // Attach a file to the note
-    @PostMapping(value = "/note/{idNotes}/attachments", produces = "application/json")
+    @PostMapping(value = "/notenilank/{idNotes}/attachments", produces = "application/json")
     public String attachFile(@PathVariable("idNotes") String id, @RequestParam(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
         JsonObject j = new JsonObject();
         try {
@@ -365,7 +365,7 @@ public class UserController {
     }
 
     // Update file attached to the note
-    @PutMapping(value="/note/{idNotes}/attachments/{idAttachments}", produces="application/json")
+    @PutMapping(value="/notenilank/{idNotes}/attachments/{idAttachments}", produces="application/json")
     public String updateFile(@RequestParam(value = "file") MultipartFile file,@PathVariable("idNotes") String idNote,
                              @PathVariable("idAttachments") String idAttachment, HttpServletRequest request,
                              HttpServletResponse response){
@@ -417,7 +417,7 @@ public class UserController {
     }
 
     // Delete file attached to the transaction
-    @DeleteMapping(value = "/note/{idNotes}/attachments/{idAttachments}", produces = "*/*")
+    @DeleteMapping(value = "/notenilank/{idNotes}/attachments/{idAttachments}", produces = "*/*")
     public String deleteFile(@PathVariable("idNotes") String idNote, @PathVariable("idAttachments") String idAttachment, HttpServletRequest request, HttpServletResponse response) {
         JsonObject j = new JsonObject();
         try {
