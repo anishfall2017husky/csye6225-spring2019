@@ -32,6 +32,8 @@ import java.util.*;
 
 import static java.time.Clock.systemUTC;
 
+import com.timgroup.statsd.StatsDClient;
+
 @RestController
 public class UserController {
 
@@ -54,9 +56,16 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private StatsDClient statsDClient;
+
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public GenericResponse home(HttpServletRequest request, HttpServletResponse response) {
+
+        statsDClient.incrementCounter("endpoint.transaction.http.get");
+        logger.info("Find Transactions by User : Start");
+
         String authorization = request.getHeader("Authorization");
         if (authorization != null && authorization.startsWith("Basic")) {
             // Authorization: Basic base64credentials
@@ -91,6 +100,10 @@ public class UserController {
     @ResponseBody
     public GenericResponse registerUser(@RequestBody User user, HttpServletRequest request,
                                         HttpServletResponse response) {
+
+        statsDClient.incrementCounter("endpoint.transaction.http.get");
+        logger.info("Find Transactions by User : Start");
+
         User existUser = userRepository.findByemailAddress(user.getEmailAddress());
         if (existUser != null) {
             response.setStatus(HttpServletResponse.SC_CONFLICT);
@@ -117,6 +130,10 @@ public class UserController {
     // Get all notes for the user
     @GetMapping(value = "/note", produces = "application/json")
     public String getAllNotes(HttpServletRequest request, HttpServletResponse response) {
+
+        statsDClient.incrementCounter("endpoint.transaction.http.get");
+        logger.info("Find Transactions by User : Start");
+
         JsonObject j = new JsonObject();
         JsonArray array = new JsonArray();
         User user = this.userService.authentication(request);
@@ -144,6 +161,10 @@ public class UserController {
     // Create a note for the user
     @PostMapping(value = "/note", produces = "application/json")
     public String createNote(@RequestBody Note noteReq, HttpServletRequest request, HttpServletResponse response) {
+
+        statsDClient.incrementCounter("endpoint.transaction.http.get");
+        logger.info("Find Transactions by User : Start");
+
         JsonObject j = new JsonObject();
         try {
             User user = this.userService.authentication(request);
@@ -182,6 +203,10 @@ public class UserController {
     // Get a note for the user
     @GetMapping(value = "/note/{id}", produces = "application/json")
     public String getNote(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
+
+        statsDClient.incrementCounter("endpoint.transaction.http.get");
+        logger.info("Find Transactions by User : Start");
+
         JsonObject j = new JsonObject();
         try {
             User user = this.userService.authentication(request);
@@ -220,6 +245,10 @@ public class UserController {
     @PutMapping(value = "/note/{id}", produces = "application/json")
     public String updateNote(@RequestBody Note note, HttpServletRequest request, @PathVariable String id,
                              HttpServletResponse response) {
+
+       statsDClient.incrementCounter("endpoint.transaction.http.get");
+       logger.info("Find Transactions by User : Start");
+
         User user = this.userService.authentication(request);
         JsonObject j = new JsonObject();
         if (user != null) {
@@ -258,6 +287,10 @@ public class UserController {
     @DeleteMapping(value = "/note/{id}", produces = "application/json")
     public String deleteNote(@PathVariable String id, HttpServletRequest request,
                              HttpServletResponse response) {
+
+       statsDClient.incrementCounter("endpoint.transaction.http.get");
+       logger.info("Find Transactions by User : Start");
+
         JsonObject j = new JsonObject();
         User user = this.userService.authentication(request);
         if (user == null) {
@@ -294,6 +327,10 @@ public class UserController {
     // Get list of files attached to the note
     @GetMapping(value = "/note/{idNotes}/attachments", produces = "application/json")
     public String getFiles(@PathVariable("idNotes") String id, HttpServletRequest request, HttpServletResponse response) {
+
+        statsDClient.incrementCounter("endpoint.transaction.http.get");
+        logger.info("Find Transactions by User : Start");
+
         JsonObject j = new JsonObject();
         User user = this.userService.authentication(request);
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -319,6 +356,10 @@ public class UserController {
     // Attach a file to the note
     @PostMapping(value = "/note/{idNotes}/attachments", produces = "application/json")
     public String attachFile(@PathVariable("idNotes") String id, @RequestParam(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
+
+        statsDClient.incrementCounter("endpoint.transaction.http.get");
+        logger.info("Find Transactions by User : Start");
+
         JsonObject j = new JsonObject();
         try {
             User user = this.userService.authentication(request);
@@ -368,6 +409,10 @@ public class UserController {
     public String updateFile(@RequestParam(value = "file") MultipartFile file,@PathVariable("idNotes") String idNote,
                              @PathVariable("idAttachments") String idAttachment, HttpServletRequest request,
                              HttpServletResponse response){
+
+       statsDClient.incrementCounter("endpoint.transaction.http.get");
+       logger.info("Find Transactions by User : Start");
+
         JsonObject j  = new JsonObject();
         try{
             User user = this.userService.authentication(request);
@@ -418,6 +463,10 @@ public class UserController {
     // Delete file attached to the transaction
     @DeleteMapping(value = "/note/{idNotes}/attachments/{idAttachments}", produces = "*/*")
     public String deleteFile(@PathVariable("idNotes") String idNote, @PathVariable("idAttachments") String idAttachment, HttpServletRequest request, HttpServletResponse response) {
+
+        statsDClient.incrementCounter("endpoint.transaction.http.get");
+        logger.info("Find Transactions by User : Start");
+
         JsonObject j = new JsonObject();
         try {
             User user = this.userService.authentication(request);
