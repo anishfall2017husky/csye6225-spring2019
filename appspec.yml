@@ -4,6 +4,8 @@ os: linux
 files:
   - source: ./ROOT.war
     destination: /opt/tomcat/webapps
+  - source: ./cloudwatch-config.json
+    destination: /opt/aws/amazon-cloudwatch-agent/bin/
 
 hooks:
   BeforeInstall:
@@ -12,9 +14,9 @@ hooks:
       runas: centos
   AfterInstall:
     - location: scripts/afterInstall.sh
-      timeout: 900
+      timeout: 300
       runas: centos
   ApplicationStart:
     - location: scripts/applicationStart.sh
-      timeout: 900
+      timeout: 300
       runas: centos

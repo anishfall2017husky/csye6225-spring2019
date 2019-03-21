@@ -74,12 +74,11 @@ jobs:
             cp ~/project/appspec.yml ~/artifacts
             mv ~/artifacts/noteapp-0.0.1-SNAPSHOT.war ~/artifacts/ROOT.war
             cp ~/project/infrastructure/aws/codedeploy/*.sh ~/artifacts/scripts
-            ls -al; pwd
+            cp ~/project/infrastructure/aws/codedeploy/cloudwatch-config.json ~/artifacts
       - run:
           name: Deploy to S3
           command: |
             cd ~/artifacts
-            ls -al
             aws deploy push \
               --application-name csye6225-webapp \
               --s3-location s3://${AWS_CODE_DEPLOY_BUCKET}/csye6225-webapp-${CIRCLE_BUILD_NUM}.zip \
@@ -98,5 +97,6 @@ workflows:
             # TODO: change branch
             branches:
               only:
+                - assignment6
                 - assignment5
                 - master
