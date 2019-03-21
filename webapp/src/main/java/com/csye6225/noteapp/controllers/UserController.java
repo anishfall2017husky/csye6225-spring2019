@@ -63,8 +63,8 @@ public class UserController {
     @ResponseBody
     public GenericResponse home(HttpServletRequest request, HttpServletResponse response) {
 
-        statsDClient.incrementCounter("endpoint.transaction.http.get");
-        logger.info("Find Transactions by User : Start");
+        statsDClient.incrementCounter("endpoint.http.get");
+        logger.info("Check User logged in");
 
         String authorization = request.getHeader("Authorization");
         if (authorization != null && authorization.startsWith("Basic")) {
@@ -99,10 +99,10 @@ public class UserController {
     @RequestMapping(value = "/user/register", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public GenericResponse registerUser(@RequestBody User user, HttpServletRequest request,
-                                        HttpServletResponse response) {
+            HttpServletResponse response) {
 
-        statsDClient.incrementCounter("endpoint.transaction.http.get");
-        logger.info("Find Transactions by User : Start");
+        statsDClient.incrementCounter("endpoint.user.register.http.post");
+        logger.info("Register User");
 
         User existUser = userRepository.findByemailAddress(user.getEmailAddress());
         if (existUser != null) {
@@ -130,9 +130,9 @@ public class UserController {
     // Get all notes for the user
     @GetMapping(value = "/note", produces = "application/json")
     public String getAllNotes(HttpServletRequest request, HttpServletResponse response) {
-
-        statsDClient.incrementCounter("endpoint.transaction.http.get");
-        logger.info("Find Transactions by User : Start");
+        
+        statsDClient.incrementCounter("endpoint.note.http.get");
+        logger.info("GET Note");
 
         JsonObject j = new JsonObject();
         JsonArray array = new JsonArray();
@@ -162,8 +162,8 @@ public class UserController {
     @PostMapping(value = "/note", produces = "application/json")
     public String createNote(@RequestBody Note noteReq, HttpServletRequest request, HttpServletResponse response) {
 
-        statsDClient.incrementCounter("endpoint.transaction.http.get");
-        logger.info("Find Transactions by User : Start");
+        statsDClient.incrementCounter("endpoint.note.http.post");
+        logger.info("Create Note");
 
         JsonObject j = new JsonObject();
         try {
@@ -204,8 +204,8 @@ public class UserController {
     @GetMapping(value = "/note/{id}", produces = "application/json")
     public String getNote(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
 
-        statsDClient.incrementCounter("endpoint.transaction.http.get");
-        logger.info("Find Transactions by User : Start");
+        statsDClient.incrementCounter("endpoint.note.id.get");
+        logger.info("Find Note by ID");
 
         JsonObject j = new JsonObject();
         try {
@@ -244,10 +244,10 @@ public class UserController {
     // Update a note for the user
     @PutMapping(value = "/note/{id}", produces = "application/json")
     public String updateNote(@RequestBody Note note, HttpServletRequest request, @PathVariable String id,
-                             HttpServletResponse response) {
+            HttpServletResponse response) {
 
-       statsDClient.incrementCounter("endpoint.transaction.http.get");
-       logger.info("Find Transactions by User : Start");
+        statsDClient.incrementCounter("endpoint.note.id.put");
+        logger.info("Find & Update the Note by ID");
 
         User user = this.userService.authentication(request);
         JsonObject j = new JsonObject();
@@ -285,11 +285,10 @@ public class UserController {
 
     // Delete a note for the user
     @DeleteMapping(value = "/note/{id}", produces = "application/json")
-    public String deleteNote(@PathVariable String id, HttpServletRequest request,
-                             HttpServletResponse response) {
+    public String deleteNote(@PathVariable String id, HttpServletRequest request, HttpServletResponse response) {
 
-       statsDClient.incrementCounter("endpoint.transaction.http.get");
-       logger.info("Find Transactions by User : Start");
+        statsDClient.incrementCounter("endpoint.note.id.delete");
+        logger.info("DELETE Note by ID");
 
         JsonObject j = new JsonObject();
         User user = this.userService.authentication(request);
@@ -310,11 +309,10 @@ public class UserController {
             return j.toString();
         }
         List<Attachment> attachments = note.getAttachments();
-        for (Attachment attachment: attachments) {
+        for (Attachment attachment : attachments) {
             try {
                 this.fileHandler.deleteFile(attachment.getUrl(), user.getEmailAddress());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 j.addProperty("message", e.toString());
             }
         }
@@ -326,10 +324,11 @@ public class UserController {
 
     // Get list of files attached to the note
     @GetMapping(value = "/note/{idNotes}/attachments", produces = "application/json")
-    public String getFiles(@PathVariable("idNotes") String id, HttpServletRequest request, HttpServletResponse response) {
+    public String getFiles(@PathVariable("idNotes") String id, HttpServletRequest request,
+            HttpServletResponse response) {
 
-        statsDClient.incrementCounter("endpoint.transaction.http.get");
-        logger.info("Find Transactions by User : Start");
+        statsDClient.incrementCounter("endpoint.note.id.attachments.http.get");
+        logger.info("GET all the attachments attached with the note ID");
 
         JsonObject j = new JsonObject();
         User user = this.userService.authentication(request);
@@ -352,13 +351,13 @@ public class UserController {
         return j.toString();
     }
 
-
     // Attach a file to the note
     @PostMapping(value = "/note/{idNotes}/attachments", produces = "application/json")
-    public String attachFile(@PathVariable("idNotes") String id, @RequestParam(value = "file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) {
+    public String attachFile(@PathVariable("idNotes") String id, @RequestParam(value = "file") MultipartFile file,
+            HttpServletRequest request, HttpServletResponse response) {
 
-        statsDClient.incrementCounter("endpoint.transaction.http.get");
-        logger.info("Find Transactions by User : Start");
+        statsDClient.incrementCounter("endpoint.note.id.attachments.post");
+        logger.info("Create an attachment by the note ID");
 
         JsonObject j = new JsonObject();
         try {
@@ -405,56 +404,57 @@ public class UserController {
     }
 
     // Update file attached to the note
-    @PutMapping(value="/note/{idNotes}/attachments/{idAttachments}", produces="application/json")
-    public String updateFile(@RequestParam(value = "file") MultipartFile file,@PathVariable("idNotes") String idNote,
-                             @PathVariable("idAttachments") String idAttachment, HttpServletRequest request,
-                             HttpServletResponse response){
+    @PutMapping(value = "/note/{idNotes}/attachments/{idAttachments}", produces = "application/json")
+    public String updateFile(@RequestParam(value = "file") MultipartFile file, @PathVariable("idNotes") String idNote,
+            @PathVariable("idAttachments") String idAttachment, HttpServletRequest request,
+            HttpServletResponse response) {
 
-       statsDClient.incrementCounter("endpoint.transaction.http.get");
-       logger.info("Find Transactions by User : Start");
+        statsDClient.incrementCounter("endpoint.note.id.attachments.id.put");
+        logger.info("Update the attachment by the attachment ID");
 
-        JsonObject j  = new JsonObject();
-        try{
+        JsonObject j = new JsonObject();
+        try {
             User user = this.userService.authentication(request);
-            if(user != null){
+            if (user != null) {
                 Attachment attachment = this.attachmentRepository.findById(idAttachment);
-                if(attachment!=null){
+                if (attachment != null) {
                     Note note = this.noteRepository.findById(idNote);
-                    if((note!=null) && (note==attachment.getNote())){
-                        if(file!=null) {
-                            if(user == attachment.getNote().getUser()){
+                    if ((note != null) && (note == attachment.getNote())) {
+                        if (file != null) {
+                            if (user == attachment.getNote().getUser()) {
                                 String fileName = file.getOriginalFilename();
                                 logger.info("filename = " + fileName);
                                 String filePath = fileHandler.uploadFile(file, user.getEmailAddress());
-                                String deleteResult = this.fileHandler.deleteFile(attachment.getUrl(), user.getEmailAddress());
+                                String deleteResult = this.fileHandler.deleteFile(attachment.getUrl(),
+                                        user.getEmailAddress());
                                 logger.info("File = " + filePath);
                                 attachment.setUrl(filePath);
                                 attachment.setNote(note);
-                                this. attachmentRepository.save(attachment);
+                                this.attachmentRepository.save(attachment);
                                 j.addProperty("Success", "Updated Successfully!");
                                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-                            }else{
+                            } else {
                                 j.addProperty("Error", "You are not the owner of the attachment.");
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                             }
-                        }else{
+                        } else {
                             j.addProperty("Error", "Sorry, attachment cannot be null/empty.");
                             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                         }
-                    }else{
+                    } else {
                         j.addProperty("Error", "Note not found");
                         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     }
-                }else{
+                } else {
                     j.addProperty("Error", "Attachment not found.");
                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 }
-            }else{
+            } else {
                 j.addProperty("Error", "Invalid User Credentials.");
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
 
-        }catch(Exception e){
+        } catch (Exception e) {
             j.addProperty("message", e.toString());
         }
         return j.toString();
@@ -462,10 +462,11 @@ public class UserController {
 
     // Delete file attached to the transaction
     @DeleteMapping(value = "/note/{idNotes}/attachments/{idAttachments}", produces = "*/*")
-    public String deleteFile(@PathVariable("idNotes") String idNote, @PathVariable("idAttachments") String idAttachment, HttpServletRequest request, HttpServletResponse response) {
+    public String deleteFile(@PathVariable("idNotes") String idNote, @PathVariable("idAttachments") String idAttachment,
+            HttpServletRequest request, HttpServletResponse response) {
 
-        statsDClient.incrementCounter("endpoint.transaction.http.get");
-        logger.info("Find Transactions by User : Start");
+        statsDClient.incrementCounter("endpoint.note.id.attachments.id.http.delete");
+        logger.info("Delete the attachment by the attachment ID");
 
         JsonObject j = new JsonObject();
         try {
@@ -476,14 +477,15 @@ public class UserController {
                     Note note = this.noteRepository.findById(idNote);
                     if ((note != null) && (note == attachment.getNote())) {
                         if (user == attachment.getNote().getUser()) {
-                            String deleteResult = this.fileHandler.deleteFile(attachment.getUrl(), user.getEmailAddress());
-//                            if (deleteResult != null) {
-                                this.attachmentRepository.deleteAttachmentById(idAttachment);
-                                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-//                            } else {
-//                                j.addProperty("Error", "File does not exist!!");
-//                                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-//                            }
+                            String deleteResult = this.fileHandler.deleteFile(attachment.getUrl(),
+                                    user.getEmailAddress());
+                            // if (deleteResult != null) {
+                            this.attachmentRepository.deleteAttachmentById(idAttachment);
+                            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                            // } else {
+                            // j.addProperty("Error", "File does not exist!!");
+                            // response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                            // }
                         } else {
                             j.addProperty("Error", "Invalid User Credentials.");
                             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
