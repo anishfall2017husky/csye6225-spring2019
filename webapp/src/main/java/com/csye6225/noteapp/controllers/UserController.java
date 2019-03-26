@@ -37,7 +37,7 @@ import com.timgroup.statsd.StatsDClient;
 @RestController
 public class UserController {
 
-    private final java.util.logging.Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -512,26 +512,23 @@ public class UserController {
 
     //Password Reset
     @GetMapping(value="/reset")
-    public String emailReset(@RequestParam("email") String email){
+    public String emailReset(@RequestParam("email") String email, HttpServletResponse response){
         
-        statsDClient.incrementCounter("endpoint.reset.http.get")
+        statsDClient.incrementCounter("endpoint.reset.http.get");
         logger.info("emailReset - Start");
+        JsonObject j = new JsonObject();
 
         try{
             User user = userRepository.findByemailAddress(email);
             if(user != null){
-                
-
-
-
-                
+                userService.sendNotification(email); 
+                j.addProperty("Success", "Password email sent!"); 
+                response.setStatus(HttpServletResponse.SC_OK); 
             }
-
         }catch(Exception e){
-
+            j.addProperty("message", e.toString());
         }
-
-
+        return j.toString();
     }
 
 

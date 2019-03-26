@@ -92,13 +92,13 @@ public class UserService {
 		String topicArn = null;
 
 		try {
-			Topic topic = amazonSNSClient.listTopicsAsync().get().getTopics().stream()
+			Topic topic = awsSnsClient.listTopicsAsync().get().getTopics().stream()
 					.filter(t -> t.getTopicArn().contains(topicName)).findAny().orElse(null);
 
 			if (null != topic) {
 				topicArn = topic.getTopicArn();
 			} else {
-				logger.info("No Topic found by the name : ", topicName);
+				logger.info("Topic not found : ", topicName);
 			}
 
 		} catch (InterruptedException e) {
@@ -112,9 +112,6 @@ public class UserService {
 		return topicArn;
 
 	}
-
-
-
 
     public void getJsonArray(Note n, JsonObject obj) {
         List<Attachment> attachments = n.getAttachments();
