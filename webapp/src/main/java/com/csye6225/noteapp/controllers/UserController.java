@@ -514,7 +514,6 @@ public class UserController {
   	public String generateResetToken(@RequestBody("email") String email, HttpServletRequest request, HttpServletResponse response) {
 
       statsDClient.incrementCounter("endpoint.reset.http.post");
-      Status status = new Status();
   		logger.info("generateResetToken - Start ");
 
   		try
