@@ -6,15 +6,15 @@ AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
 APPLICATION_NAME=$(jq -r '.[0].webapp_name' parameters.json)
 AWS_REGION=$(jq -r '.[0].aws_region' parameters.json)
 CD_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
-DOMAIN_NAME=$(aws route53 list-hosted-zones --query 'HostedZones[0].Name' --output text)
-LAMBDA_BUCKET_NAME="lambda."$DOMAIN_NAME"csye6225.com"
-DYNAMODB_TABLE=csye6225
-LAMBDA_FUNCTION_NAME=ResetPassword
+DYNAMODB_TABLE=$(jq -r '.[0].dynamodb_table' parameters.json)
+LAMBDA_FUNCTION_NAME=$(jq -r '.[0].lambda_function' parameters.json)
 
 echo "AWS region: ${AWS_REGION}"
 echo "Webapp Name: ${APPLICATION_NAME}"
 echo "Code deploy Bucket Name: ${CD_BUCKET_NAME}"
 echo "Circleci stack: ${CICD_STACK_NAME}"
+echo "DynamoDB table name: ${DYNAMODB_TABLE}"
+echo "Lambda function name: ${LAMBDA_FUNCTION_NAME}"
 
 read -p "Continue?(Y/n): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
@@ -26,7 +26,6 @@ aws cloudformation create-stack --stack-name ${CICD_STACK_NAME} \
 ParameterKey=ApplicationName,ParameterValue=${APPLICATION_NAME} \
 ParameterKey=AwsRegion,ParameterValue=${AWS_REGION} \
 ParameterKey=CDBucketName,ParameterValue=${CD_BUCKET_NAME} \
-ParameterKey=LambdaFunctionName,ParameterValue=${LAMBDA_BUCKET_NAME} \
 ParameterKey=DynamoDBTable,ParameterValue=${DYNAMODB_TABLE} \
 ParameterKey=LambdaBucketName,ParameterValue=${LAMBDA_FUNCTION_NAME} \
 --capabilities CAPABILITY_NAMED_IAM
