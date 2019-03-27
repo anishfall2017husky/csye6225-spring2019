@@ -13,6 +13,19 @@ Parameters:
   CDBucketName:
     Description: CD bucket name
     Type: String
+Type: AWS::SNS::Topic
+Properties: 
+  ManagedPolicyName: Publish-EC2-SNS
+  PolicyDocument:
+    Version: 2012-10-17
+    Statement:
+      Effect: Allow
+      Action:
+        -sns: Publish
+        -sns: ListTopics
+      Resource: "*"
+  Users:
+    - circleci
 Resources:
   CircleCIPackerUserPolicy:
     Type: AWS::IAM::ManagedPolicy

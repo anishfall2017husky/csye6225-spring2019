@@ -511,7 +511,7 @@ public class UserController {
     }
 
     //Password Reset
-    @GetMapping(value="/reset")
+    @PostMapping(value="/reset")
     public String emailReset(@RequestParam("email") String email, HttpServletResponse response){
         
         statsDClient.incrementCounter("endpoint.reset.http.get");
