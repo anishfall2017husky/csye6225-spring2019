@@ -16,6 +16,8 @@ LAMBDA_BUCKET_NAME="lambda."$DOMAIN_NAME"csye6225.com"
 LAMBDA_ROLE=$(aws iam get-role --role-name LambdaExecutionRole --query Role.Arn --output text)
 FILE_NAME=$(aws s3api list-objects --bucket $bucket_name --query Contents[0].Key --output text)
 
+export SNS_TOPIC="arn:aws:sns:us-east-1:"$AWS_ACCOUNT_ID":password_reset"
+
 echo "Stack name: ${stack_name}"
 echo "VPN stack name: ${nw_stack_name}"
 echo "EC2 key name: ${key_name}"
@@ -75,6 +77,7 @@ ParameterKey=FunctionName,ParameterValue=${FUNCTION} \
 ParameterKey=LambdaRole,ParameterValue=${LAMBDA_ROLE} \
 ParameterKey=FileName,ParameterValue=${FILE_NAME} \
 ParameterKey=DomainName,ParameterValue=${DOMAIN_NAME} \
+ParameterKey=SNSTopic,ParameterValue=${SNS_TOPIC} \
 --capabilities CAPABILITY_NAMED_IAM
 
 if [ $? -eq 0 ]; then

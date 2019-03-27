@@ -79,6 +79,9 @@
     },
     "DomainName": {
       "Type": "String"
+    },
+    "SNSTopic": {
+      "Type": "String"
     }
   },
 
@@ -328,7 +331,7 @@
       }
     },
 
-    "CodeDeployEC2ServiceRolePolicy": {
+    "CodeDeployEC2ServiceRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -349,7 +352,35 @@
         "RoleName": "CodeDeployEC2ServiceRole",
         "ManagedPolicyArns": [{
           "Ref": "CodeDeployEC2S3UserPolicy"
-        },"arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"]
+        },"arn:aws:iam::aws:policy/AmazonS3FullAccess","arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"]
+      }
+    },
+
+    "EC2SNSPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "ManagedPolicyName": "Publish-EC2-SNS",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "sns:Publish",
+                "sns:ListTopics"
+              ],
+              "Resource": [
+                  {"Ref": "SNSTopic"},
+                  "*"
+              ]
+            }
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "CodeDeployEC2ServiceRole"
+          }
+        ]
       }
     },
 
@@ -414,7 +445,7 @@
       "Properties": {
         "Path": "/",
         "Roles": [{
-          "Ref": "CodeDeployEC2ServiceRolePolicy"
+          "Ref": "CodeDeployEC2ServiceRole"
         }]
       }
     },
