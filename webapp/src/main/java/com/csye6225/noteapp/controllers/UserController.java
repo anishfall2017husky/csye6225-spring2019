@@ -130,7 +130,7 @@ public class UserController {
     // Get all notes for the user
     @GetMapping(value = "/note", produces = "application/json")
     public String getAllNotes(HttpServletRequest request, HttpServletResponse response) {
-        
+
         statsDClient.incrementCounter("endpoint.note.http.get");
         logger.info("GET Note");
 
@@ -510,26 +510,35 @@ public class UserController {
         return j.toString();
     }
 
-    //Password Reset
-    @PostMapping(value="/reset")
-    public String emailReset(@RequestParam("email") String email, HttpServletResponse response){
-        
-        statsDClient.incrementCounter("endpoint.reset.http.get");
-        logger.info("emailReset - Start");
-        JsonObject j = new JsonObject();
+    @PostMapping(value = "/reset", produces = "application/json")
+  	public String generateResetToken(@RequestBody("email") String email, HttpServletRequest request, HttpServletResponse response) {
 
-        try{
-            User user = userRepository.findByemailAddress(email);
-            if(user != null){
-                userService.sendNotification(email); 
-                j.addProperty("Success", "Password email sent!"); 
-                response.setStatus(HttpServletResponse.SC_OK); 
-            }
-        }catch(Exception e){
-            j.addProperty("message", e.toString());
-        }
-        return j.toString();
-    }
+      statsDClient.incrementCounter("endpoint.reset.http.post");
+      Status status = new Status();
+  		logger.info("generateResetToken - Start ");
 
+  		try
+  		{
+  			User user = userRepository.findByemailAddress(email);
+  			if(user != null)
+  			{
+  				userService.sendMessage(email);
+  			}
+        j.addProperty("Password reset email sent");
+        response.setStatus(HttpServletResponse.SC_CREATED);
+
+  		}
+  		catch (Exception e)
+  		{
+  			logger.error("Exception in generating reset token : " + e.getMessage());
+        j.addProperty("Reset email failed");
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+  		}
+
+  		logger.info("generateResetToken - End ");
+
+  		return j.toString();;
+
+  	}
 
 }
