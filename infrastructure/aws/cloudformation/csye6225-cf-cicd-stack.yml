@@ -13,6 +13,15 @@ Parameters:
   CDBucketName:
     Description: CD bucket name
     Type: String
+  LambdaFunctionName:
+    Description: Name of lambda function
+    Type: String
+  DynamoDBTable:
+    Description: DynamoDB table name
+    Type: String
+  LambdaBucketName:
+    Description: Bucket name where lambda function will be placed
+    Type: String
 Resources:
   CircleCIPackerUserPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -74,6 +83,8 @@ Resources:
             Resource:
               - !Sub arn:aws:s3:::${CDBucketName}
               - !Sub arn:aws:s3:::${CDBucketName}/*
+              - !Sub arn:aws:s3:::${LambdaBucketName}
+              - !Sub arn:aws:s3:::${LambdaBucketName}/*
       Users:
         - circleci
       ManagedPolicyName: CircleCI-Upload-To-S3
@@ -105,3 +116,83 @@ Resources:
               - !Sub arn:aws:codedeploy:${AwsRegion}:${AwsAccountID}:deploymentconfig:CodeDeployDefault.AllAtOnce
       Users:
       - circleci
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - !Ref LambdaExecutionPolicy
+        - !Ref LambdaSESPolicy
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - 
+            Sid: ""
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      RoleName: LambdaExecutionRole
+  LambdaExecutionPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - 
+            Effect: Allow
+            Action:
+              - dynamodb:BatchGetItem
+              - dynamodb:GetItem
+              - dynamodb:Query
+              - dynamodb:Scan
+              - dynamodb:BatchWriteItem
+              - dynamodb:PutItem
+              - dynamodb:UpdateItem
+            Resource:
+              - !Sub arn:aws:dynamodb:${AwsRegion}:${AwsAccountID}:table/${DynamoDBTable}
+          - 
+            Effect: Allow
+            Action: logs:CreateLogGroup
+            Resource:
+              - !Sub arn:aws:logs:${AwsRegion}:${AwsAccountID}:*
+          - 
+            Effect: Allow
+            Action:
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource:
+              - !Sub arn:aws:logs:${AwsRegion}:${AwsAccountID}:log-group:/aws/lambda/${LambdaFunctionName}:*
+      ManagedPolicyName: LambdaExecutionPolicy
+  UploadLambdaPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - 
+            Effect: Allow
+            Action:
+              - lambda:*
+            Resource:
+              - "*"
+      ManagedPolicyName: UploadLambdaPolicy
+      Users:
+        - circleci
+  LambdaSESPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - 
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - ses:SendRawEmail
+            Resource:
+            - *
+      ManagedPolicyName: LambdaSESPolicy
