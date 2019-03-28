@@ -538,7 +538,7 @@ public class UserController {
 
   		logger.info("generateResetToken - End ");
 
-  		return j.toString();;
+  		return j.toString();
 
   	}
 
