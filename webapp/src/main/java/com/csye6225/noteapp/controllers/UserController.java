@@ -525,14 +525,14 @@ public class UserController {
   			{
   				userService.sendMessage(email);
   			}
-        j.addProperty("Password reset email sent");
+        j.addProperty("message","Password reset email sent");
         response.setStatus(HttpServletResponse.SC_CREATED);
 
   		}
   		catch (Exception e)
   		{
   			logger.error("Exception in generating reset token : " + e.getMessage());
-        j.addProperty("Reset email failed");
+        j.addProperty("message","Reset email failed");
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
   		}
 
