@@ -512,45 +512,37 @@ public class UserController {
     }
 
     @PostMapping(value = "/reset", produces = "application/json")
-  	public String generateResetToken(@RequestBody Email email, HttpServletRequest request, HttpServletResponse response) {
+    public String generateResetToken(@RequestBody Email email, HttpServletRequest request,
+            HttpServletResponse response) {
 
-      statsDClient.incrementCounter("endpoint.reset.http.post");
-  		logger.info("generateResetToken - Start ");
-      logger.info("email" + " " + email.getEmail());
-      JsonObject j = new JsonObject();
+        statsDClient.incrementCounter("endpoint.reset.http.post");
+        logger.info("generateResetToken - Start ");
+        logger.info("email" + " " + email.getEmail());
+        JsonObject j = new JsonObject();
 
-  		try
-  		{
-  			User user = userRepository.findByemailAddress(email.getEmail());
-  			if(user != null)
-  			{
-                  if(email.getEmail() == user.getEmailAddress()){
-                    userService.sendMessage(email.getEmail());
-                    j.addProperty("message","Password reset email sent");
-                    response.setStatus(HttpServletResponse.SC_CREATED);
+        try {
+            User user = userRepository.findByemailAddress(email.getEmail());
+            if (user != null) {
+                userService.sendMessage(email.getEmail());
+                j.addProperty("message", "Password reset email sent");
+                response.setStatus(HttpServletResponse.SC_CREATED);
 
-                  }else{
-                      j.addProperty("Error", "Email does not exist!");
-                      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            } else {
+                logger.info("user not present");
+                j.addProperty("Error", "Email does not exist!");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
 
-                  }
-  				
-  			} else {
-          logger.info("user not present");
+        } catch (Exception e) {
+            logger.error("Exception in generating reset token : " + e.getMessage());
+            j.addProperty("message", "Reset email failed");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
 
-  		}
-  		catch (Exception e)
-  		{
-  			logger.error("Exception in generating reset token : " + e.getMessage());
-        j.addProperty("message","Reset email failed");
-        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-  		}
+        logger.info("generateResetToken - End ");
 
-  		logger.info("generateResetToken - End ");
+        return j.toString();
 
-  		return j.toString();
-
-  	}
+    }
 
 }
