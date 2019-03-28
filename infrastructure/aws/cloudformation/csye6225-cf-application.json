@@ -594,23 +594,7 @@
       ]
     },
 
-    "LambdaInvokePermission": {
-        "Type": "AWS::Lambda::Permission",
-        "Properties": {
-            "Action": "lambda:InvokeFunction",
-            "Principal": "sns.amazonaws.com",
-            "SourceArn": {
-                "Ref": "ResetPasswordTopic"
-            },
-            "FunctionName": {
-              "Fn::GetAtt":
-              [
-                  "ResetPasswordLambdaFunction",
-                  "Arn"
-              ]
-            }
-        }
-    }
+    
 
   }
 }
