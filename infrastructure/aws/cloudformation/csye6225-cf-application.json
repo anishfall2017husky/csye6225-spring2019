@@ -168,6 +168,10 @@
           "KeyType": "HASH"
         }],
         "TableName": "csye6225",
+        "TimeToLiveSpecification": {
+          "AttributeName": "ttl",
+          "Enabled": "TRUE"
+        },
         "ProvisionedThroughput": {
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
