@@ -515,7 +515,7 @@ public class UserController {
 
       statsDClient.incrementCounter("endpoint.reset.http.post");
   		logger.info("generateResetToken - Start ");
-
+      logger.info("email" + " " + email);
       JsonObject j = new JsonObject();
 
   		try
@@ -524,9 +524,11 @@ public class UserController {
   			if(user != null)
   			{
   				userService.sendMessage(email);
-  			}
-        j.addProperty("message","Password reset email sent");
-        response.setStatus(HttpServletResponse.SC_CREATED);
+          j.addProperty("message","Password reset email sent");
+          response.setStatus(HttpServletResponse.SC_CREATED);
+  			} else {
+          logger.info("user not present");
+        }
 
   		}
   		catch (Exception e)

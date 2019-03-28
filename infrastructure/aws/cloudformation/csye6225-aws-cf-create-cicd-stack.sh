@@ -27,7 +27,7 @@ ParameterKey=ApplicationName,ParameterValue=${APPLICATION_NAME} \
 ParameterKey=AwsRegion,ParameterValue=${AWS_REGION} \
 ParameterKey=CDBucketName,ParameterValue=${CD_BUCKET_NAME} \
 ParameterKey=DynamoDBTable,ParameterValue=${DYNAMODB_TABLE} \
-ParameterKey=LambdaBucketName,ParameterValue=${LAMBDA_FUNCTION_NAME} \
+ParameterKey=LambdaFunctionName,ParameterValue=${LAMBDA_FUNCTION_NAME} \
 --capabilities CAPABILITY_NAMED_IAM
 
 if [ $? -eq 0 ]; then
