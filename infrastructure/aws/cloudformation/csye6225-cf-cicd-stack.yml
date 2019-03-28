@@ -184,9 +184,6 @@ Resources:
             Effect: Allow
             Action:
               - ses:SendEmail
-              - logs:CreateLogGroup
-              - logs:CreateLogStream
-              - logs:PutLogEvents
               - ses:SendRawEmail
             Resource:
               - "*"
