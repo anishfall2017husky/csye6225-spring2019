@@ -511,10 +511,12 @@ public class UserController {
     }
 
     @PostMapping(value = "/reset", produces = "application/json")
-  	public String generateResetToken(@RequestBody("email") String email, HttpServletRequest request, HttpServletResponse response) {
+  	public String generateResetToken(@RequestBody String email, HttpServletRequest request, HttpServletResponse response) {
 
       statsDClient.incrementCounter("endpoint.reset.http.post");
   		logger.info("generateResetToken - Start ");
+
+      JsonObject j = new JsonObject();
 
   		try
   		{
