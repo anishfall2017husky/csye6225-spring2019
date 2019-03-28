@@ -3,6 +3,7 @@ package com.csye6225.noteapp.controllers;
 import com.csye6225.noteapp.models.Attachment;
 import com.csye6225.noteapp.models.GenericResponse;
 import com.csye6225.noteapp.models.Note;
+import com.csye6225.noteapp.models.Email;
 import com.csye6225.noteapp.repository.AttachmentRepository;
 import com.csye6225.noteapp.repository.NoteRepository;
 import com.csye6225.noteapp.repository.UserRepository;
@@ -130,7 +131,7 @@ public class UserController {
     // Get all notes for the user
     @GetMapping(value = "/note", produces = "application/json")
     public String getAllNotes(HttpServletRequest request, HttpServletResponse response) {
-        
+
         statsDClient.incrementCounter("endpoint.note.http.get");
         logger.info("GET Note");
 
@@ -508,6 +509,40 @@ public class UserController {
             j.addProperty("message", e.toString());
         }
         return j.toString();
+    }
+
+    @PostMapping(value = "/reset", produces = "application/json")
+    public String generateResetToken(@RequestBody Email email, HttpServletRequest request,
+            HttpServletResponse response) {
+
+        statsDClient.incrementCounter("endpoint.reset.http.post");
+        logger.info("generateResetToken - Start ");
+        logger.info("email" + " " + email.getEmail());
+        JsonObject j = new JsonObject();
+
+        try {
+            User user = userRepository.findByemailAddress(email.getEmail());
+            if (user != null) {
+                userService.sendMessage(email.getEmail());
+                j.addProperty("message", "Password reset email sent");
+                response.setStatus(HttpServletResponse.SC_CREATED);
+
+            } else {
+                logger.info("user not present");
+                j.addProperty("Error", "Email does not exist!");
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            }
+
+        } catch (Exception e) {
+            logger.error("Exception in generating reset token : " + e.getMessage());
+            j.addProperty("message", "Reset email failed");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        }
+
+        logger.info("generateResetToken - End ");
+
+        return j.toString();
+
     }
 
 }
