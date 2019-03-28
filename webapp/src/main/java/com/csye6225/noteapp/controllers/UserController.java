@@ -3,6 +3,7 @@ package com.csye6225.noteapp.controllers;
 import com.csye6225.noteapp.models.Attachment;
 import com.csye6225.noteapp.models.GenericResponse;
 import com.csye6225.noteapp.models.Note;
+import com.csye6225.noteapp.models.Email;
 import com.csye6225.noteapp.repository.AttachmentRepository;
 import com.csye6225.noteapp.repository.NoteRepository;
 import com.csye6225.noteapp.repository.UserRepository;
@@ -511,19 +512,19 @@ public class UserController {
     }
 
     @PostMapping(value = "/reset", produces = "application/json")
-  	public String generateResetToken(@RequestBody String email, HttpServletRequest request, HttpServletResponse response) {
+  	public String generateResetToken(@RequestBody Email email, HttpServletRequest request, HttpServletResponse response) {
 
       statsDClient.incrementCounter("endpoint.reset.http.post");
   		logger.info("generateResetToken - Start ");
-      logger.info("email" + " " + email);
+      logger.info("email" + " " + email.getEmail());
       JsonObject j = new JsonObject();
 
   		try
   		{
-  			User user = userRepository.findByemailAddress(email);
+  			User user = userRepository.findByemailAddress(email.getEmail());
   			if(user != null)
   			{
-  				userService.sendMessage(email);
+  				userService.sendMessage(email.getEmail());
           j.addProperty("message","Password reset email sent");
           response.setStatus(HttpServletResponse.SC_CREATED);
   			} else {
