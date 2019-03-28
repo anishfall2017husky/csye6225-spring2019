@@ -97,4 +97,5 @@ workflows:
             # TODO: change branch
             branches:
               only:
+                - assignment7
                 - master

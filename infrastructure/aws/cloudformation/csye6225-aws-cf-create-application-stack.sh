@@ -10,13 +10,10 @@ AWS_REGION=$(jq -r '.[0].aws_region' parameters.json)
 CD_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
 ATTACHMENTS_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/csye6225.com$/{print}')
 
-FUNCTION=ResetPassword
-DOMAIN_NAME=$(aws route53 list-hosted-zones --query 'HostedZones[0].Name' --output text)
-LAMBDA_BUCKET_NAME="lambda."$DOMAIN_NAME"csye6225.com"
+FUNCTION=$(jq -r '.[0].lambda_function' parameters.json)
 LAMBDA_ROLE=$(aws iam get-role --role-name LambdaExecutionRole --query Role.Arn --output text)
-FILE_NAME=$(aws s3api list-objects --bucket $bucket_name --query Contents[0].Key --output text)
 
-export SNS_TOPIC="arn:aws:sns:us-east-1:"$AWS_ACCOUNT_ID":password_reset"
+SNS_TOPIC="arn:aws:sns:us-east-1:"$AWS_ACCOUNT_ID":password_reset"
 
 echo "Stack name: ${stack_name}"
 echo "VPN stack name: ${nw_stack_name}"
@@ -25,7 +22,7 @@ echo "AWS region: ${AWS_REGION}"
 echo "Webapp Name: ${APPLICATION_NAME}"
 echo "Code deploy Bucket Name: ${CD_BUCKET_NAME}"
 echo "Attachments Bucket Name: ${ATTACHMENTS_BUCKET_NAME}"
-echo "Lambda Bucket Name: ${LAMBDA_BUCKET_NAME}"
+echo "Lambda Function Name: ${FUNCTION}"
 
 read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
@@ -72,10 +69,8 @@ ParameterKey=ApplicationName,ParameterValue=${APPLICATION_NAME} \
 ParameterKey=AwsRegion,ParameterValue=${AWS_REGION} \
 ParameterKey=CDBucketName,ParameterValue=${CD_BUCKET_NAME} \
 ParameterKey=AttachmentsBucketName,ParameterValue=${ATTACHMENTS_BUCKET_NAME} \
-ParameterKey=LambdaBucketName,ParameterValue=${LAMBDA_BUCKET_NAME} \
 ParameterKey=FunctionName,ParameterValue=${FUNCTION} \
 ParameterKey=LambdaRole,ParameterValue=${LAMBDA_ROLE} \
-ParameterKey=FileName,ParameterValue=${FILE_NAME} \
 ParameterKey=DomainName,ParameterValue=${DOMAIN_NAME} \
 ParameterKey=SNSTopic,ParameterValue=${SNS_TOPIC} \
 --capabilities CAPABILITY_NAMED_IAM

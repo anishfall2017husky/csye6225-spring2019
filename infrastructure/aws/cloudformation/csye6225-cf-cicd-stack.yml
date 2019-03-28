@@ -19,9 +19,6 @@ Parameters:
   DynamoDBTable:
     Description: DynamoDB table name
     Type: String
-  LambdaBucketName:
-    Description: Bucket name where lambda function will be placed
-    Type: String
 Resources:
   CircleCIPackerUserPolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -83,8 +80,6 @@ Resources:
             Resource:
               - !Sub arn:aws:s3:::${CDBucketName}
               - !Sub arn:aws:s3:::${CDBucketName}/*
-              - !Sub arn:aws:s3:::${LambdaBucketName}
-              - !Sub arn:aws:s3:::${LambdaBucketName}/*
       Users:
         - circleci
       ManagedPolicyName: CircleCI-Upload-To-S3
@@ -159,8 +154,8 @@ Resources:
           - 
             Effect: Allow
             Action:
-            - logs:CreateLogStream
-            - logs:PutLogEvents
+              - logs:CreateLogStream
+              - logs:PutLogEvents
             Resource:
               - !Sub arn:aws:logs:${AwsRegion}:${AwsAccountID}:log-group:/aws/lambda/${LambdaFunctionName}:*
       ManagedPolicyName: LambdaExecutionPolicy
@@ -194,5 +189,5 @@ Resources:
               - logs:PutLogEvents
               - ses:SendRawEmail
             Resource:
-            - *
+              - "*"
       ManagedPolicyName: LambdaSESPolicy
