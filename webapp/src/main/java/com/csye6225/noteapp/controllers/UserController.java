@@ -511,10 +511,12 @@ public class UserController {
     }
 
     @PostMapping(value = "/reset", produces = "application/json")
-  	public String generateResetToken(@RequestBody("email") String email, HttpServletRequest request, HttpServletResponse response) {
+  	public String generateResetToken(@RequestBody String email, HttpServletRequest request, HttpServletResponse response) {
 
       statsDClient.incrementCounter("endpoint.reset.http.post");
   		logger.info("generateResetToken - Start ");
+
+      JsonObject j = new JsonObject();
 
   		try
   		{
@@ -523,20 +525,20 @@ public class UserController {
   			{
   				userService.sendMessage(email);
   			}
-        j.addProperty("Password reset email sent");
+        j.addProperty("message","Password reset email sent");
         response.setStatus(HttpServletResponse.SC_CREATED);
 
   		}
   		catch (Exception e)
   		{
   			logger.error("Exception in generating reset token : " + e.getMessage());
-        j.addProperty("Reset email failed");
+        j.addProperty("message","Reset email failed");
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
   		}
 
   		logger.info("generateResetToken - End ");
 
-  		return j.toString();;
+  		return j.toString();
 
   	}
 
