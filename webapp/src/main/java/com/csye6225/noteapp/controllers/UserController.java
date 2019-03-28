@@ -524,9 +524,17 @@ public class UserController {
   			User user = userRepository.findByemailAddress(email.getEmail());
   			if(user != null)
   			{
-  				userService.sendMessage(email.getEmail());
-          j.addProperty("message","Password reset email sent");
-          response.setStatus(HttpServletResponse.SC_CREATED);
+                  if(email.getEmail() == user.getEmailAddress()){
+                    userService.sendMessage(email.getEmail());
+                    j.addProperty("message","Password reset email sent");
+                    response.setStatus(HttpServletResponse.SC_CREATED);
+
+                  }else{
+                      j.addProperty("Error", "Email does not exist!");
+                      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+
+                  }
+  				
   			} else {
           logger.info("user not present");
         }
