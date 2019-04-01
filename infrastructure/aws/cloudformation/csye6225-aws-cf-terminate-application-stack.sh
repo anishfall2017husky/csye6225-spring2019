@@ -9,7 +9,7 @@ echo "Stack name: ${STACK_NAME}"
 
 read -p "Continue?(Y/n): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
-echo "Deleting Stack: $stack_name"
+echo "Deleting Stack: $STACK_NAME"
 aws cloudformation delete-stack --stack-name ${STACK_NAME} 
 
 aws cloudformation wait stack-delete-complete --stack-name ${STACK_NAME}
