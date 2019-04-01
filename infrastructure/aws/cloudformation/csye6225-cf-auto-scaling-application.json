@@ -571,7 +571,10 @@
             "Ref": "SubnetB"
           }
         ]
-      }
+      },
+      "DependsOn": [
+        "ALBTargetGroup"
+      ]
     },
 
     "WebServerScaleUpPolicy": {
@@ -754,7 +757,11 @@
         },
         "Port": 443,
         "Protocol": "HTTPS"
-      }
+      },
+      "DependsOn": [
+        "ApplicationLoadBalancer",
+        "ALBTargetGroup"
+      ]
     },
 
     "ALBTargetGroup": {
@@ -769,7 +776,26 @@
         "Protocol": "HTTP",
         "VpcId": {
           "Ref": "VpcId"
-        }
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-ec2",
+                {
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "Key": "code-deploy",
+            "Value": "code-deploy-ec2"
+          }
+        ]
       }
     },
 
