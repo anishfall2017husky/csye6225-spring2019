@@ -1,17 +1,20 @@
 #!/bin/bash
 
-stack_name=$(jq -r '.[0].StackName' parameters.json)
-nw_stack_name=$(jq -r '.[0].NetworkStackName' parameters.json)
-key_name=$(jq -r '.[0].EC2_Key' parameters.json)
+BASEDIR=$(dirname "$0")
+PARAM_FILE_PATH=$BASEDIR"/parameters.json"
+
+stack_name=$(jq -r '.[0].StackName' "$PARAM_FILE_PATH")
+nw_stack_name=$(jq -r '.[0].NetworkStackName' "$PARAM_FILE_PATH")
+key_name=$(jq -r '.[0].EC2_Key' "$PARAM_FILE_PATH")
 
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
-APPLICATION_NAME=$(jq -r '.[0].webapp_name' parameters.json)
-AWS_REGION=$(jq -r '.[0].aws_region' parameters.json)
+APPLICATION_NAME=$(jq -r '.[0].webapp_name' "$PARAM_FILE_PATH")
+AWS_REGION=$(jq -r '.[0].aws_region' "$PARAM_FILE_PATH")
 CD_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
 ATTACHMENTS_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/csye6225.com$/{print}')
 DOMAIN_NAME=$(aws route53 list-hosted-zones --query 'HostedZones[0].Name' --output text)
 
-FUNCTION=$(jq -r '.[0].lambda_function' parameters.json)
+FUNCTION=$(jq -r '.[0].lambda_function' "$PARAM_FILE_PATH")
 LAMBDA_ROLE=$(aws iam get-role --role-name LambdaExecutionRole --query Role.Arn --output text)
 
 SNS_TOPIC="arn:aws:sns:us-east-1:"$AWS_ACCOUNT_ID":password_reset"

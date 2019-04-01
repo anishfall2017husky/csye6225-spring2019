@@ -1,13 +1,16 @@
 #!/bin/bash
 
-CICD_STACK_NAME=$(jq -r '.[0].cicd_stack' parameters.json)
+BASEDIR=$(dirname "$0")
+PARAM_FILE_PATH=$BASEDIR"/parameters.json"
+
+CICD_STACK_NAME=$(jq -r '.[0].cicd_stack' "$PARAM_FILE_PATH")
 
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
-APPLICATION_NAME=$(jq -r '.[0].webapp_name' parameters.json)
-AWS_REGION=$(jq -r '.[0].aws_region' parameters.json)
+APPLICATION_NAME=$(jq -r '.[0].webapp_name' "$PARAM_FILE_PATH")
+AWS_REGION=$(jq -r '.[0].aws_region' "$PARAM_FILE_PATH")
 CD_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
-DYNAMODB_TABLE=$(jq -r '.[0].dynamodb_table' parameters.json)
-LAMBDA_FUNCTION_NAME=$(jq -r '.[0].lambda_function' parameters.json)
+DYNAMODB_TABLE=$(jq -r '.[0].dynamodb_table' "$PARAM_FILE_PATH")
+LAMBDA_FUNCTION_NAME=$(jq -r '.[0].lambda_function' "$PARAM_FILE_PATH")
 
 echo "AWS region: ${AWS_REGION}"
 echo "Webapp Name: ${APPLICATION_NAME}"

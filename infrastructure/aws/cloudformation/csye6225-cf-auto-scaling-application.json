@@ -741,17 +741,21 @@
     "ApplicationLoadBalancerListener2": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
       "Properties": {
-        "Certificates": [{
-          "CertificateArn": {
-            "Ref": "CertificateArn"
+        "Certificates": [
+          {
+            "CertificateArn": {
+              "Ref": "CertificateArn"
+            }
           }
-        }],
-        "DefaultActions": [{
-          "Type": "forward",
-          "TargetGroupArn": {
-            "Ref": "ALBTargetGroup"
+        ],
+        "DefaultActions": [
+          {
+            "Type": "forward",
+            "TargetGroupArn": {
+              "Ref": "ALBTargetGroup"
+            }
           }
-        }],
+        ],
         "LoadBalancerArn": {
           "Ref": "ApplicationLoadBalancer"
         },
@@ -761,6 +765,32 @@
       "DependsOn": [
         "ApplicationLoadBalancer",
         "ALBTargetGroup"
+      ]
+    },
+
+    "ApplicationLoadBalancerListener": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [{
+          "Type": "redirect",
+          "RedirectConfig": {
+            "Host": "#{host}",
+            "Path": "/#{path}",
+            "Port": 443,
+            "Protocol": "HTTPS",
+            "Query": "#{query}",
+            "StatusCode": "HTTP_301"
+          }
+        }],
+        "LoadBalancerArn": {
+          "Ref": "ApplicationLoadBalancer"
+        },
+        "Port": 80,
+        "Protocol": "HTTP"
+      },
+      "DependsOn": [
+        "ApplicationLoadBalancer",
+        "ApplicationLoadBalancerListener2"
       ]
     },
 
