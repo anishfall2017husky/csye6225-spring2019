@@ -5,11 +5,10 @@ import org.springframework.data.repository.CrudRepository;
 
 import javax.transaction.Transactional;
 
-@Transactional
 public interface NoteRepository extends CrudRepository<Note, Integer> {
 
     Note findById(String id);
 
-
+    @Transactional
     int deleteNoteById(String id);
 }
