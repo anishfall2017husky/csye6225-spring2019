@@ -511,7 +511,9 @@
         "ApplicationName": {
           "Ref": "CodeDeployApplication"
         },
+        "AutoScalingGroups": [{"Ref":"WebServerGroup"}],
         "DeploymentGroupName": "csye6225-webapp-deployment",
+        "DeploymentConfigName": "CodeDeployDefault.AllAtOnce",
         "DeploymentStyle": {
           "DeploymentType": "IN_PLACE",
           "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL"

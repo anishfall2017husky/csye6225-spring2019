@@ -85,7 +85,6 @@ jobs:
               --ignore-hidden-files
             aws deploy create-deployment \
               --application-name csye6225-webapp \
-              --deployment-config-name CodeDeployDefault.OneAtATime \
               --deployment-group-name csye6225-webapp-deployment \
               --s3-location bucket=${AWS_CODE_DEPLOY_BUCKET},bundleType=zip,key=csye6225-webapp-${CIRCLE_BUILD_NUM}.zip
 workflows:
