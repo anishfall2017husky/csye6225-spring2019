@@ -541,7 +541,8 @@
             "Arn"
           ]
         }
-      }
+      },
+      "DependsOn":["ALBTargetGroup", "WebServerGroup"]
     },
 
     "EC2InstanceProfile": {
