@@ -14,5 +14,5 @@ bash on bin/jmeter.sh
 1. Load cloudApp.jmx in jmeter 
 2. Change the server Id in Thread 1 and Thread 2 to your domain name
 3. Change the csv directory path in CSV Data Set Config in Thread 1 and Thread 2 to your local directory path
-4. Run the thread 1 which will create 100 users
+4. Run the thread 1 which will create 1000 users
 5. Run the thread 2 which will create transactions and attachments for users created above
