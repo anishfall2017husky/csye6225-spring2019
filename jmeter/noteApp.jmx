@@ -19,7 +19,7 @@
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1000</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">80</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">100</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
@@ -133,7 +133,7 @@
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1000</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">80</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">250</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
@@ -144,7 +144,7 @@
             <stringProp name="1379103678">serverId</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1791985573">
+            <collectionProp name="67150805">
               <stringProp name="1791985542">csye6225-spring2019-ankita.me</stringProp>
             </collectionProp>
           </collectionProp>
@@ -212,7 +212,7 @@
               <elementProp name="" elementType="Authorization">
                 <stringProp name="Authorization.url">https://${serverId}/</stringProp>
                 <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                <stringProp name="Authorization.password">${password}</stringProp>
+                <stringProp name="Authorization.password">${password}1234</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
                 <stringProp name="Authorization.realm"></stringProp>
               </elementProp>
@@ -223,7 +223,7 @@
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
             <stringProp name="delimiter">,</stringProp>
             <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">C:/Users/nehab/Documents/Cloud_Fall18/User1.csv</stringProp>
+            <stringProp name="filename">/home/abhinn/Documents/cloud_computing/csye6225-spring2019/jmeter/User1.csv</stringProp>
             <boolProp name="ignoreFirstLine">true</boolProp>
             <boolProp name="quotedData">false</boolProp>
             <boolProp name="recycle">true</boolProp>
@@ -265,7 +265,7 @@
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.name">Content-Type</stringProp>
                 <stringProp name="Header.value">application/json</stringProp>
               </elementProp>
             </collectionProp>
@@ -274,9 +274,9 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction</stringProp>
+                <stringProp name="Authorization.url">https://${serverId}/note</stringProp>
                 <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                <stringProp name="Authorization.password">${password}</stringProp>
+                <stringProp name="Authorization.password">${password}1234</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
                 <stringProp name="Authorization.realm"></stringProp>
               </elementProp>
@@ -313,9 +313,9 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction</stringProp>
+                <stringProp name="Authorization.url">https://${serverId}/note</stringProp>
                 <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                <stringProp name="Authorization.password">${password}</stringProp>
+                <stringProp name="Authorization.password">${password}1234</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
                 <stringProp name="Authorization.realm"></stringProp>
               </elementProp>
@@ -356,7 +356,7 @@
           <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
             <collectionProp name="HeaderManager.headers">
               <elementProp name="" elementType="Header">
-                <stringProp name="Header.name">content-type</stringProp>
+                <stringProp name="Header.name">Content-Type</stringProp>
                 <stringProp name="Header.value">application/json</stringProp>
               </elementProp>
             </collectionProp>
@@ -365,9 +365,9 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction/${transactions}</stringProp>
+                <stringProp name="Authorization.url">https://${serverId}/note/${noteId}</stringProp>
                 <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                <stringProp name="Authorization.password">${password}</stringProp>
+                <stringProp name="Authorization.password">${password}1234</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
                 <stringProp name="Authorization.realm"></stringProp>
               </elementProp>
@@ -398,9 +398,9 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction</stringProp>
+                <stringProp name="Authorization.url">https://${serverId}/note</stringProp>
                 <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                <stringProp name="Authorization.password">${password}</stringProp>
+                <stringProp name="Authorization.password">${password}1234</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
                 <stringProp name="Authorization.realm"></stringProp>
               </elementProp>
@@ -437,7 +437,7 @@
             <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
               <collectionProp name="HeaderManager.headers">
                 <elementProp name="" elementType="Header">
-                  <stringProp name="Header.name">content-type</stringProp>
+                  <stringProp name="Header.name">Content-Type</stringProp>
                   <stringProp name="Header.value">application/json</stringProp>
                 </elementProp>
               </collectionProp>
@@ -446,9 +446,9 @@
             <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
               <collectionProp name="AuthManager.auth_list">
                 <elementProp name="" elementType="Authorization">
-                  <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction/${transactions}</stringProp>
+                  <stringProp name="Authorization.url">https://${serverId}/note/${noteId}</stringProp>
                   <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                  <stringProp name="Authorization.password">${password}</stringProp>
+                  <stringProp name="Authorization.password">${password}1234</stringProp>
                   <stringProp name="Authorization.domain"></stringProp>
                   <stringProp name="Authorization.realm"></stringProp>
                 </elementProp>
@@ -492,9 +492,9 @@
             <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
               <collectionProp name="AuthManager.auth_list">
                 <elementProp name="" elementType="Authorization">
-                  <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction</stringProp>
+                  <stringProp name="Authorization.url">https://${serverId}/note</stringProp>
                   <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                  <stringProp name="Authorization.password">${password}</stringProp>
+                  <stringProp name="Authorization.password">${password}1234</stringProp>
                   <stringProp name="Authorization.domain"></stringProp>
                   <stringProp name="Authorization.realm"></stringProp>
                 </elementProp>
@@ -507,8 +507,8 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create attchment in Note" enabled="true">
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="~/temp.jpg" elementType="HTTPFileArg">
-                <stringProp name="File.path">~/temp.jpg</stringProp>
+              <elementProp name="/home/abhinn/temp.jpg" elementType="HTTPFileArg">
+                <stringProp name="File.path">/home/abhinn/temp.jpg</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
                 <stringProp name="File.mimetype">image/jpeg</stringProp>
               </elementProp>
@@ -535,9 +535,9 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction/${transactions}/attachments</stringProp>
+                <stringProp name="Authorization.url">https://${serverId}/note/${noteId}/attachments</stringProp>
                 <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                <stringProp name="Authorization.password">${password}</stringProp>
+                <stringProp name="Authorization.password">${password}1234</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
                 <stringProp name="Authorization.realm"></stringProp>
               </elementProp>
@@ -574,9 +574,9 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction/${transactions}/attachments</stringProp>
+                <stringProp name="Authorization.url">https://${serverId}/note/${noteId}/attachments</stringProp>
                 <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                <stringProp name="Authorization.password">${password}</stringProp>
+                <stringProp name="Authorization.password">${password}1234</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
                 <stringProp name="Authorization.realm"></stringProp>
               </elementProp>
@@ -588,8 +588,8 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Update attchment in note" enabled="true">
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="~/temp2.jpg" elementType="HTTPFileArg">
-                <stringProp name="File.path">~/temp2.jpg</stringProp>
+              <elementProp name="/home/abhinn/temp2.jpg" elementType="HTTPFileArg">
+                <stringProp name="File.path">/home/abhinn/temp2.jpg</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
                 <stringProp name="File.mimetype">image/jpeg</stringProp>
               </elementProp>
@@ -616,9 +616,9 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction/${transactions}/attachments/${attachments}</stringProp>
+                <stringProp name="Authorization.url">https://${serverId}/note/${noteId}/attachments/${attachmentsId}</stringProp>
                 <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                <stringProp name="Authorization.password">${password}</stringProp>
+                <stringProp name="Authorization.password">${password}1234</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
                 <stringProp name="Authorization.realm"></stringProp>
               </elementProp>
@@ -649,9 +649,9 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction/${transactions}/attachments</stringProp>
+                <stringProp name="Authorization.url">https://${serverId}/note/${noteId}/attachments</stringProp>
                 <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                <stringProp name="Authorization.password">${password}</stringProp>
+                <stringProp name="Authorization.password">${password}1234</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
                 <stringProp name="Authorization.realm"></stringProp>
               </elementProp>
@@ -682,9 +682,9 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction/${transactions}/attachments/${attachments}</stringProp>
+                <stringProp name="Authorization.url">https://${serverId}/note/${noteId}/attachments/${attachmentsId}</stringProp>
                 <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                <stringProp name="Authorization.password">${password}</stringProp>
+                <stringProp name="Authorization.password">${password}1234</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
                 <stringProp name="Authorization.realm"></stringProp>
               </elementProp>
@@ -715,9 +715,9 @@
           <AuthManager guiclass="AuthPanel" testclass="AuthManager" testname="HTTP Authorization Manager" enabled="true">
             <collectionProp name="AuthManager.auth_list">
               <elementProp name="" elementType="Authorization">
-                <stringProp name="Authorization.url">https://${serverId}/cloudApp-0.0.1/transaction/${transactions}/attachments</stringProp>
+                <stringProp name="Authorization.url">https://${serverId}/note/${noteId}/attachments</stringProp>
                 <stringProp name="Authorization.username">${email}@gmail.com</stringProp>
-                <stringProp name="Authorization.password">${password}</stringProp>
+                <stringProp name="Authorization.password">${password}1234</stringProp>
                 <stringProp name="Authorization.domain"></stringProp>
                 <stringProp name="Authorization.realm"></stringProp>
               </elementProp>
@@ -727,15 +727,15 @@
           <hashTree/>
         </hashTree>
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="CSV Data Set Config" enabled="true">
-          <stringProp name="delimiter">,</stringProp>
-          <stringProp name="fileEncoding"></stringProp>
           <stringProp name="filename">/home/abhinn/Documents/cloud_computing/csye6225-spring2019/jmeter/User1.csv</stringProp>
+          <stringProp name="fileEncoding"></stringProp>
+          <stringProp name="variableNames">email,password</stringProp>
           <boolProp name="ignoreFirstLine">true</boolProp>
+          <stringProp name="delimiter">,</stringProp>
           <boolProp name="quotedData">false</boolProp>
           <boolProp name="recycle">true</boolProp>
-          <stringProp name="shareMode">shareMode.all</stringProp>
           <boolProp name="stopThread">false</boolProp>
-          <stringProp name="variableNames">email,password </stringProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
         </CSVDataSet>
         <hashTree/>
       </hashTree>
