@@ -98,9 +98,18 @@
     "VpcId": {
       "Type": "String"
     },
-    "loadBalancer": {
+    "WafStackName": {
       "Type": "String",
-      "Description": "Load Balancer arn"
+      "Description": "Stack Name"
+    },
+    "stackScope": {
+      "Type": "String",
+      "Description": "You can deploy this stack at a regional level, for regional WAF targets like Application Load Balancers, or for global targets, such as Amazon CloudFront distributions.",
+      "AllowedValues": [
+        "Global",
+        "Regional"
+      ],
+      "Default": "Regional"
     },
     "ruleAction": {
       "Type": "String",
@@ -120,6 +129,11 @@
       "Type": "String",
       "Description": "This is the URI path prefix (starting with '/') that identifies your administrative sub-site. You can add additional prefixes later directly in the set.",
       "Default": "/admin"
+    },
+    "adminRemoteCidr": {
+      "Type": "String",
+      "Description": "This is the IP address allowed to access your administrative interface. Use CIDR notation. You can add additional ones later directly in the set.",
+      "Default": "127.0.0.1/32"
     },
     "maxExpectedURISize": {
       "Type": "Number",
@@ -983,7 +997,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "size-restrictions"
             ]
@@ -1033,7 +1047,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "match-blacklisted-ips"
             ]
@@ -1072,7 +1086,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "match-auth-tokens"
             ]
@@ -1109,7 +1123,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "detect-sqli"
             ]
@@ -1178,7 +1192,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "detect-xss"
             ]
@@ -1247,7 +1261,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "match-rfi-lfi-traversal"
             ]
@@ -1330,7 +1344,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "match-php-insecure-var-refs"
             ]
@@ -1413,7 +1427,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "match-php-insecure-uri"
             ]
@@ -1448,7 +1462,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "match-csrf-method"
             ]
@@ -1475,7 +1489,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "match-csrf-token"
             ]
@@ -1507,7 +1521,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "match-ssi"
             ]
@@ -1592,7 +1606,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "match-admin-url"
             ]
@@ -1621,7 +1635,7 @@
             "-",
             [
               {
-                "Ref": "StackName"
+                "Ref": "WafStackName"
               },
               "match-admin-remote-ip"
             ]
@@ -1946,7 +1960,7 @@
       "Type": "AWS::WAFRegional::WebACLAssociation",
       "Properties": {
         "ResourceArn": {
-          "Ref": "loadBalancer"
+          "Ref": "ApplicationLoadBalancer"
         },
         "WebACLId": {
           "Ref": "wafrOwaspACL"
