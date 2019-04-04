@@ -54,7 +54,7 @@ ami_id=$(aws ec2 describe-images \
 
 flag=$?
 
-if [ -z  "$ami_id" ] || [ "$ami_id" = "None" ]
+if [ -z  "$ami_id" ] || [ "$ami_id" = "None" ] || [ -z  "$CERTIFICATE_ARN" ] || [ "$CERTIFICATE_ARN" = "None" ]
 then
 
 flag=1
