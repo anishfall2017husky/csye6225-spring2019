@@ -509,7 +509,7 @@
                     [
                       "sudo sed -i 's|Environment=\"JAVA_OPTS=-Djava.awt.headless=true ",
                       "-Djava.security.egd=file:/dev/./urandom\"|",
-                      "Environment=\"JAVA_OPTS=-Djava.awt.headless=true ",
+                      "Environment=\"JAVA_OPTS=-Xms512M -Xmx1024M -Djava.awt.headless=true ",
                       "-Djava.security.egd=file:/dev/./urandom -Dspring.datasource.username=csye6225master ",
                       "-Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev ",
                       "-Dspring.datasource.url=jdbc:mysql://",
