@@ -548,7 +548,9 @@
         "ApplicationName": {
           "Ref": "CodeDeployApplication"
         },
+        "AutoScalingGroups": [{"Ref":"WebServerGroup"}],
         "DeploymentGroupName": "csye6225-webapp-deployment",
+        "DeploymentConfigName": "CodeDeployDefault.AllAtOnce",
         "DeploymentStyle": {
           "DeploymentType": "IN_PLACE",
           "DeploymentOption": "WITHOUT_TRAFFIC_CONTROL"
@@ -559,20 +561,27 @@
             "DEPLOYMENT_FAILURE"
           ]
         },
-        "Ec2TagFilters": [
-          {
-            "Key": "code-deploy",
-            "Value": "code-deploy-ec2",
-            "Type": "KEY_AND_VALUE"
-          }
-        ],
+
+        "Ec2TagFilters": [{
+          "Key": "code-deploy",
+          "Value": "code-deploy-ec2",
+          "Type": "KEY_AND_VALUE"
+        }],
+        "LoadBalancerInfo": {
+          "TargetGroupInfoList": [{
+            "Name": {
+              "Fn::GetAtt": ["ALBTargetGroup", "TargetGroupName"]
+            }
+          }]
+        },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "CodeDeployServiceRole",
             "Arn"
           ]
         }
-      }
+      },
+      "DependsOn":["ALBTargetGroup", "WebServerGroup"]
     },
     "EC2InstanceProfile": {
       "Type": "AWS::IAM::InstanceProfile",
@@ -630,7 +639,7 @@
                     [
                       "sudo sed -i 's|Environment=\"JAVA_OPTS=-Djava.awt.headless=true ",
                       "-Djava.security.egd=file:/dev/./urandom\"|",
-                      "Environment=\"JAVA_OPTS=-Djava.awt.headless=true ",
+                      "Environment=\"JAVA_OPTS=-Xms512M -Xmx1024M -Djava.awt.headless=true ",
                       "-Djava.security.egd=file:/dev/./urandom -Dspring.datasource.username=csye6225master ",
                       "-Dspring.datasource.password=csye6225password -Dspring.profiles.active=dev ",
                       "-Dspring.datasource.url=jdbc:mysql://",
@@ -734,11 +743,11 @@
     "CPUAlarmHigh": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
-        "AlarmDescription": "Scale-up if CPU > 10% for 10 minutes",
+        "AlarmDescription": "Scale-up if CPU > 10% for 4 minutes",
         "MetricName": "CPUUtilization",
         "Namespace": "AWS/EC2",
         "Statistic": "Average",
-        "Period": "300",
+        "Period": "120",
         "EvaluationPeriods": "2",
         "Threshold": "10",
         "AlarmActions": [
@@ -760,11 +769,11 @@
     "CPUAlarmLow": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
-        "AlarmDescription": "Scale-down if CPU < 5% for 10 minutes",
+        "AlarmDescription": "Scale-down if CPU < 5% for 4 minutes",
         "MetricName": "CPUUtilization",
         "Namespace": "AWS/EC2",
         "Statistic": "Average",
-        "Period": "300",
+        "Period": "120",
         "EvaluationPeriods": "2",
         "Threshold": "5",
         "AlarmActions": [

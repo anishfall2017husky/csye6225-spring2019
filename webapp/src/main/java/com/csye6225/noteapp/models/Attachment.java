@@ -19,7 +19,7 @@ public class Attachment {
     @Expose
     private String url;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "note_id")
     private Note note;
 
