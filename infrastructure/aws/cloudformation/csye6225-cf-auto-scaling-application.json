@@ -528,7 +528,13 @@
           "Value": "code-deploy-ec2",
           "Type": "KEY_AND_VALUE"
         }],
-
+        "LoadBalancerInfo": {
+          "TargetGroupInfoList": [{
+            "Name": {
+              "Fn::GetAtt": ["ALBTargetGroup", "TargetGroupName"]
+            }
+          }]
+        },
         "ServiceRoleArn": {
           "Fn::GetAtt": [
             "CodeDeployServiceRole",
