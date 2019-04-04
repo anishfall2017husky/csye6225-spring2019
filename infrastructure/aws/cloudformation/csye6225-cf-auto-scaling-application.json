@@ -14,6 +14,15 @@
       "Description": "Application Stack Name",
       "Type": "String"
     },
+    "stackScope": {
+      "Type": "String",
+      "Description": "You can deploy this stack at a regional level, for regional WAF targets like Application Load Balancers, or for global targets, such as Amazon CloudFront distributions.",
+      "AllowedValues": [
+        "Global",
+        "Regional"
+      ],
+      "Default": "Regional"
+    },
     "KeyName": {
       "Description": "EC2 Key Name",
       "Type": "String"
@@ -157,7 +166,6 @@
       "Default": 36
     }
   },
-
   "Conditions": {
     "isRegional": {
       "Fn::Equals": [
@@ -176,13 +184,13 @@
       ]
     }
   },
-
   "Resources": {
     "webappSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "rule to allow TCP traffic on port 22, 80 and 443 from anywhere in the world",
-        "SecurityGroupIngress": [{
+        "SecurityGroupIngress": [
+          {
             "IpProtocol": "tcp",
             "FromPort": 22,
             "ToPort": 22,
@@ -201,19 +209,21 @@
             "CidrIp": "0.0.0.0/0"
           }
         ],
-        "Tags": [{
-          "Key": "Name",
-          "Value": {
-            "Fn::Sub": [
-              "${StackName}-csye6225-sgwebapp",
-              {
-                "StackName": {
-                  "Ref": "StackName"
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-sgwebapp",
+                {
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
                 }
-              }
-            ]
+              ]
+            }
           }
-        }],
+        ],
         "VpcId": {
           "Fn::ImportValue": {
             "Fn::Sub": "${NetworkStackNameParameter}-VpcID"
@@ -225,27 +235,31 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "rule to allow TCP traffic on port 3306 for MySQL only from the webapp security group",
-        "SecurityGroupIngress": [{
-          "IpProtocol": "tcp",
-          "FromPort": 3306,
-          "ToPort": 3306,
-          "SourceSecurityGroupId": {
-            "Ref": "webappSecurityGroup"
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 3306,
+            "ToPort": 3306,
+            "SourceSecurityGroupId": {
+              "Ref": "webappSecurityGroup"
+            }
           }
-        }],
-        "Tags": [{
-          "Key": "Name",
-          "Value": {
-            "Fn::Sub": [
-              "${StackName}-csye6225-rdssg",
-              {
-                "StackName": {
-                  "Ref": "StackName"
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-rdssg",
+                {
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
                 }
-              }
-            ]
+              ]
+            }
           }
-        }],
+        ],
         "VpcId": {
           "Fn::ImportValue": {
             "Fn::Sub": "${NetworkStackNameParameter}-VpcID"
@@ -253,18 +267,21 @@
         }
       }
     },
-
     "DynamoDBTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
-        "AttributeDefinitions": [{
-          "AttributeName": "id",
-          "AttributeType": "S"
-        }],
-        "KeySchema": [{
-          "AttributeName": "id",
-          "KeyType": "HASH"
-        }],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "id",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "id",
+            "KeyType": "HASH"
+          }
+        ],
         "TableName": "csye6225",
         "TimeToLiveSpecification": {
           "AttributeName": "ttl",
@@ -274,27 +291,29 @@
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
         },
-        "Tags": [{
-          "Key": "Name",
-          "Value": {
-            "Fn::Sub": [
-              "${StackName}-csye6225-dynamodb",
-              {
-                "StackName": {
-                  "Ref": "StackName"
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-dynamodb",
+                {
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
                 }
-              }
-            ]
+              ]
+            }
           }
-        }]
+        ]
       }
     },
-
     "DBSubnetGroup": {
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
         "DBSubnetGroupDescription": "Subnets available for the RDS DB Instance",
-        "SubnetIds": [{
+        "SubnetIds": [
+          {
             "Fn::ImportValue": {
               "Fn::Sub": "${NetworkStackNameParameter}-SubnetEC2"
             }
@@ -305,22 +324,23 @@
             }
           }
         ],
-        "Tags": [{
-          "Key": "Name",
-          "Value": {
-            "Fn::Sub": [
-              "${StackName}-csye6225-dbsubnetgrp",
-              {
-                "StackName": {
-                  "Ref": "StackName"
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-dbsubnetgrp",
+                {
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
                 }
-              }
-            ]
+              ]
+            }
           }
-        }]
+        ]
       }
     },
-
     "RDSInstance": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
@@ -344,114 +364,124 @@
         "DBSubnetGroupName": {
           "Ref": "DBSubnetGroup"
         },
-        "VPCSecurityGroups": [{
-          "Ref": "dbSecurityGroup"
-        }],
+        "VPCSecurityGroups": [
+          {
+            "Ref": "dbSecurityGroup"
+          }
+        ],
         "DBInstanceIdentifier": "csye6225-spring2019",
         "MultiAZ": false,
         "PubliclyAccessible": true,
-        "Tags": [{
-          "Key": "Name",
-          "Value": {
-            "Fn::Sub": [
-              "${StackName}-csye6225-rds",
-              {
-                "StackName": {
-                  "Ref": "StackName"
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-rds",
+                {
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
                 }
-              }
-            ]
+              ]
+            }
           }
-        }]
+        ]
       }
     },
-
     "CodeDeployEC2S3UserPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
         "Description": "This policy allows EC2 instances to get data from S3 buckets",
         "PolicyDocument": {
           "Version": "2012-10-17",
-          "Statement": [{
-            "Effect": "Allow",
-            "Action": [
-              "s3:Get*",
-              "s3:List*",
-              "s3:PutObject",
-              "s3:DeleteObject"
-            ],
-            "Resource": [{
-                "Fn::Sub": [
-                  "arn:aws:s3:::${BUCKET_NAME}",
-                  {
-                    "BUCKET_NAME": {
-                      "Ref": "CDBucketName"
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:Get*",
+                "s3:List*",
+                "s3:PutObject",
+                "s3:DeleteObject"
+              ],
+              "Resource": [
+                {
+                  "Fn::Sub": [
+                    "arn:aws:s3:::${BUCKET_NAME}",
+                    {
+                      "BUCKET_NAME": {
+                        "Ref": "CDBucketName"
+                      }
                     }
-                  }
-                ]
-              },
-              {
-                "Fn::Sub": [
-                  "arn:aws:s3:::${BUCKET_NAME}/*",
-                  {
-                    "BUCKET_NAME": {
-                      "Ref": "CDBucketName"
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:aws:s3:::${BUCKET_NAME}/*",
+                    {
+                      "BUCKET_NAME": {
+                        "Ref": "CDBucketName"
+                      }
                     }
-                  }
-                ]
-              },
-              {
-                "Fn::Sub": [
-                  "arn:aws:s3:::${BUCKET_NAME}/*",
-                  {
-                    "BUCKET_NAME": {
-                      "Ref": "AttachmentsBucketName"
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:aws:s3:::${BUCKET_NAME}/*",
+                    {
+                      "BUCKET_NAME": {
+                        "Ref": "AttachmentsBucketName"
+                      }
                     }
-                  }
-                ]
-              },
-              {
-                "Fn::Sub": [
-                  "arn:aws:s3:::${BUCKET_NAME}/*",
-                  {
-                    "BUCKET_NAME": {
-                      "Ref": "AttachmentsBucketName"
+                  ]
+                },
+                {
+                  "Fn::Sub": [
+                    "arn:aws:s3:::${BUCKET_NAME}/*",
+                    {
+                      "BUCKET_NAME": {
+                        "Ref": "AttachmentsBucketName"
+                      }
                     }
-                  }
-                ]
-              }
-            ]
-          }]
+                  ]
+                }
+              ]
+            }
+          ]
         },
         "ManagedPolicyName": "CodeDeploy-EC2-S3"
       }
     },
-
     "CodeDeployEC2ServiceRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
-          "Statement": [{
-            "Effect": "Allow",
-            "Principal": {
-              "Service": [
-                "ec2.amazonaws.com"
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
               ]
-            },
-            "Action": [
-              "sts:AssumeRole"
-            ]
-          }]
+            }
+          ]
         },
         "Path": "/",
         "RoleName": "CodeDeployEC2ServiceRole",
-        "ManagedPolicyArns": [{
-          "Ref": "CodeDeployEC2S3UserPolicy"
-        },"arn:aws:iam::aws:policy/AmazonS3FullAccess","arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"]
+        "ManagedPolicyArns": [
+          {
+            "Ref": "CodeDeployEC2S3UserPolicy"
+          },
+          "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+          "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+        ]
       }
     },
-
     "EC2SNSPolicy": {
       "Type": "AWS::IAM::ManagedPolicy",
       "Properties": {
@@ -466,8 +496,10 @@
                 "sns:ListTopics"
               ],
               "Resource": [
-                  {"Ref": "SNSTopic"},
-                  "*"
+                {
+                  "Ref": "SNSTopic"
+                },
+                "*"
               ]
             }
           ]
@@ -479,24 +511,30 @@
         ]
       }
     },
-
     "CodeDeployServiceRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Effect": "Allow",
-            "Principal": {
-              "Service": ["codedeploy.amazonaws.com"]
-            },
-            "Action": ["sts:AssumeRole"]
-          }]
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "codedeploy.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
         },
-        "ManagedPolicyArns": ["arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"],
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+        ],
         "Path": "/"
       }
     },
-
     "CodeDeployApplication": {
       "Type": "AWS::CodeDeploy::Application",
       "Properties": {
@@ -504,7 +542,6 @@
         "ComputePlatform": "Server"
       }
     },
-
     "DeploymentGroup": {
       "Type": "AWS::CodeDeploy::DeploymentGroup",
       "Properties": {
@@ -520,7 +557,9 @@
         },
         "AutoRollbackConfiguration": {
           "Enabled": "true",
-          "Events": ["DEPLOYMENT_FAILURE"]
+          "Events": [
+            "DEPLOYMENT_FAILURE"
+          ]
         },
 
         "Ec2TagFilters": [{
@@ -544,17 +583,17 @@
       },
       "DependsOn":["ALBTargetGroup", "WebServerGroup"]
     },
-
     "EC2InstanceProfile": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Path": "/",
-        "Roles": [{
-          "Ref": "CodeDeployEC2ServiceRole"
-        }]
+        "Roles": [
+          {
+            "Ref": "CodeDeployEC2ServiceRole"
+          }
+        ]
       }
     },
-
     "LaunchConfig": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
@@ -566,17 +605,21 @@
         "KeyName": {
           "Ref": "KeyName"
         },
-        "BlockDeviceMappings": [{
-          "DeviceName": "/dev/sda1",
-          "Ebs": {
-            "DeleteOnTermination": true,
-            "VolumeSize": "20",
-            "VolumeType": "gp2"
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "DeleteOnTermination": true,
+              "VolumeSize": "20",
+              "VolumeType": "gp2"
+            }
           }
-        }],
-        "SecurityGroups": [{
-          "Ref": "webappSecurityGroup"
-        }],
+        ],
+        "SecurityGroups": [
+          {
+            "Ref": "webappSecurityGroup"
+          }
+        ],
         "LaunchConfigurationName": "asg_launch_config",
         "IamInstanceProfile": {
           "Ref": "EC2InstanceProfile"
@@ -584,7 +627,8 @@
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
-              "\n", [
+              "\n",
+              [
                 "#!/bin/bash -xe",
                 "sudo bash",
                 "sudo systemctl stop tomcat.service",
@@ -620,9 +664,11 @@
           }
         }
       },
-      "DependsOn": ["EC2InstanceProfile", "RDSInstance"]
+      "DependsOn": [
+        "EC2InstanceProfile",
+        "RDSInstance"
+      ]
     },
-
     "WebServerGroup": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
@@ -638,7 +684,8 @@
             "Ref": "ALBTargetGroup"
           }
         ],
-        "Tags": [{
+        "Tags": [
+          {
             "Key": "Name",
             "Value": {
               "Fn::Sub": [
@@ -671,7 +718,6 @@
         "ALBTargetGroup"
       ]
     },
-
     "WebServerScaleUpPolicy": {
       "Type": "AWS::AutoScaling::ScalingPolicy",
       "Properties": {
@@ -683,7 +729,6 @@
         "ScalingAdjustment": "1"
       }
     },
-
     "WebServerScaleDownPolicy": {
       "Type": "AWS::AutoScaling::ScalingPolicy",
       "Properties": {
@@ -695,7 +740,6 @@
         "ScalingAdjustment": "-1"
       }
     },
-
     "CPUAlarmHigh": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
@@ -706,19 +750,22 @@
         "Period": "120",
         "EvaluationPeriods": "2",
         "Threshold": "10",
-        "AlarmActions": [{
-          "Ref": "WebServerScaleUpPolicy"
-        }],
-        "Dimensions": [{
-          "Name": "AutoScalingGroupName",
-          "Value": {
-            "Ref": "WebServerGroup"
+        "AlarmActions": [
+          {
+            "Ref": "WebServerScaleUpPolicy"
           }
-        }],
+        ],
+        "Dimensions": [
+          {
+            "Name": "AutoScalingGroupName",
+            "Value": {
+              "Ref": "WebServerGroup"
+            }
+          }
+        ],
         "ComparisonOperator": "GreaterThanThreshold"
       }
     },
-
     "CPUAlarmLow": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
@@ -729,110 +776,110 @@
         "Period": "120",
         "EvaluationPeriods": "2",
         "Threshold": "5",
-        "AlarmActions": [{
-          "Ref": "WebServerScaleDownPolicy"
-        }],
-        "Dimensions": [{
-          "Name": "AutoScalingGroupName",
-          "Value": {
-            "Ref": "WebServerGroup"
+        "AlarmActions": [
+          {
+            "Ref": "WebServerScaleDownPolicy"
           }
-        }],
+        ],
+        "Dimensions": [
+          {
+            "Name": "AutoScalingGroupName",
+            "Value": {
+              "Ref": "WebServerGroup"
+            }
+          }
+        ],
         "ComparisonOperator": "LessThanThreshold"
       }
     },
-
     "ResetPasswordLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-            "ZipFile": {
-              "Fn::Join": [
-                "\n",
-                [
-                  "exports.handler = function(event, context, callback) {",
-                  "  console.log('Function is working');",
-                  "  return 'Its working';",
-                  "};"
-                ]
+          "ZipFile": {
+            "Fn::Join": [
+              "\n",
+              [
+                "exports.handler = function(event, context, callback) {",
+                "  console.log('Function is working');",
+                "  return 'Its working';",
+                "};"
               ]
-            }
+            ]
+          }
         },
         "Environment": {
-            "Variables": {
-                "DOMAIN": {
-                    "Ref": "DomainName"
-                }
+          "Variables": {
+            "DOMAIN": {
+              "Ref": "DomainName"
             }
+          }
         },
         "FunctionName": {
-            "Ref": "FunctionName"
+          "Ref": "FunctionName"
         },
         "Handler": "index.handler",
         "MemorySize": 512,
         "Role": {
-            "Ref": "LambdaRole"
+          "Ref": "LambdaRole"
         },
         "Runtime": "nodejs8.10"
       }
     },
-
     "ResetPasswordTopic": {
-      "Type" : "AWS::SNS::Topic",
-      "Properties" : {
-        "Subscription" : [
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "Subscription": [
           {
-            "Endpoint" : {
-              "Fn::GetAtt":
-              [
-                  "ResetPasswordLambdaFunction",
-                  "Arn"
+            "Endpoint": {
+              "Fn::GetAtt": [
+                "ResetPasswordLambdaFunction",
+                "Arn"
               ]
             },
-            "Protocol" : "lambda"
+            "Protocol": "lambda"
           }
         ],
-        "TopicName" : "password_reset"
+        "TopicName": "password_reset"
       },
       "DependsOn": [
-          "ResetPasswordLambdaFunction"
+        "ResetPasswordLambdaFunction"
       ]
     },
-
     "LambdaInvokePermission": {
-        "Type": "AWS::Lambda::Permission",
-        "Properties": {
-            "Action": "lambda:InvokeFunction",
-            "Principal": "sns.amazonaws.com",
-            "SourceArn": {
-                "Ref": "ResetPasswordTopic"
-            },
-            "FunctionName": {
-              "Fn::GetAtt":
-              [
-                  "ResetPasswordLambdaFunction",
-                  "Arn"
-              ]
-            }
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": {
+          "Ref": "ResetPasswordTopic"
+        },
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ResetPasswordLambdaFunction",
+            "Arn"
+          ]
         }
+      }
     },
-
     "ApplicationLoadBalancer": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "Subnets": [{
+        "Subnets": [
+          {
             "Ref": "SubnetA"
           },
           {
             "Ref": "SubnetB"
           }
         ],
-        "SecurityGroups": [{
-          "Ref": "webappSecurityGroup"
-        }]
+        "SecurityGroups": [
+          {
+            "Ref": "webappSecurityGroup"
+          }
+        ]
       }
     },
-
     "ApplicationLoadBalancerListener2": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
       "Properties": {
@@ -862,21 +909,22 @@
         "ALBTargetGroup"
       ]
     },
-
     "ApplicationLoadBalancerListener": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
       "Properties": {
-        "DefaultActions": [{
-          "Type": "redirect",
-          "RedirectConfig": {
-            "Host": "#{host}",
-            "Path": "/#{path}",
-            "Port": 443,
-            "Protocol": "HTTPS",
-            "Query": "#{query}",
-            "StatusCode": "HTTP_301"
+        "DefaultActions": [
+          {
+            "Type": "redirect",
+            "RedirectConfig": {
+              "Host": "#{host}",
+              "Path": "/#{path}",
+              "Port": 443,
+              "Protocol": "HTTPS",
+              "Query": "#{query}",
+              "StatusCode": "HTTP_301"
+            }
           }
-        }],
+        ],
         "LoadBalancerArn": {
           "Ref": "ApplicationLoadBalancer"
         },
@@ -888,7 +936,6 @@
         "ApplicationLoadBalancerListener2"
       ]
     },
-
     "ALBTargetGroup": {
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
       "Properties": {
@@ -923,7 +970,6 @@
         ]
       }
     },
-
     "ResourceRecords": {
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
@@ -951,7 +997,6 @@
         "Type": "A"
       }
     },
-
     "wafrSizeRestrictionSet": {
       "Type": "AWS::WAFRegional::SizeConstraintSet",
       "Condition": "isRegional",
@@ -1002,7 +1047,6 @@
         ]
       }
     },
-
     "wafrBlacklistIpSet": {
       "Type": "AWS::WAFRegional::IPSet",
       "Condition": "isRegional",
@@ -1042,7 +1086,6 @@
         ]
       }
     },
-
     "wafgAuthTokenStringSet": {
       "Type": "AWS::WAFRegional::ByteMatchSet",
       "Condition": "isRegional",
@@ -1080,7 +1123,6 @@
         ]
       }
     },
-
     "wafrSQLiSet": {
       "Type": "AWS::WAFRegional::SqlInjectionMatchSet",
       "Condition": "isRegional",
@@ -1150,7 +1192,6 @@
         ]
       }
     },
-
     "wafrXSSSet": {
       "Type": "AWS::WAFRegional::XssMatchSet",
       "Condition": "isRegional",
@@ -1924,7 +1965,6 @@
         ]
       }
     },
-
     "MyWebACLAssociation": {
       "Type": "AWS::WAFRegional::WebACLAssociation",
       "Properties": {
@@ -1936,6 +1976,5 @@
         }
       }
     }
-
   }
 }
