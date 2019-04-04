@@ -6,6 +6,7 @@ PARAM_FILE_PATH=$BASEDIR"/parameters.json"
 stack_name=$(jq -r '.[0].StackName' "$PARAM_FILE_PATH")
 nw_stack_name=$(jq -r '.[0].NetworkStackName' "$PARAM_FILE_PATH")
 key_name=$(jq -r '.[0].EC2_Key' "$PARAM_FILE_PATH")
+waf_stackName=$(jq -r '.[0].WafStackName' "$PARAM_FILE_PATH")
 
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
 APPLICATION_NAME=$(jq -r '.[0].webapp_name' "$PARAM_FILE_PATH")
@@ -27,6 +28,7 @@ CERTIFICATE_ARN=$(aws acm list-certificates --query "CertificateSummaryList[*].C
 
 echo "Stack name: ${stack_name}"
 echo "VPN stack name: ${nw_stack_name}"
+echo "WAF stack name: ${waf_stackName}"
 echo "EC2 key name: ${key_name}"
 echo "AWS region: ${AWS_REGION}"
 echo "Webapp Name: ${APPLICATION_NAME}"
@@ -92,6 +94,7 @@ ParameterKey=SubnetA,ParameterValue=${SUBNET_A} \
 ParameterKey=SubnetB,ParameterValue=${SUBNET_B} \
 ParameterKey=CertificateArn,ParameterValue=${CERTIFICATE_ARN} \
 ParameterKey=VpcId,ParameterValue=${VPC_ID} \
+ParameterKey=WafStackName,ParameterValue=${waf_stackName} \
 --capabilities CAPABILITY_NAMED_IAM
 
 if [ $? -eq 0 ]; then
