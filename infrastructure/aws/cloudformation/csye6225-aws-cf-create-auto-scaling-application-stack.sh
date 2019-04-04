@@ -6,6 +6,7 @@ PARAM_FILE_PATH=$BASEDIR"/parameters.json"
 stack_name=$(jq -r '.[0].StackName' "$PARAM_FILE_PATH")
 nw_stack_name=$(jq -r '.[0].NetworkStackName' "$PARAM_FILE_PATH")
 key_name=$(jq -r '.[0].EC2_Key' "$PARAM_FILE_PATH")
+waf_stackName=$(jq -r '.[0].WafStackName' "$PARAM_FILE_PATH")
 
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)
 APPLICATION_NAME=$(jq -r '.[0].webapp_name' "$PARAM_FILE_PATH")
@@ -18,9 +19,16 @@ FUNCTION=$(jq -r '.[0].lambda_function' "$PARAM_FILE_PATH")
 LAMBDA_ROLE=$(aws iam get-role --role-name LambdaExecutionRole --query Role.Arn --output text)
 
 SNS_TOPIC="arn:aws:sns:us-east-1:"$AWS_ACCOUNT_ID":password_reset"
+VPC_ID=$(aws ec2 describe-vpcs --filters "Name=isDefault,Values=false" --query "Vpcs[*].VpcId" --output text)
+
+SUBNET_A=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${VPC_ID}" "Name=mapPublicIpOnLaunch,Values=true" "Name=availabilityZone,Values=us-east-1a" --query 'Subnets[*].SubnetId'  --output text)
+SUBNET_B=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${VPC_ID}" "Name=mapPublicIpOnLaunch,Values=true" "Name=availabilityZone,Values=us-east-1b" --query 'Subnets[*].SubnetId'  --output text)
+CERTIFICATE_ARN=$(aws acm list-certificates --query "CertificateSummaryList[*].CertificateArn" --output text)
+
 
 echo "Stack name: ${stack_name}"
 echo "VPN stack name: ${nw_stack_name}"
+echo "WAF stack name: ${waf_stackName}"
 echo "EC2 key name: ${key_name}"
 echo "AWS region: ${AWS_REGION}"
 echo "Webapp Name: ${APPLICATION_NAME}"
@@ -28,6 +36,10 @@ echo "Code deploy Bucket Name: ${CD_BUCKET_NAME}"
 echo "Attachments Bucket Name: ${ATTACHMENTS_BUCKET_NAME}"
 echo "Lambda Function Name: ${FUNCTION}"
 echo "Domain Name: ${DOMAIN_NAME}"
+echo "Subnet for region us-east-1a: ${SUBNET_A}"
+echo "Subnet for region us-east-1b: ${SUBNET_B}"
+echo "Certificate ARN: ${CERTIFICATE_ARN}"
+echo "VPC ID: ${VPC_ID}"
 
 read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 
@@ -64,7 +76,7 @@ fi
 echo "Executing Create Stack....."
 
 aws cloudformation create-stack --stack-name ${stack_name} \
---template-body file://csye6225-cf-application.json \
+--template-body file://csye6225-cf-auto-scaling-application.json \
 --parameters ParameterKey=NetworkStackNameParameter,ParameterValue=${nw_stack_name} \
 ParameterKey=AMIid,ParameterValue=${ami_id} \
 ParameterKey=StackName,ParameterValue=${stack_name} \
@@ -78,6 +90,11 @@ ParameterKey=FunctionName,ParameterValue=${FUNCTION} \
 ParameterKey=LambdaRole,ParameterValue=${LAMBDA_ROLE} \
 ParameterKey=DomainName,ParameterValue=${DOMAIN_NAME} \
 ParameterKey=SNSTopic,ParameterValue=${SNS_TOPIC} \
+ParameterKey=SubnetA,ParameterValue=${SUBNET_A} \
+ParameterKey=SubnetB,ParameterValue=${SUBNET_B} \
+ParameterKey=CertificateArn,ParameterValue=${CERTIFICATE_ARN} \
+ParameterKey=VpcId,ParameterValue=${VPC_ID} \
+ParameterKey=WafStackName,ParameterValue=${waf_stackName} \
 --capabilities CAPABILITY_NAMED_IAM
 
 if [ $? -eq 0 ]; then

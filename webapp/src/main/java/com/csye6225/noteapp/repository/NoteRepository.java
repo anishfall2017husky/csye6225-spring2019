@@ -10,6 +10,5 @@ public interface NoteRepository extends CrudRepository<Note, Integer> {
 
     Note findById(String id);
 
-
     int deleteNoteById(String id);
 }

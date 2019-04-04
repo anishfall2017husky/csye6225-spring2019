@@ -1,6 +1,9 @@
 #!/bin/bash
 
-circleci_pstack=$(jq -r '.[0].cicd_stack' parameters.json)
+BASEDIR=$(dirname "$0")
+PARAM_FILE_PATH=$BASEDIR"/parameters.json"
+
+circleci_pstack=$(jq -r '.[0].cicd_stack' "$PARAM_FILE_PATH")
 
 echo "Circleci packer roles stack: ${circleci_pstack}"
 

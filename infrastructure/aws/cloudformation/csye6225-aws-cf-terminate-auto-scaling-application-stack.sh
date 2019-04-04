@@ -5,7 +5,7 @@ PARAM_FILE_PATH=$BASEDIR"/parameters.json"
 
 STACK_NAME=$(jq -r '.[0].StackName' "$PARAM_FILE_PATH")
 
-echo "Stack name: ${STACK_NAME}"
+echo "Auto-scaling stack name: ${STACK_NAME}"
 
 read -p "Continue?(Y/n): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
 

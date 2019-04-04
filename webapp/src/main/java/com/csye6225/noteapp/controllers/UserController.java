@@ -72,11 +72,9 @@ public class UserController {
             // Authorization: Basic base64credentials
             String base64Credentials = authorization.substring("Basic".length()).trim();
             String credentials = new String(Base64.getDecoder().decode(base64Credentials), Charset.forName("UTF-8"));
-            logger.info("credentials" + " = " + credentials);
             // credentials = username:password
             final String[] values = credentials.split(":", 2);
             logger.info("username/emailaddress" + " = " + values[0]);
-            logger.info("password" + " = " + values[1]);
             User user = userRepository.findByemailAddress(values[0]);
             logger.info("user" + " = " + user);
             if (user == null) {
@@ -103,7 +101,7 @@ public class UserController {
             HttpServletResponse response) {
 
         statsDClient.incrementCounter("endpoint.user.register.http.post");
-        logger.info("Register User");
+        logger.info("Register User - " + user.getEmailAddress());
 
         User existUser = userRepository.findByemailAddress(user.getEmailAddress());
         if (existUser != null) {
