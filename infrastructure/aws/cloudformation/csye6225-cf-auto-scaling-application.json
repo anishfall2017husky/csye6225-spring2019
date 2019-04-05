@@ -1004,12 +1004,10 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [ {
                 "Ref": "WafStackName"
               },
-              "size-restrictions"
-            ]
+              "size-restrictions"]
           ]
         },
         "SizeConstraints": [
@@ -1042,9 +1040,7 @@
             "ComparisonOperator": "GT",
             "Size": {
               "Ref": "maxExpectedCookieSize"
-            }
-          }
-        ]
+            }}]
       }
     },
     "wafrBlacklistIpSet": {
@@ -1059,8 +1055,7 @@
                 "Ref": "WafStackName"
               },
               "match-blacklisted-ips"
-            ]
-          ]
+            ]]
         },
         "IPSetDescriptors": [
           {
@@ -1082,10 +1077,7 @@
           {
             "Type": "IPV4",
             "Value": "127.0.0.1/32"
-          }
-        ]
-      }
-    },
+          }]}},
     "wafgAuthTokenStringSet": {
       "Type": "AWS::WAFRegional::ByteMatchSet",
       "Condition": "isRegional",
@@ -1098,8 +1090,7 @@
                 "Ref": "WafStackName"
               },
               "match-auth-tokens"
-            ]
-          ]
+            ] ]
         },
         "ByteMatchTuples": [
           {
@@ -1119,9 +1110,7 @@
             "PositionalConstraint": "ENDS_WITH",
             "TargetString": ".TJVA95OrM7E2cBab30RMHrHDcEfxjoYZgeFONFh7HgQ",
             "TextTransformation": "URL_DECODE"
-          }
-        ]
-      }
+          }] }
     },
     "wafrSQLiSet": {
       "Type": "AWS::WAFRegional::SqlInjectionMatchSet",
@@ -1135,8 +1124,7 @@
                 "Ref": "WafStackName"
               },
               "detect-sqli"
-            ]
-          ]
+            ]]
         },
         "SqlInjectionMatchTuples": [
           {
@@ -1188,9 +1176,7 @@
               "Data": "cookie"
             },
             "TextTransformation": "HTML_ENTITY_DECODE"
-          }
-        ]
-      }
+          }]}
     },
     "wafrXSSSet": {
       "Type": "AWS::WAFRegional::XssMatchSet",
@@ -1204,8 +1190,7 @@
                 "Ref": "WafStackName"
               },
               "detect-xss"
-            ]
-          ]
+            ]]
         },
         "XssMatchTuples": [
           {
@@ -1257,9 +1242,7 @@
               "Data": "cookie"
             },
             "TextTransformation": "HTML_ENTITY_DECODE"
-          }
-        ]
-      }
+          }]}
     },
     "wafrPathsStringSet": {
       "Type": "AWS::WAFRegional::ByteMatchSet",
@@ -1340,9 +1323,7 @@
             "PositionalConstraint": "CONTAINS",
             "TargetString": "://",
             "TextTransformation": "HTML_ENTITY_DECODE"
-          }
-        ]
-      }
+          }]}
     },
     "wafrPHPInsecureQSStringSet": {
       "Type": "AWS::WAFRegional::ByteMatchSet",
@@ -1356,8 +1337,7 @@
                 "Ref": "WafStackName"
               },
               "match-php-insecure-var-refs"
-            ]
-          ]
+            ] ]
         },
         "ByteMatchTuples": [
           {
@@ -1423,9 +1403,7 @@
             "PositionalConstraint": "CONTAINS",
             "TargetString": "safe_mode=",
             "TextTransformation": "URL_DECODE"
-          }
-        ]
-      }
+          }]}
     },
     "wafrPHPInsecureURIStringSet": {
       "Type": "AWS::WAFRegional::ByteMatchSet",
@@ -1439,8 +1417,7 @@
                 "Ref": "WafStackName"
               },
               "match-php-insecure-uri"
-            ]
-          ]
+            ] ]
         },
         "ByteMatchTuples": [
           {
@@ -1458,9 +1435,7 @@
             "PositionalConstraint": "ENDS_WITH",
             "TargetString": "/",
             "TextTransformation": "URL_DECODE"
-          }
-        ]
-      }
+          }]}
     },
     "wafrCSRFMethodStringSet": {
       "Type": "AWS::WAFRegional::ByteMatchSet",
@@ -1474,9 +1449,7 @@
                 "Ref": "WafStackName"
               },
               "match-csrf-method"
-            ]
-          ]
-        },
+            ]] },
         "ByteMatchTuples": [
           {
             "FieldToMatch": {
@@ -1485,9 +1458,7 @@
             "PositionalConstraint": "EXACTLY",
             "TargetString": "post",
             "TextTransformation": "LOWERCASE"
-          }
-        ]
-      }
+          }]}
     },
     "wafrCSRFTokenSizeConstraint": {
       "Type": "AWS::WAFRegional::SizeConstraintSet",
@@ -1501,8 +1472,7 @@
                 "Ref": "WafStackName"
               },
               "match-csrf-token"
-            ]
-          ]
+            ] ]
         },
         "SizeConstraints": [
           {
@@ -1517,9 +1487,7 @@
             "Size": {
               "Ref": "csrfExpectedSize"
             }
-          }
-        ]
-      }
+          }] }
     },
     "wafrServerSideIncludeStringSet": {
       "Type": "AWS::WAFRegional::ByteMatchSet",
@@ -1533,8 +1501,7 @@
                 "Ref": "WafStackName"
               },
               "match-ssi"
-            ]
-          ]
+            ]]
         },
         "ByteMatchTuples": [
           {
@@ -1602,9 +1569,7 @@
             "PositionalConstraint": "ENDS_WITH",
             "TargetString": ".backup",
             "TextTransformation": "LOWERCASE"
-          }
-        ]
-      }
+          }]}
     },
     "wafrAdminUrlStringSet": {
       "Type": "AWS::WAFRegional::ByteMatchSet",
@@ -1618,8 +1583,7 @@
                 "Ref": "WafStackName"
               },
               "match-admin-url"
-            ]
-          ]
+            ]]
         },
         "ByteMatchTuples": [
           {
@@ -1631,9 +1595,7 @@
               "Ref": "adminUrlPrefix"
             },
             "TextTransformation": "URL_DECODE"
-          }
-        ]
-      }
+          }]}
     },
     "wafrAdminRemoteAddrIpSet": {
       "Type": "AWS::WAFRegional::IPSet",
@@ -1647,18 +1609,13 @@
                 "Ref": "WafStackName"
               },
               "match-admin-remote-ip"
-            ]
-          ]
-        },
+            ]] },
         "IPSetDescriptors": [
           {
             "Type": "IPV4",
             "Value": {
               "Ref": "adminRemoteCidr"
-            }
-          }
-        ]
-      }
+            }}] }
     },
     "wafrSizeRestrictionRule": {
       "Type": "AWS::WAFRegional::Rule",
@@ -1672,10 +1629,7 @@
             "Negated": false,
             "DataId": {
               "Ref": "wafrSizeRestrictionSet"
-            }
-          }
-        ]
-      }
+            }}]}
     },
     "wafrBlacklistIpRule": {
       "Type": "AWS::WAFRegional::Rule",
@@ -1689,10 +1643,7 @@
             "Negated": false,
             "DataId": {
               "Ref": "wafrBlacklistIpSet"
-            }
-          }
-        ]
-      }
+            }}]}
     },
     "wafgAuthTokenRule": {
       "Type": "AWS::WAFRegional::Rule",
@@ -1706,10 +1657,7 @@
             "Negated": false,
             "DataId": {
               "Ref": "wafgAuthTokenStringSet"
-            }
-          }
-        ]
-      }
+            }}]}
     },
     "wafrSQLiRule": {
       "Type": "AWS::WAFRegional::Rule",
@@ -1723,10 +1671,7 @@
             "Negated": false,
             "DataId": {
               "Ref": "wafrSQLiSet"
-            }
-          }
-        ]
-      }
+            }}]}
     },
     "wafrXSSRule": {
       "Type": "AWS::WAFRegional::Rule",
@@ -1740,10 +1685,7 @@
             "Negated": false,
             "DataId": {
               "Ref": "wafrXSSSet"
-            }
-          }
-        ]
-      }
+            }}]}
     },
     "wafrPathsRule": {
       "Type": "AWS::WAFRegional::Rule",
@@ -1757,10 +1699,7 @@
             "Negated": false,
             "DataId": {
               "Ref": "wafrPathsStringSet"
-            }
-          }
-        ]
-      }
+            }}]}
     },
     "wafrPHPInsecureRule": {
       "Type": "AWS::WAFRegional::Rule",
@@ -1781,10 +1720,7 @@
             "Negated": false,
             "DataId": {
               "Ref": "wafrPHPInsecureURIStringSet"
-            }
-          }
-        ]
-      }
+            }}]}
     },
     "wafrCSRFRule": {
       "Type": "AWS::WAFRegional::Rule",
@@ -1798,10 +1734,7 @@
             "Negated": true,
             "DataId": {
               "Ref": "wafrCSRFTokenSizeConstraint"
-            }
-          }
-        ]
-      }
+            }}]}
     },
     "wafrServerSideIncludeRule": {
       "Type": "AWS::WAFRegional::Rule",
@@ -1815,10 +1748,7 @@
             "Negated": false,
             "DataId": {
               "Ref": "wafrServerSideIncludeStringSet"
-            }
-          }
-        ]
-      }
+            }}]}
     },
     "wafrAdminAccessRule": {
       "Type": "AWS::WAFRegional::Rule",
@@ -1839,10 +1769,7 @@
             "Negated": true,
             "DataId": {
               "Ref": "wafrAdminRemoteAddrIpSet"
-            }
-          }
-        ]
-      }
+            }}] }
     },
     "wafrOwaspACL": {
       "Type": "AWS::WAFRegional::WebACL",
@@ -1960,10 +1887,7 @@
             "Priority": 100,
             "RuleId": {
               "Ref": "wafrBlacklistIpRule"
-            }
-          }
-        ]
-      }
+            }}]}
     },
     "MyWebACLAssociation": {
       "Type": "AWS::WAFRegional::WebACLAssociation",
