@@ -14,15 +14,6 @@
       "Description": "Application Stack Name",
       "Type": "String"
     },
-    "stackScope": {
-      "Type": "String",
-      "Description": "You can deploy this stack at a regional level, for regional WAF targets like Application Load Balancers, or for global targets, such as Amazon CloudFront distributions.",
-      "AllowedValues": [
-        "Global",
-        "Regional"
-      ],
-      "Default": "Regional"
-    },
     "KeyName": {
       "Description": "EC2 Key Name",
       "Type": "String"
@@ -168,16 +159,14 @@
   },
   "Conditions": {
     "isRegional": {
-      "Fn::Equals": [
-        {
+      "Fn::Equals": [{
           "Ref": "stackScope"
         },
         "Regional"
       ]
     },
     "isGlobal": {
-      "Fn::Equals": [
-        {
+      "Fn::Equals": [{
           "Ref": "stackScope"
         },
         "Global"
@@ -189,8 +178,7 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "rule to allow TCP traffic on port 22, 80 and 443 from anywhere in the world",
-        "SecurityGroupIngress": [
-          {
+        "SecurityGroupIngress": [{
             "IpProtocol": "tcp",
             "FromPort": 22,
             "ToPort": 22,
@@ -209,21 +197,19 @@
             "CidrIp": "0.0.0.0/0"
           }
         ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-sgwebapp",
-                {
-                  "StackName": {
-                    "Ref": "StackName"
-                  }
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Sub": [
+              "${StackName}-csye6225-sgwebapp",
+              {
+                "StackName": {
+                  "Ref": "StackName"
                 }
-              ]
-            }
+              }
+            ]
           }
-        ],
+        }],
         "VpcId": {
           "Fn::ImportValue": {
             "Fn::Sub": "${NetworkStackNameParameter}-VpcID"
@@ -235,31 +221,27 @@
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "rule to allow TCP traffic on port 3306 for MySQL only from the webapp security group",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 3306,
-            "ToPort": 3306,
-            "SourceSecurityGroupId": {
-              "Ref": "webappSecurityGroup"
-            }
+        "SecurityGroupIngress": [{
+          "IpProtocol": "tcp",
+          "FromPort": 3306,
+          "ToPort": 3306,
+          "SourceSecurityGroupId": {
+            "Ref": "webappSecurityGroup"
           }
-        ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-rdssg",
-                {
-                  "StackName": {
-                    "Ref": "StackName"
-                  }
+        }],
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Sub": [
+              "${StackName}-csye6225-rdssg",
+              {
+                "StackName": {
+                  "Ref": "StackName"
                 }
-              ]
-            }
+              }
+            ]
           }
-        ],
+        }],
         "VpcId": {
           "Fn::ImportValue": {
             "Fn::Sub": "${NetworkStackNameParameter}-VpcID"
@@ -270,18 +252,14 @@
     "DynamoDBTable": {
       "Type": "AWS::DynamoDB::Table",
       "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "id",
-            "AttributeType": "S"
-          }
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "id",
-            "KeyType": "HASH"
-          }
-        ],
+        "AttributeDefinitions": [{
+          "AttributeName": "id",
+          "AttributeType": "S"
+        }],
+        "KeySchema": [{
+          "AttributeName": "id",
+          "KeyType": "HASH"
+        }],
         "TableName": "csye6225",
         "TimeToLiveSpecification": {
           "AttributeName": "ttl",
@@ -291,29 +269,26 @@
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
         },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-dynamodb",
-                {
-                  "StackName": {
-                    "Ref": "StackName"
-                  }
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Sub": [
+              "${StackName}-csye6225-dynamodb",
+              {
+                "StackName": {
+                  "Ref": "StackName"
                 }
-              ]
-            }
+              }
+            ]
           }
-        ]
+        }]
       }
     },
     "DBSubnetGroup": {
       "Type": "AWS::RDS::DBSubnetGroup",
       "Properties": {
         "DBSubnetGroupDescription": "Subnets available for the RDS DB Instance",
-        "SubnetIds": [
-          {
+        "SubnetIds": [{
             "Fn::ImportValue": {
               "Fn::Sub": "${NetworkStackNameParameter}-SubnetEC2"
             }
@@ -324,21 +299,19 @@
             }
           }
         ],
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-dbsubnetgrp",
-                {
-                  "StackName": {
-                    "Ref": "StackName"
-                  }
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Sub": [
+              "${StackName}-csye6225-dbsubnetgrp",
+              {
+                "StackName": {
+                  "Ref": "StackName"
                 }
-              ]
-            }
+              }
+            ]
           }
-        ]
+        }]
       }
     },
     "RDSInstance": {
@@ -364,29 +337,25 @@
         "DBSubnetGroupName": {
           "Ref": "DBSubnetGroup"
         },
-        "VPCSecurityGroups": [
-          {
-            "Ref": "dbSecurityGroup"
-          }
-        ],
+        "VPCSecurityGroups": [{
+          "Ref": "dbSecurityGroup"
+        }],
         "DBInstanceIdentifier": "csye6225-spring2019",
         "MultiAZ": false,
         "PubliclyAccessible": true,
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": {
-              "Fn::Sub": [
-                "${StackName}-csye6225-rds",
-                {
-                  "StackName": {
-                    "Ref": "StackName"
-                  }
+        "Tags": [{
+          "Key": "Name",
+          "Value": {
+            "Fn::Sub": [
+              "${StackName}-csye6225-rds",
+              {
+                "StackName": {
+                  "Ref": "StackName"
                 }
-              ]
-            }
+              }
+            ]
           }
-        ]
+        }]
       }
     },
     "CodeDeployEC2S3UserPolicy": {
@@ -395,59 +364,56 @@
         "Description": "This policy allows EC2 instances to get data from S3 buckets",
         "PolicyDocument": {
           "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": [
-                "s3:Get*",
-                "s3:List*",
-                "s3:PutObject",
-                "s3:DeleteObject"
-              ],
-              "Resource": [
-                {
-                  "Fn::Sub": [
-                    "arn:aws:s3:::${BUCKET_NAME}",
-                    {
-                      "BUCKET_NAME": {
-                        "Ref": "CDBucketName"
-                      }
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+              "s3:Get*",
+              "s3:List*",
+              "s3:PutObject",
+              "s3:DeleteObject"
+            ],
+            "Resource": [{
+                "Fn::Sub": [
+                  "arn:aws:s3:::${BUCKET_NAME}",
+                  {
+                    "BUCKET_NAME": {
+                      "Ref": "CDBucketName"
                     }
-                  ]
-                },
-                {
-                  "Fn::Sub": [
-                    "arn:aws:s3:::${BUCKET_NAME}/*",
-                    {
-                      "BUCKET_NAME": {
-                        "Ref": "CDBucketName"
-                      }
+                  }
+                ]
+              },
+              {
+                "Fn::Sub": [
+                  "arn:aws:s3:::${BUCKET_NAME}/*",
+                  {
+                    "BUCKET_NAME": {
+                      "Ref": "CDBucketName"
                     }
-                  ]
-                },
-                {
-                  "Fn::Sub": [
-                    "arn:aws:s3:::${BUCKET_NAME}/*",
-                    {
-                      "BUCKET_NAME": {
-                        "Ref": "AttachmentsBucketName"
-                      }
+                  }
+                ]
+              },
+              {
+                "Fn::Sub": [
+                  "arn:aws:s3:::${BUCKET_NAME}/*",
+                  {
+                    "BUCKET_NAME": {
+                      "Ref": "AttachmentsBucketName"
                     }
-                  ]
-                },
-                {
-                  "Fn::Sub": [
-                    "arn:aws:s3:::${BUCKET_NAME}/*",
-                    {
-                      "BUCKET_NAME": {
-                        "Ref": "AttachmentsBucketName"
-                      }
+                  }
+                ]
+              },
+              {
+                "Fn::Sub": [
+                  "arn:aws:s3:::${BUCKET_NAME}/*",
+                  {
+                    "BUCKET_NAME": {
+                      "Ref": "AttachmentsBucketName"
                     }
-                  ]
-                }
-              ]
-            }
-          ]
+                  }
+                ]
+              }
+            ]
+          }]
         },
         "ManagedPolicyName": "CodeDeploy-EC2-S3"
       }
@@ -457,24 +423,21 @@
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": [
-                  "ec2.amazonaws.com"
-                ]
-              },
-              "Action": [
-                "sts:AssumeRole"
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [
+                "ec2.amazonaws.com"
               ]
-            }
-          ]
+            },
+            "Action": [
+              "sts:AssumeRole"
+            ]
+          }]
         },
         "Path": "/",
         "RoleName": "CodeDeployEC2ServiceRole",
-        "ManagedPolicyArns": [
-          {
+        "ManagedPolicyArns": [{
             "Ref": "CodeDeployEC2S3UserPolicy"
           },
           "arn:aws:iam::aws:policy/AmazonS3FullAccess",
@@ -488,46 +451,39 @@
         "ManagedPolicyName": "Publish-EC2-SNS",
         "PolicyDocument": {
           "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": [
-                "sns:Publish",
-                "sns:ListTopics"
-              ],
-              "Resource": [
-                {
-                  "Ref": "SNSTopic"
-                },
-                "*"
-              ]
-            }
-          ]
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": [
+              "sns:Publish",
+              "sns:ListTopics"
+            ],
+            "Resource": [{
+                "Ref": "SNSTopic"
+              },
+              "*"
+            ]
+          }]
         },
-        "Roles": [
-          {
-            "Ref": "CodeDeployEC2ServiceRole"
-          }
-        ]
+        "Roles": [{
+          "Ref": "CodeDeployEC2ServiceRole"
+        }]
       }
     },
     "CodeDeployServiceRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": [
-                  "codedeploy.amazonaws.com"
-                ]
-              },
-              "Action": [
-                "sts:AssumeRole"
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+              "Service": [
+                "codedeploy.amazonaws.com"
               ]
-            }
-          ]
+            },
+            "Action": [
+              "sts:AssumeRole"
+            ]
+          }]
         },
         "ManagedPolicyArns": [
           "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
@@ -548,7 +504,9 @@
         "ApplicationName": {
           "Ref": "CodeDeployApplication"
         },
-        "AutoScalingGroups": [{"Ref":"WebServerGroup"}],
+        "AutoScalingGroups": [{
+          "Ref": "WebServerGroup"
+        }],
         "DeploymentGroupName": "csye6225-webapp-deployment",
         "DeploymentConfigName": "CodeDeployDefault.AllAtOnce",
         "DeploymentStyle": {
@@ -581,17 +539,15 @@
           ]
         }
       },
-      "DependsOn":["ALBTargetGroup", "WebServerGroup"]
+      "DependsOn": ["ALBTargetGroup", "WebServerGroup"]
     },
     "EC2InstanceProfile": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
         "Path": "/",
-        "Roles": [
-          {
-            "Ref": "CodeDeployEC2ServiceRole"
-          }
-        ]
+        "Roles": [{
+          "Ref": "CodeDeployEC2ServiceRole"
+        }]
       }
     },
     "LaunchConfig": {
@@ -605,21 +561,17 @@
         "KeyName": {
           "Ref": "KeyName"
         },
-        "BlockDeviceMappings": [
-          {
-            "DeviceName": "/dev/sda1",
-            "Ebs": {
-              "DeleteOnTermination": true,
-              "VolumeSize": "20",
-              "VolumeType": "gp2"
-            }
+        "BlockDeviceMappings": [{
+          "DeviceName": "/dev/sda1",
+          "Ebs": {
+            "DeleteOnTermination": true,
+            "VolumeSize": "20",
+            "VolumeType": "gp2"
           }
-        ],
-        "SecurityGroups": [
-          {
-            "Ref": "webappSecurityGroup"
-          }
-        ],
+        }],
+        "SecurityGroups": [{
+          "Ref": "webappSecurityGroup"
+        }],
         "LaunchConfigurationName": "asg_launch_config",
         "IamInstanceProfile": {
           "Ref": "EC2InstanceProfile"
@@ -679,13 +631,10 @@
         },
         "MinSize": "3",
         "MaxSize": "10",
-        "TargetGroupARNs": [
-          {
-            "Ref": "ALBTargetGroup"
-          }
-        ],
-        "Tags": [
-          {
+        "TargetGroupARNs": [{
+          "Ref": "ALBTargetGroup"
+        }],
+        "Tags": [{
             "Key": "Name",
             "Value": {
               "Fn::Sub": [
@@ -705,8 +654,7 @@
             "PropagateAtLaunch": true
           }
         ],
-        "VPCZoneIdentifier": [
-          {
+        "VPCZoneIdentifier": [{
             "Ref": "SubnetA"
           },
           {
@@ -750,45 +698,37 @@
         "Period": "120",
         "EvaluationPeriods": "2",
         "Threshold": "10",
-        "AlarmActions": [
-          {
-            "Ref": "WebServerScaleUpPolicy"
+        "AlarmActions": [{
+          "Ref": "WebServerScaleUpPolicy"
+        }],
+        "Dimensions": [{
+          "Name": "AutoScalingGroupName",
+          "Value": {
+            "Ref": "WebServerGroup"
           }
-        ],
-        "Dimensions": [
-          {
-            "Name": "AutoScalingGroupName",
-            "Value": {
-              "Ref": "WebServerGroup"
-            }
-          }
-        ],
+        }],
         "ComparisonOperator": "GreaterThanThreshold"
       }
     },
     "CPUAlarmLow": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
-        "AlarmDescription": "Scale-down if CPU < 5% for 4 minutes",
+        "AlarmDescription": "Scale-down if CPU < 5% for 2 minutes",
         "MetricName": "CPUUtilization",
         "Namespace": "AWS/EC2",
         "Statistic": "Average",
-        "Period": "120",
+        "Period": "60",
         "EvaluationPeriods": "2",
         "Threshold": "5",
-        "AlarmActions": [
-          {
-            "Ref": "WebServerScaleDownPolicy"
+        "AlarmActions": [{
+          "Ref": "WebServerScaleDownPolicy"
+        }],
+        "Dimensions": [{
+          "Name": "AutoScalingGroupName",
+          "Value": {
+            "Ref": "WebServerGroup"
           }
-        ],
-        "Dimensions": [
-          {
-            "Name": "AutoScalingGroupName",
-            "Value": {
-              "Ref": "WebServerGroup"
-            }
-          }
-        ],
+        }],
         "ComparisonOperator": "LessThanThreshold"
       }
     },
@@ -829,17 +769,15 @@
     "ResetPasswordTopic": {
       "Type": "AWS::SNS::Topic",
       "Properties": {
-        "Subscription": [
-          {
-            "Endpoint": {
-              "Fn::GetAtt": [
-                "ResetPasswordLambdaFunction",
-                "Arn"
-              ]
-            },
-            "Protocol": "lambda"
-          }
-        ],
+        "Subscription": [{
+          "Endpoint": {
+            "Fn::GetAtt": [
+              "ResetPasswordLambdaFunction",
+              "Arn"
+            ]
+          },
+          "Protocol": "lambda"
+        }],
         "TopicName": "password_reset"
       },
       "DependsOn": [
@@ -865,39 +803,32 @@
     "ApplicationLoadBalancer": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
-        "Subnets": [
-          {
+        "Subnets": [{
             "Ref": "SubnetA"
           },
           {
             "Ref": "SubnetB"
           }
         ],
-        "SecurityGroups": [
-          {
-            "Ref": "webappSecurityGroup"
-          }
-        ]
+        "SecurityGroups": [{
+          "Ref": "webappSecurityGroup"
+        }]
       }
     },
     "ApplicationLoadBalancerListener2": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
       "Properties": {
-        "Certificates": [
-          {
-            "CertificateArn": {
-              "Ref": "CertificateArn"
-            }
+        "Certificates": [{
+          "CertificateArn": {
+            "Ref": "CertificateArn"
           }
-        ],
-        "DefaultActions": [
-          {
-            "Type": "forward",
-            "TargetGroupArn": {
-              "Ref": "ALBTargetGroup"
-            }
+        }],
+        "DefaultActions": [{
+          "Type": "forward",
+          "TargetGroupArn": {
+            "Ref": "ALBTargetGroup"
           }
-        ],
+        }],
         "LoadBalancerArn": {
           "Ref": "ApplicationLoadBalancer"
         },
@@ -912,19 +843,17 @@
     "ApplicationLoadBalancerListener": {
       "Type": "AWS::ElasticLoadBalancingV2::Listener",
       "Properties": {
-        "DefaultActions": [
-          {
-            "Type": "redirect",
-            "RedirectConfig": {
-              "Host": "#{host}",
-              "Path": "/#{path}",
-              "Port": 443,
-              "Protocol": "HTTPS",
-              "Query": "#{query}",
-              "StatusCode": "HTTP_301"
-            }
+        "DefaultActions": [{
+          "Type": "redirect",
+          "RedirectConfig": {
+            "Host": "#{host}",
+            "Path": "/#{path}",
+            "Port": 443,
+            "Protocol": "HTTPS",
+            "Query": "#{query}",
+            "StatusCode": "HTTP_301"
           }
-        ],
+        }],
         "LoadBalancerArn": {
           "Ref": "ApplicationLoadBalancer"
         },
@@ -949,8 +878,7 @@
         "VpcId": {
           "Ref": "VpcId"
         },
-        "Tags": [
-          {
+        "Tags": [{
             "Key": "Name",
             "Value": {
               "Fn::Sub": [
@@ -1004,16 +932,14 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "size-restrictions"
             ]
           ]
         },
-        "SizeConstraints": [
-          {
+        "SizeConstraints": [{
             "FieldToMatch": {
               "Type": "URI"
             },
@@ -1054,16 +980,14 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "match-blacklisted-ips"
             ]
           ]
         },
-        "IPSetDescriptors": [
-          {
+        "IPSetDescriptors": [{
             "Type": "IPV4",
             "Value": "10.0.0.0/8"
           },
@@ -1093,16 +1017,14 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "match-auth-tokens"
             ]
           ]
         },
-        "ByteMatchTuples": [
-          {
+        "ByteMatchTuples": [{
             "FieldToMatch": {
               "Type": "HEADER",
               "Data": "cookie"
@@ -1130,16 +1052,14 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "detect-sqli"
             ]
           ]
         },
-        "SqlInjectionMatchTuples": [
-          {
+        "SqlInjectionMatchTuples": [{
             "FieldToMatch": {
               "Type": "URI"
             },
@@ -1199,16 +1119,14 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "detect-xss"
             ]
           ]
         },
-        "XssMatchTuples": [
-          {
+        "XssMatchTuples": [{
             "FieldToMatch": {
               "Type": "URI"
             },
@@ -1268,16 +1186,14 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "match-rfi-lfi-traversal"
             ]
           ]
         },
-        "ByteMatchTuples": [
-          {
+        "ByteMatchTuples": [{
             "FieldToMatch": {
               "Type": "URI"
             },
@@ -1351,16 +1267,14 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "match-php-insecure-var-refs"
             ]
           ]
         },
-        "ByteMatchTuples": [
-          {
+        "ByteMatchTuples": [{
             "FieldToMatch": {
               "Type": "QUERY_STRING"
             },
@@ -1434,16 +1348,14 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "match-php-insecure-uri"
             ]
           ]
         },
-        "ByteMatchTuples": [
-          {
+        "ByteMatchTuples": [{
             "FieldToMatch": {
               "Type": "URI"
             },
@@ -1469,24 +1381,21 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "match-csrf-method"
             ]
           ]
         },
-        "ByteMatchTuples": [
-          {
-            "FieldToMatch": {
-              "Type": "METHOD"
-            },
-            "PositionalConstraint": "EXACTLY",
-            "TargetString": "post",
-            "TextTransformation": "LOWERCASE"
-          }
-        ]
+        "ByteMatchTuples": [{
+          "FieldToMatch": {
+            "Type": "METHOD"
+          },
+          "PositionalConstraint": "EXACTLY",
+          "TargetString": "post",
+          "TextTransformation": "LOWERCASE"
+        }]
       }
     },
     "wafrCSRFTokenSizeConstraint": {
@@ -1496,29 +1405,26 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "match-csrf-token"
             ]
           ]
         },
-        "SizeConstraints": [
-          {
-            "FieldToMatch": {
-              "Type": "HEADER",
-              "Data": {
-                "Ref": "csrfExpectedHeader"
-              }
-            },
-            "TextTransformation": "NONE",
-            "ComparisonOperator": "EQ",
-            "Size": {
-              "Ref": "csrfExpectedSize"
+        "SizeConstraints": [{
+          "FieldToMatch": {
+            "Type": "HEADER",
+            "Data": {
+              "Ref": "csrfExpectedHeader"
             }
+          },
+          "TextTransformation": "NONE",
+          "ComparisonOperator": "EQ",
+          "Size": {
+            "Ref": "csrfExpectedSize"
           }
-        ]
+        }]
       }
     },
     "wafrServerSideIncludeStringSet": {
@@ -1528,16 +1434,14 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "match-ssi"
             ]
           ]
         },
-        "ByteMatchTuples": [
-          {
+        "ByteMatchTuples": [{
             "FieldToMatch": {
               "Type": "URI"
             },
@@ -1613,26 +1517,23 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "match-admin-url"
             ]
           ]
         },
-        "ByteMatchTuples": [
-          {
-            "FieldToMatch": {
-              "Type": "URI"
-            },
-            "PositionalConstraint": "STARTS_WITH",
-            "TargetString": {
-              "Ref": "adminUrlPrefix"
-            },
-            "TextTransformation": "URL_DECODE"
-          }
-        ]
+        "ByteMatchTuples": [{
+          "FieldToMatch": {
+            "Type": "URI"
+          },
+          "PositionalConstraint": "STARTS_WITH",
+          "TargetString": {
+            "Ref": "adminUrlPrefix"
+          },
+          "TextTransformation": "URL_DECODE"
+        }]
       }
     },
     "wafrAdminRemoteAddrIpSet": {
@@ -1642,22 +1543,19 @@
         "Name": {
           "Fn::Join": [
             "-",
-            [
-              {
+            [{
                 "Ref": "WafStackName"
               },
               "match-admin-remote-ip"
             ]
           ]
         },
-        "IPSetDescriptors": [
-          {
-            "Type": "IPV4",
-            "Value": {
-              "Ref": "adminRemoteCidr"
-            }
+        "IPSetDescriptors": [{
+          "Type": "IPV4",
+          "Value": {
+            "Ref": "adminRemoteCidr"
           }
-        ]
+        }]
       }
     },
     "wafrSizeRestrictionRule": {
@@ -1666,15 +1564,13 @@
       "Properties": {
         "MetricName": "restrictsizes",
         "Name": "restrictsizes",
-        "Predicates": [
-          {
-            "Type": "SizeConstraint",
-            "Negated": false,
-            "DataId": {
-              "Ref": "wafrSizeRestrictionSet"
-            }
+        "Predicates": [{
+          "Type": "SizeConstraint",
+          "Negated": false,
+          "DataId": {
+            "Ref": "wafrSizeRestrictionSet"
           }
-        ]
+        }]
       }
     },
     "wafrBlacklistIpRule": {
@@ -1683,15 +1579,13 @@
       "Properties": {
         "MetricName": "blacklistedips",
         "Name": "blacklistedips",
-        "Predicates": [
-          {
-            "Type": "IPMatch",
-            "Negated": false,
-            "DataId": {
-              "Ref": "wafrBlacklistIpSet"
-            }
+        "Predicates": [{
+          "Type": "IPMatch",
+          "Negated": false,
+          "DataId": {
+            "Ref": "wafrBlacklistIpSet"
           }
-        ]
+        }]
       }
     },
     "wafgAuthTokenRule": {
@@ -1700,15 +1594,13 @@
       "Properties": {
         "MetricName": "badauthtokens",
         "Name": "badauthtokens",
-        "Predicates": [
-          {
-            "Type": "ByteMatch",
-            "Negated": false,
-            "DataId": {
-              "Ref": "wafgAuthTokenStringSet"
-            }
+        "Predicates": [{
+          "Type": "ByteMatch",
+          "Negated": false,
+          "DataId": {
+            "Ref": "wafgAuthTokenStringSet"
           }
-        ]
+        }]
       }
     },
     "wafrSQLiRule": {
@@ -1717,15 +1609,13 @@
       "Properties": {
         "MetricName": "mitigatesqli",
         "Name": "mitigatesqli",
-        "Predicates": [
-          {
-            "Type": "SqlInjectionMatch",
-            "Negated": false,
-            "DataId": {
-              "Ref": "wafrSQLiSet"
-            }
+        "Predicates": [{
+          "Type": "SqlInjectionMatch",
+          "Negated": false,
+          "DataId": {
+            "Ref": "wafrSQLiSet"
           }
-        ]
+        }]
       }
     },
     "wafrXSSRule": {
@@ -1734,15 +1624,13 @@
       "Properties": {
         "MetricName": "mitigatexss",
         "Name": "mitigatexss",
-        "Predicates": [
-          {
-            "Type": "XssMatch",
-            "Negated": false,
-            "DataId": {
-              "Ref": "wafrXSSSet"
-            }
+        "Predicates": [{
+          "Type": "XssMatch",
+          "Negated": false,
+          "DataId": {
+            "Ref": "wafrXSSSet"
           }
-        ]
+        }]
       }
     },
     "wafrPathsRule": {
@@ -1751,15 +1639,13 @@
       "Properties": {
         "MetricName": "detectrfilfi",
         "Name": "detectrfilfi",
-        "Predicates": [
-          {
-            "Type": "ByteMatch",
-            "Negated": false,
-            "DataId": {
-              "Ref": "wafrPathsStringSet"
-            }
+        "Predicates": [{
+          "Type": "ByteMatch",
+          "Negated": false,
+          "DataId": {
+            "Ref": "wafrPathsStringSet"
           }
-        ]
+        }]
       }
     },
     "wafrPHPInsecureRule": {
@@ -1768,8 +1654,7 @@
       "Properties": {
         "MetricName": "detectphpinsecure",
         "Name": "detectphpinsecure",
-        "Predicates": [
-          {
+        "Predicates": [{
             "Type": "ByteMatch",
             "Negated": false,
             "DataId": {
@@ -1792,15 +1677,13 @@
       "Properties": {
         "MetricName": "enforcecsrf",
         "Name": "enforcecsrf",
-        "Predicates": [
-          {
-            "Type": "SizeConstraint",
-            "Negated": true,
-            "DataId": {
-              "Ref": "wafrCSRFTokenSizeConstraint"
-            }
+        "Predicates": [{
+          "Type": "SizeConstraint",
+          "Negated": true,
+          "DataId": {
+            "Ref": "wafrCSRFTokenSizeConstraint"
           }
-        ]
+        }]
       }
     },
     "wafrServerSideIncludeRule": {
@@ -1809,15 +1692,13 @@
       "Properties": {
         "MetricName": "detectssi",
         "Name": "detectssi",
-        "Predicates": [
-          {
-            "Type": "ByteMatch",
-            "Negated": false,
-            "DataId": {
-              "Ref": "wafrServerSideIncludeStringSet"
-            }
+        "Predicates": [{
+          "Type": "ByteMatch",
+          "Negated": false,
+          "DataId": {
+            "Ref": "wafrServerSideIncludeStringSet"
           }
-        ]
+        }]
       }
     },
     "wafrAdminAccessRule": {
@@ -1826,8 +1707,7 @@
       "Properties": {
         "MetricName": "detectadminaccess",
         "Name": "detectadminaccess",
-        "Predicates": [
-          {
+        "Predicates": [{
             "Type": "ByteMatch",
             "Negated": false,
             "DataId": {
@@ -1853,8 +1733,7 @@
         "DefaultAction": {
           "Type": "ALLOW"
         },
-        "Rules": [
-          {
+        "Rules": [{
             "Action": {
               "Type": {
                 "Ref": "ruleAction"

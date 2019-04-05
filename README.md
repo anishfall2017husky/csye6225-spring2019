@@ -77,5 +77,5 @@ Environment varibales
 
 ### Usage
 * A git commit will automatically execute CircleCI JOB
-* A job can also be initiated using the following command
+* A job can also be initiated using the following command  
 `curl -u 'put_circleci_user_token' -d build_parameters[CIRCLE_JOB]=build-app https://circleci.com/api/v1.1/project/github/<username>/csye6225-spring2019/tree/<branch>`
