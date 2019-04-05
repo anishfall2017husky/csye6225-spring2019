@@ -14,15 +14,6 @@
       "Description": "Application Stack Name",
       "Type": "String"
     },
-    "stackScope": {
-      "Type": "String",
-      "Description": "You can deploy this stack at a regional level, for regional WAF targets like Application Load Balancers, or for global targets, such as Amazon CloudFront distributions.",
-      "AllowedValues": [
-        "Global",
-        "Regional"
-      ],
-      "Default": "Regional"
-    },
     "KeyName": {
       "Description": "EC2 Key Name",
       "Type": "String"
@@ -722,11 +713,11 @@
     "CPUAlarmLow": {
       "Type": "AWS::CloudWatch::Alarm",
       "Properties": {
-        "AlarmDescription": "Scale-down if CPU < 5% for 4 minutes",
+        "AlarmDescription": "Scale-down if CPU < 5% for 2 minutes",
         "MetricName": "CPUUtilization",
         "Namespace": "AWS/EC2",
         "Statistic": "Average",
-        "Period": "120",
+        "Period": "60",
         "EvaluationPeriods": "2",
         "Threshold": "5",
         "AlarmActions": [{
