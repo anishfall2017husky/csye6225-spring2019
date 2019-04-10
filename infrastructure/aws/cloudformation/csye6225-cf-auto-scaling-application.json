@@ -177,24 +177,14 @@
     "webappSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "rule to allow TCP traffic on port 22, 80 and 443 from anywhere in the world",
+        "GroupDescription": "rule to allow TCP traffic on port 80 from loadbalancer",
         "SecurityGroupIngress": [{
-            "IpProtocol": "tcp",
-            "FromPort": 22,
-            "ToPort": 22,
-            "CidrIp": "0.0.0.0/0"
-          },
-          {
             "IpProtocol": "tcp",
             "FromPort": 80,
             "ToPort": 80,
-            "CidrIp": "0.0.0.0/0"
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": 443,
-            "ToPort": 443,
-            "CidrIp": "0.0.0.0/0"
+            "SourceSecurityGroupId": {
+              "Ref": "loadBalancerSecurityGroup"
+            }
           }
         ],
         "Tags": [{
@@ -210,6 +200,46 @@
             ]
           }
         }],
+        "VpcId": {
+          "Fn::ImportValue": {
+            "Fn::Sub": "${NetworkStackNameParameter}-VpcID"
+          }
+        }
+      }
+    },
+    "loadBalancerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "rule to allow TCP traffic on port 22 and 443",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 443,
+            "ToPort": 443,
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": [
+                "${StackName}-csye6225-sglb",
+                {
+                  "StackName": {
+                    "Ref": "StackName"
+                  }
+                }
+              ]
+            }
+          }
+        ],
         "VpcId": {
           "Fn::ImportValue": {
             "Fn::Sub": "${NetworkStackNameParameter}-VpcID"
@@ -811,7 +841,7 @@
           }
         ],
         "SecurityGroups": [{
-          "Ref": "webappSecurityGroup"
+          "Ref": "loadBalancerSecurityGroup"
         }]
       }
     },
@@ -838,31 +868,6 @@
       "DependsOn": [
         "ApplicationLoadBalancer",
         "ALBTargetGroup"
-      ]
-    },
-    "ApplicationLoadBalancerListener": {
-      "Type": "AWS::ElasticLoadBalancingV2::Listener",
-      "Properties": {
-        "DefaultActions": [{
-          "Type": "redirect",
-          "RedirectConfig": {
-            "Host": "#{host}",
-            "Path": "/#{path}",
-            "Port": 443,
-            "Protocol": "HTTPS",
-            "Query": "#{query}",
-            "StatusCode": "HTTP_301"
-          }
-        }],
-        "LoadBalancerArn": {
-          "Ref": "ApplicationLoadBalancer"
-        },
-        "Port": 80,
-        "Protocol": "HTTP"
-      },
-      "DependsOn": [
-        "ApplicationLoadBalancer",
-        "ApplicationLoadBalancerListener2"
       ]
     },
     "ALBTargetGroup": {
