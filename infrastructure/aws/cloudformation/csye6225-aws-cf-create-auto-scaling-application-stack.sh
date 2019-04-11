@@ -14,7 +14,7 @@ AWS_REGION=$(jq -r '.[0].aws_region' "$PARAM_FILE_PATH")
 CD_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
 ATTACHMENTS_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/csye6225.com$/{print}')
 DOMAIN_NAME=$(aws route53 list-hosted-zones --query 'HostedZones[0].Name' --output text)
-NOWAF_DOMAIN_NAME=$(aws route53 list-hosted-zones --query 'HostedZones[1].Name' --output text)
+NOWAF_DOMAIN_NAME=nowaf."${DOMAIN_NAME}"
 
 FUNCTION=$(jq -r '.[0].lambda_function' "$PARAM_FILE_PATH")
 LAMBDA_ROLE=$(aws iam get-role --role-name LambdaExecutionRole --query Role.Arn --output text)
@@ -26,7 +26,6 @@ SUBNET_A=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${VPC_ID}" "Na
 SUBNET_B=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${VPC_ID}" "Name=mapPublicIpOnLaunch,Values=true" "Name=availabilityZone,Values=us-east-1b" --query 'Subnets[*].SubnetId'  --output text)
 CERTIFICATE_ARN=$(aws acm list-certificates --query "CertificateSummaryList[0].CertificateArn" --output text)
 CERTIFICATE_ARN2=$(aws acm list-certificates --query "CertificateSummaryList[1].CertificateArn" --output text)
-
 
 echo "Stack name: ${stack_name}"
 echo "VPN stack name: ${nw_stack_name}"

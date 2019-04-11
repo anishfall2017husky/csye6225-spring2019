@@ -1024,7 +1024,7 @@
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "HostedZoneName": {
-          "Ref": "NowafDomainName"
+          "Ref": "DomainName"
         },
         "Name": {
           "Ref": "NowafDomainName"
