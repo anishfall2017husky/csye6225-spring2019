@@ -14,6 +14,7 @@ AWS_REGION=$(jq -r '.[0].aws_region' "$PARAM_FILE_PATH")
 CD_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
 ATTACHMENTS_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/csye6225.com$/{print}')
 DOMAIN_NAME=$(aws route53 list-hosted-zones --query 'HostedZones[0].Name' --output text)
+NOWAF_DOMAIN_NAME=nowaf."${DOMAIN_NAME}"
 
 FUNCTION=$(jq -r '.[0].lambda_function' "$PARAM_FILE_PATH")
 LAMBDA_ROLE=$(aws iam get-role --role-name LambdaExecutionRole --query Role.Arn --output text)
@@ -23,7 +24,8 @@ VPC_ID=$(aws ec2 describe-vpcs --filters "Name=isDefault,Values=false" --query "
 
 SUBNET_A=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${VPC_ID}" "Name=mapPublicIpOnLaunch,Values=true" "Name=availabilityZone,Values=us-east-1a" --query 'Subnets[*].SubnetId'  --output text)
 SUBNET_B=$(aws ec2 describe-subnets --filters "Name=vpc-id,Values=${VPC_ID}" "Name=mapPublicIpOnLaunch,Values=true" "Name=availabilityZone,Values=us-east-1b" --query 'Subnets[*].SubnetId'  --output text)
-CERTIFICATE_ARN=$(aws acm list-certificates --query "CertificateSummaryList[*].CertificateArn" --output text)
+CERTIFICATE_ARN=$(aws acm list-certificates --query "CertificateSummaryList[0].CertificateArn" --output text)
+CERTIFICATE_ARN2=$(aws acm list-certificates --query "CertificateSummaryList[1].CertificateArn" --output text)
 
 
 echo "Stack name: ${stack_name}"
@@ -36,9 +38,11 @@ echo "Code deploy Bucket Name: ${CD_BUCKET_NAME}"
 echo "Attachments Bucket Name: ${ATTACHMENTS_BUCKET_NAME}"
 echo "Lambda Function Name: ${FUNCTION}"
 echo "Domain Name: ${DOMAIN_NAME}"
+echo "Nowaf subdomain name: ${NOWAF_DOMAIN_NAME}"
 echo "Subnet for region us-east-1a: ${SUBNET_A}"
 echo "Subnet for region us-east-1b: ${SUBNET_B}"
 echo "Certificate ARN: ${CERTIFICATE_ARN}"
+echo "Certificate ARN: ${CERTIFICATE_ARN2}"
 echo "VPC ID: ${VPC_ID}"
 
 read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
@@ -95,6 +99,8 @@ ParameterKey=SubnetB,ParameterValue=${SUBNET_B} \
 ParameterKey=CertificateArn,ParameterValue=${CERTIFICATE_ARN} \
 ParameterKey=VpcId,ParameterValue=${VPC_ID} \
 ParameterKey=WafStackName,ParameterValue=${waf_stackName} \
+ParameterKey=NowafDomainName,ParameterValue=${NOWAF_DOMAIN_NAME} \
+ParameterKey=CertificateArn2,ParameterValue=${CERTIFICATE_ARN2} \
 --capabilities CAPABILITY_NAMED_IAM
 
 if [ $? -eq 0 ]; then
