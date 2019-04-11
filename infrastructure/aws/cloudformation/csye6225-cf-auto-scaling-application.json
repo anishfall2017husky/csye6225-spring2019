@@ -678,6 +678,9 @@
         "TargetGroupARNs": [
           {
             "Ref": "ALBTargetGroup"
+          },
+          {
+            "Ref": "ALBTargetGroup2"
           }
         ],
         "Tags": [
@@ -1021,7 +1024,7 @@
       "Type": "AWS::Route53::RecordSet",
       "Properties": {
         "HostedZoneName": {
-          "Ref": "DomainName"
+          "Ref": "NowafDomainName"
         },
         "Name": {
           "Ref": "NowafDomainName"

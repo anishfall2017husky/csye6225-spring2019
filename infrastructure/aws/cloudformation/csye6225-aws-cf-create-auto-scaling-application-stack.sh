@@ -14,7 +14,7 @@ AWS_REGION=$(jq -r '.[0].aws_region' "$PARAM_FILE_PATH")
 CD_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/code-deploy./{print}')
 ATTACHMENTS_BUCKET_NAME=$(aws s3api list-buckets --query "Buckets[*].[Name]" --output text | awk '/csye6225.com$/{print}')
 DOMAIN_NAME=$(aws route53 list-hosted-zones --query 'HostedZones[0].Name' --output text)
-NOWAF_DOMAIN_NAME=nowaf."${DOMAIN_NAME}"
+NOWAF_DOMAIN_NAME=$(aws route53 list-hosted-zones --query 'HostedZones[1].Name' --output text)
 
 FUNCTION=$(jq -r '.[0].lambda_function' "$PARAM_FILE_PATH")
 LAMBDA_ROLE=$(aws iam get-role --role-name LambdaExecutionRole --query Role.Arn --output text)
